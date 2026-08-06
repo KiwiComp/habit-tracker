@@ -23,6 +23,7 @@ sealed class AppTheme {
 
   ThemeData get themeData {
     return ThemeData(
+      visualDensity: VisualDensity.standard,
       colorScheme: _colorScheme,
       textTheme: AppTextStyle.textTheme,
       extensions: [
