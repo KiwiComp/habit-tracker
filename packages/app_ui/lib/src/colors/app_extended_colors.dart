@@ -4,24 +4,33 @@ import 'package:flutter/material.dart';
 @immutable
 class AppExtendedColors extends ThemeExtension<AppExtendedColors> {
   /// Creates an [AppExtendedColors].
-  const AppExtendedColors({required this.accent});
+  const AppExtendedColors({required this.accent, required this.disabledBtn});
 
   /// The light variant.
   static const AppExtendedColors light = AppExtendedColors(
     accent: Color(0xFFB6244F),
+    disabledBtn: Color.fromARGB(255, 232, 232, 232),
   );
 
   /// The dark variant.
   static const AppExtendedColors dark = AppExtendedColors(
     accent: Color(0xFFB6244F),
+    // disabledBtn: Color.fromARGB(255, 181, 181, 181),
+    disabledBtn: Color(0xFFD0D3C8),
   );
 
   /// The accent color.
   final Color accent;
 
+  /// The disabled button color.
+  final Color disabledBtn;
+
   @override
-  AppExtendedColors copyWith({Color? accent}) {
-    return AppExtendedColors(accent: accent ?? this.accent);
+  AppExtendedColors copyWith({Color? accent, Color? disabledBtn}) {
+    return AppExtendedColors(
+      accent: accent ?? this.accent,
+      disabledBtn: disabledBtn ?? this.disabledBtn,
+    );
   }
 
   @override
@@ -29,6 +38,7 @@ class AppExtendedColors extends ThemeExtension<AppExtendedColors> {
     if (other == null) return this;
     return AppExtendedColors(
       accent: Color.lerp(accent, other.accent, t)!,
+      disabledBtn: Color.lerp(disabledBtn, other.disabledBtn, t)!,
     );
   }
 }
