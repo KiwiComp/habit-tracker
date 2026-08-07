@@ -3,5 +3,41 @@
     "counterAppBarTitle": "Counter",
     "@counterAppBarTitle": {
         "description": "Text shown in the AppBar of the Counter Page"
+    },
+    "startEmptyScheduleTitle": "There is nothing scheduled",
+    "@startEmptyScheduleTitle": {
+        "description": "Title shown when the selected day has no scheduled activities"
+    },
+    "startEmptyScheduleSubtitle": "Try adding new activities",
+    "@startEmptyScheduleSubtitle": {
+        "description": "Subtitle shown when the selected day has no scheduled activities"
+    },
+    "startNavToday": "Today",
+    "@startNavToday": {
+        "description": "Label for the Today tab in the bottom navigation bar"
+    },
+    "startNavHabits": "Habits",
+    "@startNavHabits": {
+        "description": "Label for the Habits tab in the bottom navigation bar"
+    },
+    "startMenuTooltip": "Menu",
+    "@startMenuTooltip": {
+        "description": "Tooltip for the AppBar's menu button"
+    },
+    "startSearchTooltip": "Search",
+    "@startSearchTooltip": {
+        "description": "Tooltip for the AppBar's search button"
+    },
+    "startCalendarViewTooltip": "Calendar view",
+    "@startCalendarViewTooltip": {
+        "description": "Tooltip for the AppBar's calendar view button"
+    },
+    "startHelpTooltip": "Help",
+    "@startHelpTooltip": {
+        "description": "Tooltip for the AppBar's help button"
+    },
+    "startAddActivityTooltip": "Add activity",
+    "@startAddActivityTooltip": {
+        "description": "Tooltip for the floating action button that adds a new activity"
     }
 }
