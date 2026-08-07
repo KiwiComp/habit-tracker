@@ -30,16 +30,22 @@ coverage is ~77%, driven by untested getters in `AppSpacing`/`AppRadius`/
 for those or explicitly set a lower `min_coverage` once that's a deliberate
 decision.
 
-## No habit/task creation flow
+## Habit/task creation doesn't persist
 
 The start page's FAB opens `AddActivitySheet`
-(`lib/add_activity/view/add_activity_sheet.dart`) with tappable "Habit" and
-"Task" options. Tapping either dispatches an event into `AddActivityBloc`
-(`lib/add_activity/bloc`), which records the choice in
-`AddActivityState.selectedType` — but nothing reads that state yet. There's
-no habit/task creation form, and no wiring to `packages/habits_repository`.
-Build that flow (and consume `selectedType` to open it) once the creation
-UI/UX is decided.
+(`lib/add_activity/view/add_activity_sheet.dart`); tapping "Habit" or "Task"
+closes it and pushes `CreateActivityPage`
+(`lib/create_activity/view/create_activity_page.dart`), a single form for
+both (fields toggle based on the selected type, rather than two separate
+screens — see the page's doc comment for why). `CreateActivityBloc` collects
+name/frequency/weekdays/startDate — exactly `HabitsRepository.createHabit`'s
+parameters — but its `CreateActivitySaveRequested` handler
+(`lib/create_activity/bloc/create_activity_bloc.dart`) is a stub: tapping
+"Save" just validates, nothing is persisted. There's also no
+`HabitsRepository` instance anywhere in the app's widget tree yet. Wire both
+up together once that's a deliberate decision (also unblocks the "No real
+activity data source" entry below, which needs the same repository
+instance).
 
 ## Habits tab
 

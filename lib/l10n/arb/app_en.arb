@@ -59,5 +59,45 @@
     "addActivityTaskSubtitle": "Happens once",
     "@addActivityTaskSubtitle": {
         "description": "Subtitle of the option for adding a one-off task"
+    },
+    "createActivityAppBarTitle": "New activity",
+    "@createActivityAppBarTitle": {
+        "description": "Title of the AppBar on the create habit/task page"
+    },
+    "createActivityNameLabel": "Name",
+    "@createActivityNameLabel": {
+        "description": "Label for the name text field on the create habit/task page"
+    },
+    "createActivityNameHintHabit": "e.g. Drink water",
+    "@createActivityNameHintHabit": {
+        "description": "Hint text for the name field when creating a habit"
+    },
+    "createActivityNameHintTask": "e.g. Renew passport",
+    "@createActivityNameHintTask": {
+        "description": "Hint text for the name field when creating a task"
+    },
+    "createActivityRepeatLabel": "Repeat",
+    "@createActivityRepeatLabel": {
+        "description": "Label for the repeat-pattern section when creating a habit"
+    },
+    "createActivityRepeatDaily": "Every day",
+    "@createActivityRepeatDaily": {
+        "description": "Option for a habit that repeats every day"
+    },
+    "createActivityRepeatWeekdays": "Specific days",
+    "@createActivityRepeatWeekdays": {
+        "description": "Option for a habit that repeats on specific weekdays"
+    },
+    "createActivityStartDateLabelHabit": "Starts on",
+    "@createActivityStartDateLabelHabit": {
+        "description": "Label for the date field when creating a habit"
+    },
+    "createActivityStartDateLabelTask": "Date",
+    "@createActivityStartDateLabelTask": {
+        "description": "Label for the date field when creating a task"
+    },
+    "createActivitySaveButton": "Save",
+    "@createActivitySaveButton": {
+        "description": "Label for the button that saves the new habit/task"
     }
 }

@@ -59,5 +59,45 @@
     "addActivityTaskSubtitle": "Ocurre una sola vez",
     "@addActivityTaskSubtitle": {
         "description": "Subtítulo de la opción para añadir una tarea puntual"
+    },
+    "createActivityAppBarTitle": "Nueva actividad",
+    "@createActivityAppBarTitle": {
+        "description": "Título de la AppBar en la página de creación de hábito/tarea"
+    },
+    "createActivityNameLabel": "Nombre",
+    "@createActivityNameLabel": {
+        "description": "Etiqueta del campo de texto del nombre en la página de creación de hábito/tarea"
+    },
+    "createActivityNameHintHabit": "p. ej. Beber agua",
+    "@createActivityNameHintHabit": {
+        "description": "Texto de ejemplo del campo de nombre al crear un hábito"
+    },
+    "createActivityNameHintTask": "p. ej. Renovar el pasaporte",
+    "@createActivityNameHintTask": {
+        "description": "Texto de ejemplo del campo de nombre al crear una tarea"
+    },
+    "createActivityRepeatLabel": "Repetir",
+    "@createActivityRepeatLabel": {
+        "description": "Etiqueta de la sección de patrón de repetición al crear un hábito"
+    },
+    "createActivityRepeatDaily": "Todos los días",
+    "@createActivityRepeatDaily": {
+        "description": "Opción para un hábito que se repite todos los días"
+    },
+    "createActivityRepeatWeekdays": "Días concretos",
+    "@createActivityRepeatWeekdays": {
+        "description": "Opción para un hábito que se repite en días concretos de la semana"
+    },
+    "createActivityStartDateLabelHabit": "Empieza el",
+    "@createActivityStartDateLabelHabit": {
+        "description": "Etiqueta del campo de fecha al crear un hábito"
+    },
+    "createActivityStartDateLabelTask": "Fecha",
+    "@createActivityStartDateLabelTask": {
+        "description": "Etiqueta del campo de fecha al crear una tarea"
+    },
+    "createActivitySaveButton": "Guardar",
+    "@createActivitySaveButton": {
+        "description": "Etiqueta del botón que guarda el nuevo hábito/tarea"
     }
 }
