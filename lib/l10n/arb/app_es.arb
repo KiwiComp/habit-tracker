@@ -3,5 +3,41 @@
     "counterAppBarTitle": "Contador",
     "@counterAppBarTitle": {
         "description": "Texto mostrado en la AppBar de la página del contador"
+    },
+    "startEmptyScheduleTitle": "No hay nada programado",
+    "@startEmptyScheduleTitle": {
+        "description": "Título mostrado cuando el día seleccionado no tiene actividades programadas"
+    },
+    "startEmptyScheduleSubtitle": "Prueba añadiendo nuevas actividades",
+    "@startEmptyScheduleSubtitle": {
+        "description": "Subtítulo mostrado cuando el día seleccionado no tiene actividades programadas"
+    },
+    "startNavToday": "Hoy",
+    "@startNavToday": {
+        "description": "Etiqueta de la pestaña Hoy en la barra de navegación inferior"
+    },
+    "startNavHabits": "Hábitos",
+    "@startNavHabits": {
+        "description": "Etiqueta de la pestaña Hábitos en la barra de navegación inferior"
+    },
+    "startMenuTooltip": "Menú",
+    "@startMenuTooltip": {
+        "description": "Tooltip del botón de menú de la AppBar"
+    },
+    "startSearchTooltip": "Buscar",
+    "@startSearchTooltip": {
+        "description": "Tooltip del botón de búsqueda de la AppBar"
+    },
+    "startCalendarViewTooltip": "Vista de calendario",
+    "@startCalendarViewTooltip": {
+        "description": "Tooltip del botón de vista de calendario de la AppBar"
+    },
+    "startHelpTooltip": "Ayuda",
+    "@startHelpTooltip": {
+        "description": "Tooltip del botón de ayuda de la AppBar"
+    },
+    "startAddActivityTooltip": "Añadir actividad",
+    "@startAddActivityTooltip": {
+        "description": "Tooltip del botón flotante que añade una nueva actividad"
     }
 }

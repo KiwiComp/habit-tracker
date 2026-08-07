@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0+2
+
+- Add `onAccent` to `AppExtendedColors` for content drawn on top of `accent`-colored surfaces.
+
 ## 0.1.0+1
 
 - Add `AppTheme` with light and dark `ThemeData`, built from `ColorScheme.fromSeed`.
