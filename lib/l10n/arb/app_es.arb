@@ -39,5 +39,25 @@
     "startAddActivityTooltip": "Añadir actividad",
     "@startAddActivityTooltip": {
         "description": "Tooltip del botón flotante que añade una nueva actividad"
+    },
+    "addActivitySheetTitle": "Añadir actividad",
+    "@addActivitySheetTitle": {
+        "description": "Título de la hoja inferior mostrada al añadir una nueva actividad"
+    },
+    "addActivityHabitTitle": "Hábito",
+    "@addActivityHabitTitle": {
+        "description": "Título de la opción para añadir un hábito recurrente"
+    },
+    "addActivityHabitSubtitle": "Se repite según un horario",
+    "@addActivityHabitSubtitle": {
+        "description": "Subtítulo de la opción para añadir un hábito recurrente"
+    },
+    "addActivityTaskTitle": "Tarea",
+    "@addActivityTaskTitle": {
+        "description": "Título de la opción para añadir una tarea puntual"
+    },
+    "addActivityTaskSubtitle": "Ocurre una sola vez",
+    "@addActivityTaskSubtitle": {
+        "description": "Subtítulo de la opción para añadir una tarea puntual"
     }
 }

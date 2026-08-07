@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:habit_tracker/add_activity/add_activity.dart';
 import 'package:habit_tracker/l10n/l10n.dart';
 import 'package:habit_tracker/start_page/bloc/bloc.dart';
 import 'package:habit_tracker/start_page/models/models.dart';
@@ -121,7 +122,7 @@ class _StartViewState extends State<StartView> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(context.radius.lg),
         ),
-        onPressed: () {},
+        onPressed: () => AddActivitySheet.show(context),
         child: const Icon(Icons.add),
       ),
       bottomNavigationBar: const _StartNavigationBar(),

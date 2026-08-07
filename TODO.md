@@ -30,6 +30,17 @@ coverage is ~77%, driven by untested getters in `AppSpacing`/`AppRadius`/
 for those or explicitly set a lower `min_coverage` once that's a deliberate
 decision.
 
+## No habit/task creation flow
+
+The start page's FAB opens `AddActivitySheet`
+(`lib/add_activity/view/add_activity_sheet.dart`) with tappable "Habit" and
+"Task" options. Tapping either dispatches an event into `AddActivityBloc`
+(`lib/add_activity/bloc`), which records the choice in
+`AddActivityState.selectedType` — but nothing reads that state yet. There's
+no habit/task creation form, and no wiring to `packages/habits_repository`.
+Build that flow (and consume `selectedType` to open it) once the creation
+UI/UX is decided.
+
 ## Habits tab
 
 The bottom nav on the start screen (`lib/start_page/view/start_page.dart`)
@@ -40,11 +51,23 @@ yet — tapping it currently does nothing.
 
 `StartBloc` can hold and render scheduled activities (`StartState.activities`,
 `StartActivitiesLoaded` event, `ScheduleList` widget in
-`lib/start_page/widgets/schedule_list.dart`), but nothing populates it yet —
-no repository, no persistence, no backend. The empty state always shows
-until a real data source exists and dispatches `StartActivitiesLoaded`.
-`ScheduleList`'s visuals are also a functional placeholder (no design
-reference for it yet, unlike `EmptySchedule`/`DayChip`).
+`lib/start_page/widgets/schedule_list.dart`), but nothing populates it yet.
+`packages/habits_repository` (Drift/SQLite-backed, exposing `Habit`/`Entry`)
+now exists, but `StartBloc` isn't wired to it — the empty state still always
+shows until something constructs a `HabitsRepository` and dispatches
+`StartActivitiesLoaded` from its streams. `ScheduleList`'s visuals are also a
+functional placeholder (no design reference for it yet, unlike
+`EmptySchedule`/`DayChip`).
+
+## habits_repository coverage gap
+
+Coverage is dragged down by Drift's generated `database.g.dart` (~27%,
+boilerplate no one hand-writes tests against) and by `HabitsTable`/
+`EntriesTable` column getters showing as unhit despite being exercised
+indirectly through `HabitsRepository`'s tests — the same
+"untested getters" shape as the `CI coverage threshold` entry above, just in
+a different package. Worth a `min_coverage` decision (and possibly excluding
+`*.g.dart`) alongside that one rather than solving it separately.
 
 ## Leftover counter boilerplate
 

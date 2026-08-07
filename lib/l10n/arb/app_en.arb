@@ -39,5 +39,25 @@
     "startAddActivityTooltip": "Add activity",
     "@startAddActivityTooltip": {
         "description": "Tooltip for the floating action button that adds a new activity"
+    },
+    "addActivitySheetTitle": "Add activity",
+    "@addActivitySheetTitle": {
+        "description": "Title of the bottom sheet shown when adding a new activity"
+    },
+    "addActivityHabitTitle": "Habit",
+    "@addActivityHabitTitle": {
+        "description": "Title of the option for adding a recurring habit"
+    },
+    "addActivityHabitSubtitle": "Repeats on a schedule",
+    "@addActivityHabitSubtitle": {
+        "description": "Subtitle of the option for adding a recurring habit"
+    },
+    "addActivityTaskTitle": "Task",
+    "@addActivityTaskTitle": {
+        "description": "Title of the option for adding a one-off task"
+    },
+    "addActivityTaskSubtitle": "Happens once",
+    "@addActivityTaskSubtitle": {
+        "description": "Subtitle of the option for adding a one-off task"
     }
 }
