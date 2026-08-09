@@ -38,6 +38,17 @@ void main() {
       expect(created.startDate, DateTime(2026));
     });
 
+    test('persists an optional endDate', () async {
+      final created = await repository.createHabit(
+        name: 'Drink water',
+        frequency: Frequency.daily,
+        startDate: DateTime(2026),
+        endDate: DateTime(2026, 2),
+      );
+
+      expect(created.endDate, DateTime(2026, 2));
+    });
+
     test('returns the persisted row, not the pre-insert value', () async {
       // Regression test: createHabit used to return the in-memory Habit
       // built before the insert, which could disagree with what's actually

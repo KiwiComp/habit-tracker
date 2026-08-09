@@ -8,6 +8,7 @@ import 'package:habit_tracker/l10n/l10n.dart';
 import 'package:habit_tracker/start_page/bloc/bloc.dart';
 import 'package:habit_tracker/start_page/models/models.dart';
 import 'package:habit_tracker/start_page/widgets/widgets.dart';
+import 'package:habits_repository/habits_repository.dart';
 import 'package:intl/intl.dart';
 
 class StartPage extends StatelessWidget {
@@ -16,23 +17,8 @@ class StartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      // TODO(you): temporary mock data to visually verify ScheduleList.
-      // Remove once a real activity data source exists (see TODO.md).
-      create: (_) => StartBloc()
-        ..add(
-          StartActivitiesLoaded([
-            Activity(
-              id: '1',
-              title: 'Morning run',
-              date: DateTime(2026, 8, 6, 7),
-            ),
-            Activity(
-              id: '2',
-              title: 'Read 20 pages',
-              date: DateTime(2026, 8, 6, 20),
-            ),
-          ]),
-        ),
+      create: (context) =>
+          StartBloc(habitsRepository: context.read<HabitsRepository>()),
       child: const StartView(),
     );
   }

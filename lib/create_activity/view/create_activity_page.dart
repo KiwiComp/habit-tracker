@@ -24,7 +24,10 @@ class CreateActivityPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => CreateActivityBloc(initialType: initialType),
+      create: (context) => CreateActivityBloc(
+        initialType: initialType,
+        habitsRepository: context.read<HabitsRepository>(),
+      ),
       child: const _CreateActivityView(),
     );
   }
@@ -41,127 +44,143 @@ class _CreateActivityView extends StatelessWidget {
     final isHabit = state.activityType == ActivityType.habit;
     final spacing = context.spacing;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.createActivityAppBarTitle)),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(spacing.md),
-          child: Column(
-            spacing: spacing.lg,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(
-                spacing: spacing.xs,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _Title(text: 'Type'), //TODO(k): l10n
-                  ActivityTypeToggle(
-                    selected: state.activityType,
-                    onChanged: (type) =>
-                        bloc.add(CreateActivityTypeChanged(type)),
-                  ),
-                ],
-              ),
-              Column(
-                spacing: spacing.xs,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _Title(text: 'Name'), //TODO(k): l10n
-                  AppTextField(
-                    onChanged: (name) =>
-                        bloc.add(CreateActivityNameChanged(name)),
-                    label: l10n.createActivityNameLabel,
-                    hint: isHabit
-                        ? l10n.createActivityNameHintHabit
-                        : l10n.createActivityNameHintTask,
-                  ),
-                ],
-              ),
-
-              if (isHabit) ...[
+    return BlocListener<CreateActivityBloc, CreateActivityState>(
+      listenWhen: (previous, current) => previous.status != current.status,
+      listener: (context, state) {
+        switch (state.status) {
+          case CreateActivitySaveStatus.success:
+            Navigator.of(context).pop();
+          case CreateActivitySaveStatus.failure:
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(l10n.createActivitySaveError)),
+            );
+          case CreateActivitySaveStatus.idle:
+          case CreateActivitySaveStatus.saving:
+            break;
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(title: Text(l10n.createActivityAppBarTitle)),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(spacing.md),
+            child: Column(
+              spacing: spacing.lg,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Column(
                   spacing: spacing.xs,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _Title(text: l10n.createActivityRepeatLabel),
-                    RepeatPatternSelector(
-                      selected: state.frequency,
-                      onChanged: (frequency) => bloc.add(
-                        CreateActivityRepeatPatternChanged(frequency),
-                      ),
+                    _Title(text: 'Type'), //TODO(k): l10n
+                    ActivityTypeToggle(
+                      selected: state.activityType,
+                      onChanged: (type) =>
+                          bloc.add(CreateActivityTypeChanged(type)),
                     ),
-                    if (state.frequency == Frequency.weekdays) ...[
-                      SizedBox(height: context.spacing.md),
-                      WeekdayChipRow(
-                        selected: state.weekdays,
-                        onToggled: (weekday) =>
-                            bloc.add(CreateActivityWeekdayToggled(weekday)),
-                      ),
-                    ],
                   ],
                 ),
-              ],
-              Column(
-                spacing: spacing.xs,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _Title(text: 'Starts on'), // TODO(k): l10n
-                  StartDateField(
-                    label: isHabit
-                        ? l10n.createActivityStartDateLabelHabit
-                        : l10n.createActivityStartDateLabelTask,
-                    date: state.startDate,
-                    onChanged: (date) =>
-                        bloc.add(CreateActivityStartDateChanged(date)),
-                  ),
-                ],
-              ),
-              if (isHabit) ...[
                 Column(
                   spacing: spacing.xs,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _Title(text: l10n.createActivityEndsLabel),
-                    EndDateField(
-                      date: state.endDate,
-                      firstDate: state.startDate,
-                      onChanged: (date) =>
-                          bloc.add(CreateActivityEndDateChanged(date)),
+                    _Title(text: 'Name'), //TODO(k): l10n
+                    AppTextField(
+                      onChanged: (name) =>
+                          bloc.add(CreateActivityNameChanged(name)),
+                      label: l10n.createActivityNameLabel,
+                      hint: isHabit
+                          ? l10n.createActivityNameHintHabit
+                          : l10n.createActivityNameHintTask,
                     ),
-                    if (state.hasUnreachableWeekdayWindow)
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(
-                            Icons.warning_amber_rounded,
-                            size: context.iconSize.sm,
-                            color: context.colorScheme.error,
-                          ),
-                          SizedBox(width: spacing.xs),
-                          Expanded(
-                            child: Text(
-                              l10n.createActivityWeekdayWindowWarning,
-                              style: AppTextStyle.bodySmall.copyWith(
-                                color: context.colorScheme.error,
+                  ],
+                ),
+
+                if (isHabit) ...[
+                  Column(
+                    spacing: spacing.xs,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _Title(text: l10n.createActivityRepeatLabel),
+                      RepeatPatternSelector(
+                        selected: state.frequency,
+                        onChanged: (frequency) => bloc.add(
+                          CreateActivityRepeatPatternChanged(frequency),
+                        ),
+                      ),
+                      if (state.frequency == Frequency.weekdays) ...[
+                        SizedBox(height: context.spacing.md),
+                        WeekdayChipRow(
+                          selected: state.weekdays,
+                          onToggled: (weekday) =>
+                              bloc.add(CreateActivityWeekdayToggled(weekday)),
+                        ),
+                      ],
+                    ],
+                  ),
+                ],
+                Column(
+                  spacing: spacing.xs,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _Title(text: 'Starts on'), // TODO(k): l10n
+                    StartDateField(
+                      label: isHabit
+                          ? l10n.createActivityStartDateLabelHabit
+                          : l10n.createActivityStartDateLabelTask,
+                      date: state.startDate,
+                      onChanged: (date) =>
+                          bloc.add(CreateActivityStartDateChanged(date)),
+                    ),
+                  ],
+                ),
+                if (isHabit) ...[
+                  Column(
+                    spacing: spacing.xs,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _Title(text: l10n.createActivityEndsLabel),
+                      EndDateField(
+                        date: state.endDate,
+                        firstDate: state.startDate,
+                        onChanged: (date) =>
+                            bloc.add(CreateActivityEndDateChanged(date)),
+                      ),
+                      if (state.hasUnreachableWeekdayWindow)
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.warning_amber_rounded,
+                              size: context.iconSize.sm,
+                              color: context.colorScheme.error,
+                            ),
+                            SizedBox(width: spacing.xs),
+                            Expanded(
+                              child: Text(
+                                l10n.createActivityWeekdayWindowWarning,
+                                style: AppTextStyle.bodySmall.copyWith(
+                                  color: context.colorScheme.error,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                  ],
-                ),
+                          ],
+                        ),
+                    ],
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
-      ),
-      bottomNavigationBar: SafeArea(
-        minimum: EdgeInsets.all(context.spacing.md),
-        child: AppButton.primary(
-          onPressed: state.canSave
-              ? () => bloc.add(const CreateActivitySaveRequested())
-              : null,
-          child: Text(l10n.createActivitySaveButton),
+        bottomNavigationBar: SafeArea(
+          minimum: EdgeInsets.all(context.spacing.md),
+          child: AppButton.primary(
+            onPressed: state.canSave
+                ? () => bloc.add(const CreateActivitySaveRequested())
+                : null,
+            child: Text(l10n.createActivitySaveButton),
+          ),
         ),
       ),
     );

@@ -115,5 +115,9 @@
     "createActivityWeekdayWindowWarning": "Ninguno de los días seleccionados cae dentro de este rango: este hábito nunca ocurriría.",
     "@createActivityWeekdayWindowWarning": {
         "description": "Aviso mostrado cuando los días de la semana elegidos nunca ocurren entre la fecha de inicio y la de fin"
+    },
+    "createActivitySaveError": "No se pudo guardar. Inténtalo de nuevo.",
+    "@createActivitySaveError": {
+        "description": "Se muestra en un SnackBar cuando falla el guardado del nuevo hábito o tarea"
     }
 }

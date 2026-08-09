@@ -8,16 +8,20 @@ import 'package:habits_repository/habits_repository.dart';
 class CreateActivityBloc
     extends Bloc<CreateActivityEvent, CreateActivityState> {
   /// Creates a [CreateActivityBloc], seeded with [initialType] — whichever
-  /// option the user tapped in the add-activity sheet.
-  CreateActivityBloc({required ActivityType initialType})
-    : super(
-        CreateActivityState(
-          activityType: initialType,
-          frequency: initialType == ActivityType.task
-              ? Frequency.once
-              : Frequency.daily,
-        ),
-      ) {
+  /// option the user tapped in the add-activity sheet. [habitsRepository]
+  /// persists the activity once `CreateActivitySaveRequested` fires.
+  CreateActivityBloc({
+    required ActivityType initialType,
+    required HabitsRepository habitsRepository,
+  }) : _habitsRepository = habitsRepository,
+       super(
+         CreateActivityState(
+           activityType: initialType,
+           frequency: initialType == ActivityType.task
+               ? Frequency.once
+               : Frequency.daily,
+         ),
+       ) {
     on<CreateActivityTypeChanged>(_onTypeChanged);
     on<CreateActivityNameChanged>(_onNameChanged);
     on<CreateActivityRepeatPatternChanged>(_onRepeatPatternChanged);
@@ -26,6 +30,8 @@ class CreateActivityBloc
     on<CreateActivityEndDateChanged>(_onEndDateChanged);
     on<CreateActivitySaveRequested>(_onSaveRequested);
   }
+
+  final HabitsRepository _habitsRepository;
 
   void _onTypeChanged(
     CreateActivityTypeChanged event,
@@ -91,17 +97,29 @@ class CreateActivityBloc
     );
   }
 
-  void _onSaveRequested(
+  Future<void> _onSaveRequested(
     CreateActivitySaveRequested event,
     Emitter<CreateActivityState> emit,
-  ) {
+  ) async {
     if (!state.canSave) return;
-    // TODO(you): call HabitsRepository.createHabit(name: state.name,
-    // frequency: state.frequency, startDate: state.startDate,
-    // weekdays: state.weekdays) once a HabitsRepository is wired into the
-    // app (see root TODO.md). Nothing is persisted yet — state already
-    // holds everything that call needs. Note createHabit doesn't accept
-    // endDate yet either — that's a separate, small addition once wiring
-    // actually happens (see root TODO.md).
+    emit(state.copyWith(status: CreateActivitySaveStatus.saving));
+    try {
+      await _habitsRepository.createHabit(
+        name: state.name,
+        frequency: state.frequency,
+        startDate: state.startDate,
+        weekdays: state.weekdays,
+        endDate: state.endDate,
+      );
+      emit(state.copyWith(status: CreateActivitySaveStatus.success));
+    } on Exception catch (error, stackTrace) {
+      // Reported through the existing BlocObserver.onError logging (see
+      // AppBlocObserver) rather than rethrown, so the bloc keeps working —
+      // emitting failure below resets the form to retry instead of leaving
+      // it stuck showing a spinner.
+      addError(error, stackTrace);
+      emit(state.copyWith(status: CreateActivitySaveStatus.failure));
+      emit(state.copyWith(status: CreateActivitySaveStatus.idle));
+    }
   }
 }

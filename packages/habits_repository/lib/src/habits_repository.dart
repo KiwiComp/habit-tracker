@@ -46,6 +46,7 @@ class HabitsRepository {
     required Frequency frequency,
     required DateTime startDate,
     Set<int> weekdays = const {},
+    DateTime? endDate,
   }) async {
     final habit = Habit(
       id: _uuid.v4(),
@@ -53,6 +54,7 @@ class HabitsRepository {
       frequency: frequency,
       weekdays: weekdays,
       startDate: startDate,
+      endDate: endDate,
       createdAt: DateTime.now(),
     );
     final row = await _database

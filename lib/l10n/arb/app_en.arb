@@ -115,5 +115,9 @@
     "createActivityWeekdayWindowWarning": "None of the selected days fall within this range — this habit would never occur.",
     "@createActivityWeekdayWindowWarning": {
         "description": "Warning shown when the chosen weekdays never occur between the start and end date"
+    },
+    "createActivitySaveError": "Couldn't save. Please try again.",
+    "@createActivitySaveError": {
+        "description": "Shown in a SnackBar when saving the new habit/task fails"
     }
 }

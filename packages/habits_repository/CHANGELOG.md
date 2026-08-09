@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0+3
+
+- `createHabit` now accepts an optional `endDate`, matching `Habit`'s constructor. Previously only settable after creation via `updateHabit`.
+
 ## 0.1.0+2
 
 - Add `Habit.endDate` (optional, inclusive) — a habit's recurrence can now have a scheduled end. `isScheduledOn` excludes any day after it.

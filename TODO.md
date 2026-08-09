@@ -30,24 +30,16 @@ coverage is ~77%, driven by untested getters in `AppSpacing`/`AppRadius`/
 for those or explicitly set a lower `min_coverage` once that's a deliberate
 decision.
 
-## Habit/task creation doesn't persist
+## Habit/task creation flow isn't tested
 
-The start page's FAB opens `AddActivitySheet`
-(`lib/start_page/widgets/add_activity_sheet.dart`); tapping "Habit" or "Task"
-closes it and pushes `CreateActivityPage`
-(`lib/create_activity/view/create_activity_page.dart`), a single form for
-both (fields toggle based on the selected type, rather than two separate
-screens — see the page's doc comment for why). `CreateActivityBloc` collects
-name/frequency/weekdays/startDate/endDate — matching `Habit`'s fields — but
-its `CreateActivitySaveRequested` handler
-(`lib/create_activity/bloc/create_activity_bloc.dart`) is a stub: tapping
-"Save" just validates, nothing is persisted. There's also no
-`HabitsRepository` instance anywhere in the app's widget tree yet.
-`HabitsRepository.createHabit` doesn't accept `endDate` as a parameter yet
-either (only `Habit`'s constructor does) — a small addition once wiring
-actually happens. Wire both up together once that's a deliberate decision
-(also unblocks the "No real activity data source" entry below, which needs
-the same repository instance).
+`CreateActivityBloc`'s `CreateActivitySaveRequested` handler now persists via
+`HabitsRepository.createHabit` (which accepts `endDate`), and a
+`HabitsRepository` is provided app-wide via `RepositoryProvider` in
+`lib/app/view/app.dart` — also used by `StartBloc` (see "Activity/
+ScheduleList still placeholder shapes" below). Neither the bloc's save/error
+path nor the `endDate` addition has its own test yet, deferred alongside the
+rest of `create_activity`'s test suite. Write these together once
+`create_activity` gets a test pass.
 
 ## No behavior defined for a habit whose end date has passed
 
@@ -80,17 +72,27 @@ The bottom nav on the start screen (`lib/start_page/view/start_page.dart`)
 shows a "Habits" destination, but there's no Habits page or route behind it
 yet — tapping it currently does nothing.
 
-## No real activity data source
+## Activity/ScheduleList still placeholder shapes
 
-`StartBloc` can hold and render scheduled activities (`StartState.activities`,
-`StartActivitiesLoaded` event, `ScheduleList` widget in
-`lib/start_page/widgets/schedule_list.dart`), but nothing populates it yet.
-`packages/habits_repository` (Drift/SQLite-backed, exposing `Habit`/`Entry`)
-now exists, but `StartBloc` isn't wired to it — the empty state still always
-shows until something constructs a `HabitsRepository` and dispatches
-`StartActivitiesLoaded` from its streams. `ScheduleList`'s visuals are also a
-functional placeholder (no design reference for it yet, unlike
-`EmptySchedule`/`DayChip`).
+`StartBloc` now watches `HabitsRepository.watchHabits()` and maps whatever's
+due on the selected day (via `Habit.isScheduledOn`) into `StartState`, so
+real habits/tasks show up on the start page. Two things are still
+placeholder, though:
+
+- `Activity` (`lib/start_page/models/activity.dart`) only carries
+  `id`/`title`/`date` — `Habit` has no time-of-day, so every mapped
+  `Activity` gets midnight and `ScheduleList`'s `DateFormat.Hm()` always
+  shows 00:00. There's also no completion state shown (a `Habit` being
+  scheduled vs. actually logged via an `Entry` are different things —
+  `watchEntries`/`watchEntriesOnDate` aren't consulted yet).
+- `ScheduleList`'s visuals are still a functional placeholder (no design
+  reference for it yet, unlike `EmptySchedule`/`DayChip`) — revisit both
+  points above once one exists; the mapping in `StartBloc` will likely need
+  to change shape alongside it (e.g. carrying a `Habit`/`Entry` pair instead
+  of the flattened `Activity`).
+- See "No behavior defined for a habit whose end date has passed" above —
+  that entry is about a habits-*list* view, not this one; `isScheduledOn`
+  (which `StartBloc` uses) already excludes an ended habit correctly.
 
 ## habits_repository coverage gap
 

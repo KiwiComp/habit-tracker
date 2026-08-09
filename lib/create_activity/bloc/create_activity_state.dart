@@ -2,10 +2,28 @@ import 'package:habit_tracker/create_activity/models/models.dart';
 import 'package:habits_repository/habits_repository.dart';
 import 'package:meta/meta.dart';
 
+/// How the in-progress save triggered by `CreateActivitySaveRequested` is
+/// going.
+enum CreateActivitySaveStatus {
+  /// No save in flight — the form is being edited, or a previous save
+  /// failed and was reset so the user can retry.
+  idle,
+
+  /// Persisting via `HabitsRepository.createHabit`.
+  saving,
+
+  /// The save succeeded. `CreateActivityPage` listens for this to pop back.
+  success,
+
+  /// The save threw. `CreateActivityPage` listens for this to show an error,
+  /// then the bloc resets to [idle] so the Save button works again.
+  failure,
+}
+
 /// The state of `CreateActivityBloc`.
 ///
 /// Shaped to match `HabitsRepository.createHabit`'s parameters exactly
-/// (`name`/`frequency`/`startDate`/`weekdays`), so wiring the eventual save
+/// (`name`/`frequency`/`startDate`/`weekdays`/`endDate`), so wiring the save
 /// call is a matter of passing these fields straight through — see
 /// `CreateActivityBloc`'s `CreateActivitySaveRequested` handler.
 @immutable
@@ -18,6 +36,7 @@ final class CreateActivityState {
     this.weekdays = const {},
     DateTime? startDate,
     this.endDate,
+    this.status = CreateActivitySaveStatus.idle,
   }) : startDate = startDate ?? DateTime.now();
 
   /// Whether the user is creating a recurring habit or a one-off task.
@@ -46,8 +65,12 @@ final class CreateActivityState {
   /// inherent single occurrence.
   final DateTime? endDate;
 
+  /// How the in-progress save (if any) is going.
+  final CreateActivitySaveStatus status;
+
   /// Whether the form has enough to be saved.
   bool get canSave =>
+      status != CreateActivitySaveStatus.saving &&
       name.trim().isNotEmpty &&
       (frequency != Frequency.weekdays || weekdays.isNotEmpty) &&
       (endDate == null || !endDate!.isBefore(startDate));
@@ -82,6 +105,7 @@ final class CreateActivityState {
     DateTime? startDate,
     DateTime? endDate,
     bool clearEndDate = false,
+    CreateActivitySaveStatus? status,
   }) {
     return CreateActivityState(
       activityType: activityType ?? this.activityType,
@@ -90,6 +114,7 @@ final class CreateActivityState {
       weekdays: weekdays ?? this.weekdays,
       startDate: startDate ?? this.startDate,
       endDate: clearEndDate ? null : (endDate ?? this.endDate),
+      status: status ?? this.status,
     );
   }
 
@@ -102,7 +127,8 @@ final class CreateActivityState {
         other.weekdays.length == weekdays.length &&
         other.weekdays.containsAll(weekdays) &&
         other.startDate == startDate &&
-        other.endDate == endDate;
+        other.endDate == endDate &&
+        other.status == status;
   }
 
   @override
@@ -113,5 +139,6 @@ final class CreateActivityState {
     Object.hashAllUnordered(weekdays),
     startDate,
     endDate,
+    status,
   );
 }
