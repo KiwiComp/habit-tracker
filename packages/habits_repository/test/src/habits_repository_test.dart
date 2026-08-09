@@ -37,6 +37,24 @@ void main() {
 
       expect(created.startDate, DateTime(2026));
     });
+
+    test('returns the persisted row, not the pre-insert value', () async {
+      // Regression test: createHabit used to return the in-memory Habit
+      // built before the insert, which could disagree with what's actually
+      // in the database (e.g. an un-normalized startDate). That made
+      // isScheduledOn wrongly return false for a habit created earlier the
+      // same day, and made the returned object compare unequal (via ==) to
+      // what watchHabits later streams for the same row.
+      final created = await repository.createHabit(
+        name: 'Drink water',
+        frequency: Frequency.daily,
+        startDate: DateTime(2026, 1, 1, 14, 30),
+      );
+
+      final habits = await repository.watchHabits().first;
+      expect(created, habits.single);
+      expect(created.isScheduledOn(DateTime(2026, 1, 1, 9)), isTrue);
+    });
   });
 
   group('watchHabits', () {
@@ -88,6 +106,28 @@ void main() {
       expect(active, hasLength(1));
       expect(active.single.isArchived, isFalse);
     });
+  });
+
+  group('updateHabit', () {
+    test(
+      'normalizes startDate to a calendar date even though this call site '
+      'never called dateOnly() itself — the converter is what makes this '
+      'safe now',
+      () async {
+        final created = await repository.createHabit(
+          name: 'Drink water',
+          frequency: Frequency.daily,
+          startDate: DateTime(2026),
+        );
+
+        await repository.updateHabit(
+          created.copyWith(startDate: DateTime(2026, 3, 8, 14, 30)),
+        );
+
+        final habits = await repository.watchHabits().first;
+        expect(habits.single.startDate, DateTime(2026, 3, 8));
+      },
+    );
   });
 
   group('deleteHabit', () {

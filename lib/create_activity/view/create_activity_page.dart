@@ -116,6 +116,41 @@ class _CreateActivityView extends StatelessWidget {
                   ),
                 ],
               ),
+              if (isHabit) ...[
+                Column(
+                  spacing: spacing.xs,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _Title(text: l10n.createActivityEndsLabel),
+                    EndDateField(
+                      date: state.endDate,
+                      firstDate: state.startDate,
+                      onChanged: (date) =>
+                          bloc.add(CreateActivityEndDateChanged(date)),
+                    ),
+                    if (state.hasUnreachableWeekdayWindow)
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.warning_amber_rounded,
+                            size: context.iconSize.sm,
+                            color: context.colorScheme.error,
+                          ),
+                          SizedBox(width: spacing.xs),
+                          Expanded(
+                            child: Text(
+                              l10n.createActivityWeekdayWindowWarning,
+                              style: AppTextStyle.bodySmall.copyWith(
+                                color: context.colorScheme.error,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+              ],
             ],
           ),
         ),

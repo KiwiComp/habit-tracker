@@ -1,6 +1,5 @@
 import 'package:drift/drift.dart';
 import 'package:habits_repository/src/database/database.dart';
-import 'package:habits_repository/src/models/date_only.dart';
 import 'package:habits_repository/src/models/models.dart';
 import 'package:uuid/uuid.dart';
 
@@ -15,7 +14,7 @@ class HabitsRepository {
   /// Creates a [HabitsRepository], optionally backed by a specific
   /// [database] (an in-memory one, for tests).
   HabitsRepository({HabitsDatabase? database})
-      : _database = database ?? HabitsDatabase();
+    : _database = database ?? HabitsDatabase();
 
   final HabitsDatabase _database;
   static const _uuid = Uuid();
@@ -33,6 +32,15 @@ class HabitsRepository {
   }
 
   /// Creates a new habit and returns it.
+  ///
+  /// Returns the persisted row via `insertReturning` rather than the
+  /// pre-insert `Habit` built above — that object's `startDate` (and
+  /// `endDate`, if set) may still carry a time-of-day if the caller didn't
+  /// normalize it, whereas the persisted row always round-trips through
+  /// `DateOnlyConverter`. Returning the un-normalized object caused
+  /// `isScheduledOn` to compare a normalized "today" against a
+  /// not-yet-normalized `startDate` and wrongly return `false` for a habit
+  /// created earlier the same day.
   Future<Habit> createHabit({
     required String name,
     required Frequency frequency,
@@ -44,13 +52,13 @@ class HabitsRepository {
       name: name,
       frequency: frequency,
       weekdays: weekdays,
-      startDate: dateOnly(startDate),
+      startDate: startDate,
       createdAt: DateTime.now(),
     );
-    await _database
+    final row = await _database
         .into(_database.habitsTable)
-        .insert(_habitToCompanion(habit));
-    return habit;
+        .insertReturning(_habitToCompanion(habit));
+    return _habitFromRow(row);
   }
 
   /// Persists edits to an existing habit (name, schedule, etc).
@@ -71,9 +79,8 @@ class HabitsRepository {
 
   /// Permanently deletes a habit and every entry logged against it.
   Future<void> deleteHabit(String id) => (_database.delete(
-        _database.habitsTable,
-      )..where((table) => table.id.equals(id)))
-          .go();
+    _database.habitsTable,
+  )..where((table) => table.id.equals(id))).go();
 
   /// Streams every entry logged for [habitId], oldest first.
   Stream<List<Entry>> watchEntries(String habitId) {
@@ -85,9 +92,8 @@ class HabitsRepository {
 
   /// Streams every entry logged on [date], across all habits.
   Stream<List<Entry>> watchEntriesOnDate(DateTime date) {
-    final day = dateOnly(date);
     final query = _database.select(_database.entriesTable)
-      ..where((table) => table.date.equals(day));
+      ..where((table) => table.date.equalsValue(date));
     return query.watch().map((rows) => rows.map(_entryFromRow).toList());
   }
 
@@ -96,11 +102,13 @@ class HabitsRepository {
   /// Idempotent: logging the same habit/date combination twice has no
   /// additional effect, enforced by the `entries` table's unique index.
   Future<void> logEntry({required String habitId, required DateTime date}) {
-    return _database.into(_database.entriesTable).insert(
+    return _database
+        .into(_database.entriesTable)
+        .insert(
           EntriesTableCompanion.insert(
             id: _uuid.v4(),
             habitId: habitId,
-            date: dateOnly(date),
+            date: date,
             createdAt: DateTime.now(),
           ),
           mode: InsertMode.insertOrIgnore,
@@ -109,11 +117,10 @@ class HabitsRepository {
 
   /// Removes the entry logging [habitId] as done on [date], if any.
   Future<void> unlogEntry({required String habitId, required DateTime date}) {
-    final day = dateOnly(date);
-    return (_database.delete(_database.entriesTable)
-          ..where(
-            (table) => table.habitId.equals(habitId) & table.date.equals(day),
-          ))
+    return (_database.delete(_database.entriesTable)..where(
+          (table) =>
+              table.habitId.equals(habitId) & table.date.equalsValue(date),
+        ))
         .go();
   }
 
@@ -127,24 +134,26 @@ class HabitsRepository {
         frequency: habit.frequency.name,
         weekdays: Value(habit.weekdays),
         startDate: habit.startDate,
+        endDate: Value(habit.endDate),
         archivedAt: Value(habit.archivedAt),
         createdAt: habit.createdAt,
       );
 
   Habit _habitFromRow(HabitRow row) => Habit(
-        id: row.id,
-        name: row.name,
-        frequency: Frequency.fromName(row.frequency),
-        weekdays: row.weekdays,
-        startDate: row.startDate,
-        archivedAt: row.archivedAt,
-        createdAt: row.createdAt,
-      );
+    id: row.id,
+    name: row.name,
+    frequency: Frequency.fromName(row.frequency),
+    weekdays: row.weekdays,
+    startDate: row.startDate,
+    endDate: row.endDate,
+    archivedAt: row.archivedAt,
+    createdAt: row.createdAt,
+  );
 
   Entry _entryFromRow(EntryRow row) => Entry(
-        id: row.id,
-        habitId: row.habitId,
-        date: row.date,
-        createdAt: row.createdAt,
-      );
+    id: row.id,
+    habitId: row.habitId,
+    date: row.date,
+    createdAt: row.createdAt,
+  );
 }

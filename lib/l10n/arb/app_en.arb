@@ -99,5 +99,21 @@
     "createActivitySaveButton": "Save",
     "@createActivitySaveButton": {
         "description": "Label for the button that saves the new habit/task"
+    },
+    "createActivityEndsLabel": "Ends",
+    "@createActivityEndsLabel": {
+        "description": "Label for the end-date section when creating a habit"
+    },
+    "createActivityEndsNever": "Never",
+    "@createActivityEndsNever": {
+        "description": "Shown when a habit has no end date, and as the option to clear one"
+    },
+    "createActivityEndsOnDate": "On a date",
+    "@createActivityEndsOnDate": {
+        "description": "Option to give a habit a specific end date"
+    },
+    "createActivityWeekdayWindowWarning": "None of the selected days fall within this range — this habit would never occur.",
+    "@createActivityWeekdayWindowWarning": {
+        "description": "Warning shown when the chosen weekdays never occur between the start and end date"
     }
 }

@@ -23,6 +23,7 @@ class CreateActivityBloc
     on<CreateActivityRepeatPatternChanged>(_onRepeatPatternChanged);
     on<CreateActivityWeekdayToggled>(_onWeekdayToggled);
     on<CreateActivityStartDateChanged>(_onStartDateChanged);
+    on<CreateActivityEndDateChanged>(_onEndDateChanged);
     on<CreateActivitySaveRequested>(_onSaveRequested);
   }
 
@@ -37,6 +38,7 @@ class CreateActivityBloc
             ? Frequency.once
             : Frequency.daily,
         weekdays: const {},
+        clearEndDate: true,
       ),
     );
   }
@@ -80,6 +82,15 @@ class CreateActivityBloc
     emit(state.copyWith(startDate: event.date));
   }
 
+  void _onEndDateChanged(
+    CreateActivityEndDateChanged event,
+    Emitter<CreateActivityState> emit,
+  ) {
+    emit(
+      state.copyWith(endDate: event.date, clearEndDate: event.date == null),
+    );
+  }
+
   void _onSaveRequested(
     CreateActivitySaveRequested event,
     Emitter<CreateActivityState> emit,
@@ -89,6 +100,8 @@ class CreateActivityBloc
     // frequency: state.frequency, startDate: state.startDate,
     // weekdays: state.weekdays) once a HabitsRepository is wired into the
     // app (see root TODO.md). Nothing is persisted yet — state already
-    // holds everything that call needs.
+    // holds everything that call needs. Note createHabit doesn't accept
+    // endDate yet either — that's a separate, small addition once wiring
+    // actually happens (see root TODO.md).
   }
 }

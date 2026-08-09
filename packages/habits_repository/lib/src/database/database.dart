@@ -15,18 +15,18 @@ class HabitsDatabase extends _$HabitsDatabase {
   /// Creates a [HabitsDatabase] backed by a file on disk named
   /// `habits.sqlite`, or an in-memory/test [executor] when provided.
   HabitsDatabase([QueryExecutor? executor])
-      : super(executor ?? driftDatabase(name: 'habits'));
+    : super(executor ?? driftDatabase(name: 'habits'));
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   // SQLite has foreign-key enforcement off by default per connection, so
   // `entries`' `ON DELETE CASCADE` (see EntriesTable.habitId) is a no-op
   // without this — it must be set on every connection, not just once.
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        beforeOpen: (details) async {
-          await customStatement('PRAGMA foreign_keys = ON');
-        },
-      );
+    beforeOpen: (details) async {
+      await customStatement('PRAGMA foreign_keys = ON');
+    },
+  );
 }

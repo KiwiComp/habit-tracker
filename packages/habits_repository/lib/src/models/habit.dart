@@ -17,6 +17,7 @@ class Habit {
     required this.startDate,
     required this.createdAt,
     this.weekdays = const {},
+    this.endDate,
     this.archivedAt,
   });
 
@@ -36,6 +37,10 @@ class Habit {
   /// First day the habit applies. Local midnight.
   final DateTime startDate;
 
+  /// Last day the habit's recurrence applies, inclusive — the habit is still
+  /// due on this day, just not after it. `null` means the habit never ends.
+  final DateTime? endDate;
+
   /// When the habit was archived, if it has been.
   ///
   /// Set instead of deleting, so past entries keep their history.
@@ -54,6 +59,7 @@ class Habit {
   bool isScheduledOn(DateTime date) {
     final day = dateOnly(date);
     if (day.isBefore(startDate)) return false;
+    if (endDate != null && day.isAfter(endDate!)) return false;
 
     switch (frequency) {
       case Frequency.daily:
@@ -71,6 +77,8 @@ class Habit {
     Frequency? frequency,
     Set<int>? weekdays,
     DateTime? startDate,
+    DateTime? endDate,
+    bool clearEndDate = false,
     DateTime? archivedAt,
     bool clearArchivedAt = false,
   }) {
@@ -80,6 +88,7 @@ class Habit {
       frequency: frequency ?? this.frequency,
       weekdays: weekdays ?? this.weekdays,
       startDate: startDate ?? this.startDate,
+      endDate: clearEndDate ? null : (endDate ?? this.endDate),
       archivedAt: clearArchivedAt ? null : (archivedAt ?? this.archivedAt),
       createdAt: createdAt,
     );
@@ -93,19 +102,21 @@ class Habit {
           other.name == name &&
           other.frequency == frequency &&
           other.startDate == startDate &&
+          other.endDate == endDate &&
           other.archivedAt == archivedAt &&
           other.weekdays.length == weekdays.length &&
           other.weekdays.containsAll(weekdays);
 
   @override
   int get hashCode => Object.hash(
-        id,
-        name,
-        frequency,
-        startDate,
-        archivedAt,
-        Object.hashAllUnordered(weekdays),
-      );
+    id,
+    name,
+    frequency,
+    startDate,
+    endDate,
+    archivedAt,
+    Object.hashAllUnordered(weekdays),
+  );
 
   @override
   String toString() => 'Habit($id, $name, ${frequency.name})';

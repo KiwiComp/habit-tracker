@@ -56,6 +56,32 @@ void main() {
 
       expect(habit.isScheduledOn(DateTime(2026, 6, 1, 23, 59)), isTrue);
     });
+
+    test('is due on the end date itself, but not the day after', () {
+      final habit = Habit(
+        id: '1',
+        name: 'Drink water',
+        frequency: Frequency.daily,
+        startDate: DateTime(2026),
+        endDate: DateTime(2026, 1, 10),
+        createdAt: DateTime(2026),
+      );
+
+      expect(habit.isScheduledOn(DateTime(2026, 1, 10)), isTrue);
+      expect(habit.isScheduledOn(DateTime(2026, 1, 11)), isFalse);
+    });
+
+    test('has no end when endDate is null', () {
+      final habit = Habit(
+        id: '1',
+        name: 'Drink water',
+        frequency: Frequency.daily,
+        startDate: DateTime(2026),
+        createdAt: DateTime(2026),
+      );
+
+      expect(habit.isScheduledOn(DateTime(2099)), isTrue);
+    });
   });
 
   group('Habit.isArchived', () {

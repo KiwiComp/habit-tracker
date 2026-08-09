@@ -48,17 +48,24 @@ class $HabitsTableTable extends HabitsTable
         requiredDuringInsert: false,
         defaultValue: const Constant(''),
       ).withConverter<Set<int>>($HabitsTableTable.$converterweekdays);
-  static const VerificationMeta _startDateMeta = const VerificationMeta(
-    'startDate',
-  );
   @override
-  late final GeneratedColumn<DateTime> startDate = GeneratedColumn<DateTime>(
-    'start_date',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
+  late final GeneratedColumnWithTypeConverter<DateTime, int> startDate =
+      GeneratedColumn<int>(
+        'start_date',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: true,
+      ).withConverter<DateTime>($HabitsTableTable.$converterstartDate);
+  @override
+  late final GeneratedColumnWithTypeConverter<DateTime?, int> endDate =
+      GeneratedColumn<int>(
+        'end_date',
+        aliasedName,
+        true,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+      ).withConverter<DateTime?>($HabitsTableTable.$converterendDaten);
   static const VerificationMeta _archivedAtMeta = const VerificationMeta(
     'archivedAt',
   );
@@ -88,6 +95,7 @@ class $HabitsTableTable extends HabitsTable
     frequency,
     weekdays,
     startDate,
+    endDate,
     archivedAt,
     createdAt,
   ];
@@ -123,14 +131,6 @@ class $HabitsTableTable extends HabitsTable
       );
     } else if (isInserting) {
       context.missing(_frequencyMeta);
-    }
-    if (data.containsKey('start_date')) {
-      context.handle(
-        _startDateMeta,
-        startDate.isAcceptableOrUnknown(data['start_date']!, _startDateMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_startDateMeta);
     }
     if (data.containsKey('archived_at')) {
       context.handle(
@@ -173,10 +173,18 @@ class $HabitsTableTable extends HabitsTable
           data['${effectivePrefix}weekdays'],
         )!,
       ),
-      startDate: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}start_date'],
-      )!,
+      startDate: $HabitsTableTable.$converterstartDate.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}start_date'],
+        )!,
+      ),
+      endDate: $HabitsTableTable.$converterendDaten.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}end_date'],
+        ),
+      ),
       archivedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}archived_at'],
@@ -195,6 +203,12 @@ class $HabitsTableTable extends HabitsTable
 
   static TypeConverter<Set<int>, String> $converterweekdays =
       const WeekdaysConverter();
+  static TypeConverter<DateTime, int> $converterstartDate =
+      const DateOnlyConverter();
+  static TypeConverter<DateTime, int> $converterendDate =
+      const DateOnlyConverter();
+  static TypeConverter<DateTime?, int?> $converterendDaten =
+      NullAwareTypeConverter.wrap($converterendDate);
 }
 
 class HabitRow extends DataClass implements Insertable<HabitRow> {
@@ -210,8 +224,12 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
   /// See [WeekdaysConverter].
   final Set<int> weekdays;
 
-  /// First day the habit applies. Stored as local midnight.
+  /// First day the habit applies. See [DateOnlyConverter].
   final DateTime startDate;
+
+  /// Last day the habit's recurrence applies, inclusive. `null` means it
+  /// never ends. See [DateOnlyConverter].
+  final DateTime? endDate;
 
   /// When the habit was archived, if it has been.
   final DateTime? archivedAt;
@@ -224,6 +242,7 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
     required this.frequency,
     required this.weekdays,
     required this.startDate,
+    this.endDate,
     this.archivedAt,
     required this.createdAt,
   });
@@ -238,7 +257,16 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
         $HabitsTableTable.$converterweekdays.toSql(weekdays),
       );
     }
-    map['start_date'] = Variable<DateTime>(startDate);
+    {
+      map['start_date'] = Variable<int>(
+        $HabitsTableTable.$converterstartDate.toSql(startDate),
+      );
+    }
+    if (!nullToAbsent || endDate != null) {
+      map['end_date'] = Variable<int>(
+        $HabitsTableTable.$converterendDaten.toSql(endDate),
+      );
+    }
     if (!nullToAbsent || archivedAt != null) {
       map['archived_at'] = Variable<DateTime>(archivedAt);
     }
@@ -253,6 +281,9 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
       frequency: Value(frequency),
       weekdays: Value(weekdays),
       startDate: Value(startDate),
+      endDate: endDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endDate),
       archivedAt: archivedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(archivedAt),
@@ -271,6 +302,7 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
       frequency: serializer.fromJson<String>(json['frequency']),
       weekdays: serializer.fromJson<Set<int>>(json['weekdays']),
       startDate: serializer.fromJson<DateTime>(json['startDate']),
+      endDate: serializer.fromJson<DateTime?>(json['endDate']),
       archivedAt: serializer.fromJson<DateTime?>(json['archivedAt']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
@@ -284,6 +316,7 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
       'frequency': serializer.toJson<String>(frequency),
       'weekdays': serializer.toJson<Set<int>>(weekdays),
       'startDate': serializer.toJson<DateTime>(startDate),
+      'endDate': serializer.toJson<DateTime?>(endDate),
       'archivedAt': serializer.toJson<DateTime?>(archivedAt),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
@@ -295,6 +328,7 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
     String? frequency,
     Set<int>? weekdays,
     DateTime? startDate,
+    Value<DateTime?> endDate = const Value.absent(),
     Value<DateTime?> archivedAt = const Value.absent(),
     DateTime? createdAt,
   }) => HabitRow(
@@ -303,6 +337,7 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
     frequency: frequency ?? this.frequency,
     weekdays: weekdays ?? this.weekdays,
     startDate: startDate ?? this.startDate,
+    endDate: endDate.present ? endDate.value : this.endDate,
     archivedAt: archivedAt.present ? archivedAt.value : this.archivedAt,
     createdAt: createdAt ?? this.createdAt,
   );
@@ -313,6 +348,7 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
       frequency: data.frequency.present ? data.frequency.value : this.frequency,
       weekdays: data.weekdays.present ? data.weekdays.value : this.weekdays,
       startDate: data.startDate.present ? data.startDate.value : this.startDate,
+      endDate: data.endDate.present ? data.endDate.value : this.endDate,
       archivedAt: data.archivedAt.present
           ? data.archivedAt.value
           : this.archivedAt,
@@ -328,6 +364,7 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
           ..write('frequency: $frequency, ')
           ..write('weekdays: $weekdays, ')
           ..write('startDate: $startDate, ')
+          ..write('endDate: $endDate, ')
           ..write('archivedAt: $archivedAt, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
@@ -341,6 +378,7 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
     frequency,
     weekdays,
     startDate,
+    endDate,
     archivedAt,
     createdAt,
   );
@@ -353,6 +391,7 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
           other.frequency == this.frequency &&
           other.weekdays == this.weekdays &&
           other.startDate == this.startDate &&
+          other.endDate == this.endDate &&
           other.archivedAt == this.archivedAt &&
           other.createdAt == this.createdAt);
 }
@@ -363,6 +402,7 @@ class HabitsTableCompanion extends UpdateCompanion<HabitRow> {
   final Value<String> frequency;
   final Value<Set<int>> weekdays;
   final Value<DateTime> startDate;
+  final Value<DateTime?> endDate;
   final Value<DateTime?> archivedAt;
   final Value<DateTime> createdAt;
   final Value<int> rowid;
@@ -372,6 +412,7 @@ class HabitsTableCompanion extends UpdateCompanion<HabitRow> {
     this.frequency = const Value.absent(),
     this.weekdays = const Value.absent(),
     this.startDate = const Value.absent(),
+    this.endDate = const Value.absent(),
     this.archivedAt = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -382,6 +423,7 @@ class HabitsTableCompanion extends UpdateCompanion<HabitRow> {
     required String frequency,
     this.weekdays = const Value.absent(),
     required DateTime startDate,
+    this.endDate = const Value.absent(),
     this.archivedAt = const Value.absent(),
     required DateTime createdAt,
     this.rowid = const Value.absent(),
@@ -395,7 +437,8 @@ class HabitsTableCompanion extends UpdateCompanion<HabitRow> {
     Expression<String>? name,
     Expression<String>? frequency,
     Expression<String>? weekdays,
-    Expression<DateTime>? startDate,
+    Expression<int>? startDate,
+    Expression<int>? endDate,
     Expression<DateTime>? archivedAt,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
@@ -406,6 +449,7 @@ class HabitsTableCompanion extends UpdateCompanion<HabitRow> {
       if (frequency != null) 'frequency': frequency,
       if (weekdays != null) 'weekdays': weekdays,
       if (startDate != null) 'start_date': startDate,
+      if (endDate != null) 'end_date': endDate,
       if (archivedAt != null) 'archived_at': archivedAt,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
@@ -418,6 +462,7 @@ class HabitsTableCompanion extends UpdateCompanion<HabitRow> {
     Value<String>? frequency,
     Value<Set<int>>? weekdays,
     Value<DateTime>? startDate,
+    Value<DateTime?>? endDate,
     Value<DateTime?>? archivedAt,
     Value<DateTime>? createdAt,
     Value<int>? rowid,
@@ -428,6 +473,7 @@ class HabitsTableCompanion extends UpdateCompanion<HabitRow> {
       frequency: frequency ?? this.frequency,
       weekdays: weekdays ?? this.weekdays,
       startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
       archivedAt: archivedAt ?? this.archivedAt,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
@@ -452,7 +498,14 @@ class HabitsTableCompanion extends UpdateCompanion<HabitRow> {
       );
     }
     if (startDate.present) {
-      map['start_date'] = Variable<DateTime>(startDate.value);
+      map['start_date'] = Variable<int>(
+        $HabitsTableTable.$converterstartDate.toSql(startDate.value),
+      );
+    }
+    if (endDate.present) {
+      map['end_date'] = Variable<int>(
+        $HabitsTableTable.$converterendDaten.toSql(endDate.value),
+      );
     }
     if (archivedAt.present) {
       map['archived_at'] = Variable<DateTime>(archivedAt.value);
@@ -474,6 +527,7 @@ class HabitsTableCompanion extends UpdateCompanion<HabitRow> {
           ..write('frequency: $frequency, ')
           ..write('weekdays: $weekdays, ')
           ..write('startDate: $startDate, ')
+          ..write('endDate: $endDate, ')
           ..write('archivedAt: $archivedAt, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
@@ -511,15 +565,15 @@ class $EntriesTableTable extends EntriesTable
       'REFERENCES habits (id) ON DELETE CASCADE',
     ),
   );
-  static const VerificationMeta _dateMeta = const VerificationMeta('date');
   @override
-  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
-    'date',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
+  late final GeneratedColumnWithTypeConverter<DateTime, int> date =
+      GeneratedColumn<int>(
+        'date',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: true,
+      ).withConverter<DateTime>($EntriesTableTable.$converterdate);
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -558,14 +612,6 @@ class $EntriesTableTable extends EntriesTable
     } else if (isInserting) {
       context.missing(_habitIdMeta);
     }
-    if (data.containsKey('date')) {
-      context.handle(
-        _dateMeta,
-        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_dateMeta);
-    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -595,10 +641,12 @@ class $EntriesTableTable extends EntriesTable
         DriftSqlType.string,
         data['${effectivePrefix}habit_id'],
       )!,
-      date: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date'],
-      )!,
+      date: $EntriesTableTable.$converterdate.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}date'],
+        )!,
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -610,6 +658,9 @@ class $EntriesTableTable extends EntriesTable
   $EntriesTableTable createAlias(String alias) {
     return $EntriesTableTable(attachedDatabase, alias);
   }
+
+  static TypeConverter<DateTime, int> $converterdate =
+      const DateOnlyConverter();
 }
 
 class EntryRow extends DataClass implements Insertable<EntryRow> {
@@ -619,7 +670,7 @@ class EntryRow extends DataClass implements Insertable<EntryRow> {
   /// The habit this entry belongs to. Cascades on habit deletion.
   final String habitId;
 
-  /// The calendar day this completion belongs to. Stored as local midnight.
+  /// The calendar day this completion belongs to. See [DateOnlyConverter].
   final DateTime date;
 
   /// When this entry was logged.
@@ -635,7 +686,11 @@ class EntryRow extends DataClass implements Insertable<EntryRow> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['habit_id'] = Variable<String>(habitId);
-    map['date'] = Variable<DateTime>(date);
+    {
+      map['date'] = Variable<int>(
+        $EntriesTableTable.$converterdate.toSql(date),
+      );
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -741,7 +796,7 @@ class EntriesTableCompanion extends UpdateCompanion<EntryRow> {
   static Insertable<EntryRow> custom({
     Expression<String>? id,
     Expression<String>? habitId,
-    Expression<DateTime>? date,
+    Expression<int>? date,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
@@ -780,7 +835,9 @@ class EntriesTableCompanion extends UpdateCompanion<EntryRow> {
       map['habit_id'] = Variable<String>(habitId.value);
     }
     if (date.present) {
-      map['date'] = Variable<DateTime>(date.value);
+      map['date'] = Variable<int>(
+        $EntriesTableTable.$converterdate.toSql(date.value),
+      );
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -836,6 +893,7 @@ typedef $$HabitsTableTableCreateCompanionBuilder =
       required String frequency,
       Value<Set<int>> weekdays,
       required DateTime startDate,
+      Value<DateTime?> endDate,
       Value<DateTime?> archivedAt,
       required DateTime createdAt,
       Value<int> rowid,
@@ -847,6 +905,7 @@ typedef $$HabitsTableTableUpdateCompanionBuilder =
       Value<String> frequency,
       Value<Set<int>> weekdays,
       Value<DateTime> startDate,
+      Value<DateTime?> endDate,
       Value<DateTime?> archivedAt,
       Value<DateTime> createdAt,
       Value<int> rowid,
@@ -905,10 +964,17 @@ class $$HabitsTableTableFilterComposer
         builder: (column) => ColumnWithTypeConverterFilters(column),
       );
 
-  ColumnFilters<DateTime> get startDate => $composableBuilder(
-    column: $table.startDate,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnWithTypeConverterFilters<DateTime, DateTime, int> get startDate =>
+      $composableBuilder(
+        column: $table.startDate,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnWithTypeConverterFilters<DateTime?, DateTime, int> get endDate =>
+      $composableBuilder(
+        column: $table.endDate,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 
   ColumnFilters<DateTime> get archivedAt => $composableBuilder(
     column: $table.archivedAt,
@@ -975,8 +1041,13 @@ class $$HabitsTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get startDate => $composableBuilder(
+  ColumnOrderings<int> get startDate => $composableBuilder(
     column: $table.startDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get endDate => $composableBuilder(
+    column: $table.endDate,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -1012,8 +1083,11 @@ class $$HabitsTableTableAnnotationComposer
   GeneratedColumnWithTypeConverter<Set<int>, String> get weekdays =>
       $composableBuilder(column: $table.weekdays, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get startDate =>
+  GeneratedColumnWithTypeConverter<DateTime, int> get startDate =>
       $composableBuilder(column: $table.startDate, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<DateTime?, int> get endDate =>
+      $composableBuilder(column: $table.endDate, builder: (column) => column);
 
   GeneratedColumn<DateTime> get archivedAt => $composableBuilder(
     column: $table.archivedAt,
@@ -1082,6 +1156,7 @@ class $$HabitsTableTableTableManager
                 Value<String> frequency = const Value.absent(),
                 Value<Set<int>> weekdays = const Value.absent(),
                 Value<DateTime> startDate = const Value.absent(),
+                Value<DateTime?> endDate = const Value.absent(),
                 Value<DateTime?> archivedAt = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -1091,6 +1166,7 @@ class $$HabitsTableTableTableManager
                 frequency: frequency,
                 weekdays: weekdays,
                 startDate: startDate,
+                endDate: endDate,
                 archivedAt: archivedAt,
                 createdAt: createdAt,
                 rowid: rowid,
@@ -1102,6 +1178,7 @@ class $$HabitsTableTableTableManager
                 required String frequency,
                 Value<Set<int>> weekdays = const Value.absent(),
                 required DateTime startDate,
+                Value<DateTime?> endDate = const Value.absent(),
                 Value<DateTime?> archivedAt = const Value.absent(),
                 required DateTime createdAt,
                 Value<int> rowid = const Value.absent(),
@@ -1111,6 +1188,7 @@ class $$HabitsTableTableTableManager
                 frequency: frequency,
                 weekdays: weekdays,
                 startDate: startDate,
+                endDate: endDate,
                 archivedAt: archivedAt,
                 createdAt: createdAt,
                 rowid: rowid,
@@ -1224,10 +1302,11 @@ class $$EntriesTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<DateTime> get date => $composableBuilder(
-    column: $table.date,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnWithTypeConverterFilters<DateTime, DateTime, int> get date =>
+      $composableBuilder(
+        column: $table.date,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
@@ -1272,7 +1351,7 @@ class $$EntriesTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get date => $composableBuilder(
+  ColumnOrderings<int> get date => $composableBuilder(
     column: $table.date,
     builder: (column) => ColumnOrderings(column),
   );
@@ -1318,7 +1397,7 @@ class $$EntriesTableTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get date =>
+  GeneratedColumnWithTypeConverter<DateTime, int> get date =>
       $composableBuilder(column: $table.date, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>

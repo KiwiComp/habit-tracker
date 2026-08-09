@@ -58,6 +58,16 @@ final class CreateActivityStartDateChanged extends CreateActivityEvent {
   final DateTime date;
 }
 
+/// The user picked or cleared the habit's end date. `null` means "never
+/// ends".
+final class CreateActivityEndDateChanged extends CreateActivityEvent {
+  /// Creates a [CreateActivityEndDateChanged] event for the given [date].
+  const CreateActivityEndDateChanged(this.date);
+
+  /// The newly picked end date, or `null` for "never".
+  final DateTime? date;
+}
+
 /// The user tapped "Save".
 final class CreateActivitySaveRequested extends CreateActivityEvent {
   const CreateActivitySaveRequested();

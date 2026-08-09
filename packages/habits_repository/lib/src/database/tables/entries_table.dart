@@ -18,8 +18,8 @@ class EntriesTable extends Table {
   TextColumn get habitId =>
       text().references(HabitsTable, #id, onDelete: KeyAction.cascade)();
 
-  /// The calendar day this completion belongs to. Stored as local midnight.
-  DateTimeColumn get date => dateTime()();
+  /// The calendar day this completion belongs to. See [DateOnlyConverter].
+  IntColumn get date => integer().map(const DateOnlyConverter())();
 
   /// When this entry was logged.
   DateTimeColumn get createdAt => dateTime()();
@@ -29,6 +29,6 @@ class EntriesTable extends Table {
 
   @override
   List<Set<Column>> get uniqueKeys => [
-        {habitId, date},
-      ];
+    {habitId, date},
+  ];
 }

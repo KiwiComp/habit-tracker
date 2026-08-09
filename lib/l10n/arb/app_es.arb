@@ -99,5 +99,21 @@
     "createActivitySaveButton": "Guardar",
     "@createActivitySaveButton": {
         "description": "Etiqueta del botón que guarda el nuevo hábito/tarea"
+    },
+    "createActivityEndsLabel": "Termina",
+    "@createActivityEndsLabel": {
+        "description": "Etiqueta de la sección de fecha de fin al crear un hábito"
+    },
+    "createActivityEndsNever": "Nunca",
+    "@createActivityEndsNever": {
+        "description": "Se muestra cuando un hábito no tiene fecha de fin, y como opción para quitarla"
+    },
+    "createActivityEndsOnDate": "En una fecha",
+    "@createActivityEndsOnDate": {
+        "description": "Opción para dar a un hábito una fecha de fin concreta"
+    },
+    "createActivityWeekdayWindowWarning": "Ninguno de los días seleccionados cae dentro de este rango: este hábito nunca ocurriría.",
+    "@createActivityWeekdayWindowWarning": {
+        "description": "Aviso mostrado cuando los días de la semana elegidos nunca ocurren entre la fecha de inicio y la de fin"
     }
 }
