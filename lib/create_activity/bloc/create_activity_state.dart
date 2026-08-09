@@ -1,4 +1,4 @@
-import 'package:habit_tracker/add_activity/models/models.dart';
+import 'package:habit_tracker/create_activity/models/models.dart';
 import 'package:habits_repository/habits_repository.dart';
 import 'package:meta/meta.dart';
 

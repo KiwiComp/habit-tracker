@@ -1,8 +1,8 @@
 import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:habit_tracker/add_activity/models/models.dart';
 import 'package:habit_tracker/create_activity/bloc/bloc.dart';
+import 'package:habit_tracker/create_activity/models/models.dart';
 import 'package:habit_tracker/create_activity/widgets/widgets.dart';
 import 'package:habit_tracker/l10n/l10n.dart';
 import 'package:habits_repository/habits_repository.dart';
@@ -39,70 +39,112 @@ class _CreateActivityView extends StatelessWidget {
     final state = context.watch<CreateActivityBloc>().state;
     final bloc = context.read<CreateActivityBloc>();
     final isHabit = state.activityType == ActivityType.habit;
+    final spacing = context.spacing;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.createActivityAppBarTitle)),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(context.spacing.md),
+          padding: EdgeInsets.all(spacing.md),
           child: Column(
+            spacing: spacing.lg,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ActivityTypeToggle(
-                selected: state.activityType,
-                onChanged: (type) => bloc.add(CreateActivityTypeChanged(type)),
-              ),
-              SizedBox(height: context.spacing.lg),
-              TextField(
-                onChanged: (name) => bloc.add(CreateActivityNameChanged(name)),
-                decoration: InputDecoration(
-                  labelText: l10n.createActivityNameLabel,
-                  hintText: isHabit
-                      ? l10n.createActivityNameHintHabit
-                      : l10n.createActivityNameHintTask,
-                ),
-              ),
-              SizedBox(height: context.spacing.lg),
-              if (isHabit) ...[
-                Text(
-                  l10n.createActivityRepeatLabel,
-                  style: AppTextStyle.titleSmall,
-                ),
-                SizedBox(height: context.spacing.sm),
-                RepeatPatternSelector(
-                  selected: state.frequency,
-                  onChanged: (frequency) =>
-                      bloc.add(CreateActivityRepeatPatternChanged(frequency)),
-                ),
-                if (state.frequency == Frequency.weekdays) ...[
-                  SizedBox(height: context.spacing.md),
-                  WeekdayChipRow(
-                    selected: state.weekdays,
-                    onToggled: (weekday) =>
-                        bloc.add(CreateActivityWeekdayToggled(weekday)),
+              Column(
+                spacing: spacing.xs,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _Title(text: 'Type'), //TODO(k): l10n
+                  ActivityTypeToggle(
+                    selected: state.activityType,
+                    onChanged: (type) =>
+                        bloc.add(CreateActivityTypeChanged(type)),
                   ),
                 ],
-                SizedBox(height: context.spacing.lg),
-              ],
-              StartDateField(
-                label: isHabit
-                    ? l10n.createActivityStartDateLabelHabit
-                    : l10n.createActivityStartDateLabelTask,
-                date: state.startDate,
-                onChanged: (date) =>
-                    bloc.add(CreateActivityStartDateChanged(date)),
               ),
-              SizedBox(height: context.spacing.xl),
-              AppButton.primary(
-                onPressed: state.canSave
-                    ? () => bloc.add(const CreateActivitySaveRequested())
-                    : null,
-                child: Text(l10n.createActivitySaveButton),
+              Column(
+                spacing: spacing.xs,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _Title(text: 'Name'), //TODO(k): l10n
+                  AppTextField(
+                    onChanged: (name) =>
+                        bloc.add(CreateActivityNameChanged(name)),
+                    label: l10n.createActivityNameLabel,
+                    hint: isHabit
+                        ? l10n.createActivityNameHintHabit
+                        : l10n.createActivityNameHintTask,
+                  ),
+                ],
+              ),
+
+              if (isHabit) ...[
+                Column(
+                  spacing: spacing.xs,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _Title(text: l10n.createActivityRepeatLabel),
+                    RepeatPatternSelector(
+                      selected: state.frequency,
+                      onChanged: (frequency) => bloc.add(
+                        CreateActivityRepeatPatternChanged(frequency),
+                      ),
+                    ),
+                    if (state.frequency == Frequency.weekdays) ...[
+                      SizedBox(height: context.spacing.md),
+                      WeekdayChipRow(
+                        selected: state.weekdays,
+                        onToggled: (weekday) =>
+                            bloc.add(CreateActivityWeekdayToggled(weekday)),
+                      ),
+                    ],
+                  ],
+                ),
+              ],
+              Column(
+                spacing: spacing.xs,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _Title(text: 'Starts on'), // TODO(k): l10n
+                  StartDateField(
+                    label: isHabit
+                        ? l10n.createActivityStartDateLabelHabit
+                        : l10n.createActivityStartDateLabelTask,
+                    date: state.startDate,
+                    onChanged: (date) =>
+                        bloc.add(CreateActivityStartDateChanged(date)),
+                  ),
+                ],
               ),
             ],
           ),
         ),
       ),
+      bottomNavigationBar: SafeArea(
+        minimum: EdgeInsets.all(context.spacing.md),
+        child: AppButton.primary(
+          onPressed: state.canSave
+              ? () => bloc.add(const CreateActivitySaveRequested())
+              : null,
+          child: Text(l10n.createActivitySaveButton),
+        ),
+      ),
+    );
+  }
+}
+
+class _Title extends StatelessWidget {
+  const _Title({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final titleStyle = AppTextStyle.titleMedium;
+
+    return Text(
+      text,
+      style: titleStyle,
     );
   }
 }

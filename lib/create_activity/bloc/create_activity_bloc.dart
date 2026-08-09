@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
-import 'package:habit_tracker/add_activity/models/models.dart';
 import 'package:habit_tracker/create_activity/bloc/create_activity_event.dart';
 import 'package:habit_tracker/create_activity/bloc/create_activity_state.dart';
+import 'package:habit_tracker/create_activity/models/models.dart';
 import 'package:habits_repository/habits_repository.dart';
 
 /// Manages the in-progress form for creating a new habit or task.

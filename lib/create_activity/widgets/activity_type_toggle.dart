@@ -1,6 +1,6 @@
 import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:habit_tracker/add_activity/models/models.dart';
+import 'package:habit_tracker/create_activity/models/models.dart';
 import 'package:habit_tracker/l10n/l10n.dart';
 
 /// A segmented control for switching between creating a habit and a task.
@@ -24,24 +24,33 @@ class ActivityTypeToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return SegmentedButton<ActivityType>(
-      style: SegmentedButton.styleFrom(
-        selectedBackgroundColor: context.colorScheme.tertiary,
-        selectedForegroundColor: context.extendedColors.onAccent,
+    final textStyle = AppTextStyle.titleMedium;
+
+    return SizedBox(
+      width: double.infinity,
+      child: SegmentedButton<ActivityType>(
+        style: SegmentedButton.styleFrom(
+          selectedBackgroundColor: context.colorScheme.tertiary,
+          selectedForegroundColor: context.extendedColors.onAccent,
+          padding: EdgeInsets.symmetric(vertical: context.spacing.md),
+        ),
+        showSelectedIcon: false,
+        segments: [
+          ButtonSegment(
+            value: ActivityType.habit,
+            label: Text(l10n.addActivityHabitTitle, style: textStyle),
+          ),
+          ButtonSegment(
+            value: ActivityType.task,
+            label: Text(
+              l10n.addActivityTaskTitle,
+              style: textStyle,
+            ),
+          ),
+        ],
+        selected: {selected},
+        onSelectionChanged: (values) => onChanged(values.first),
       ),
-      showSelectedIcon: false,
-      segments: [
-        ButtonSegment(
-          value: ActivityType.habit,
-          label: Text(l10n.addActivityHabitTitle),
-        ),
-        ButtonSegment(
-          value: ActivityType.task,
-          label: Text(l10n.addActivityTaskTitle),
-        ),
-      ],
-      selected: {selected},
-      onSelectionChanged: (values) => onChanged(values.first),
     );
   }
 }

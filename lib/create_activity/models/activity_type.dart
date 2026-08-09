@@ -1,4 +1,5 @@
-/// The kind of activity a user can add from the add-activity bottom sheet.
+/// The kind of activity a user can add: a recurring habit or a one-off
+/// task.
 enum ActivityType {
   /// A recurring activity, done on a repeating schedule.
   habit,

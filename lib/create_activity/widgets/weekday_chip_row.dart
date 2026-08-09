@@ -25,19 +25,20 @@ class WeekdayChipRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: context.spacing.sm,
-      runSpacing: context.spacing.sm,
+    return Row(
+      spacing: context.spacing.xs,
       children: [
         for (
           var weekday = DateTime.monday;
           weekday <= DateTime.sunday;
           weekday++
         )
-          _WeekdayChip(
-            weekday: weekday,
-            isSelected: selected.contains(weekday),
-            onTap: () => onToggled(weekday),
+          Expanded(
+            child: _WeekdayChip(
+              weekday: weekday,
+              isSelected: selected.contains(weekday),
+              onTap: () => onToggled(weekday),
+            ),
           ),
       ],
     );
@@ -57,29 +58,44 @@ class _WeekdayChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = isSelected
-        ? context.colorScheme.tertiary
-        : context.colorScheme.surfaceContainerHigh;
-    final foregroundColor = isSelected
-        ? context.extendedColors.onAccent
-        : context.colorScheme.onSurfaceVariant;
+    final colors = context.colorScheme;
 
-    return Material(
-      color: backgroundColor,
-      borderRadius: BorderRadius.circular(context.radius.full),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(context.radius.full),
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: context.spacing.md,
-            vertical: context.spacing.sm,
+    final letter = MaterialLocalizations.of(
+      context,
+    ).narrowWeekdays[weekday % DateTime.daysPerWeek];
+
+    final fullName = DateFormat.EEEE().format(
+      _referenceMonday.add(Duration(days: weekday - DateTime.monday)),
+    );
+
+    return Semantics(
+      label: fullName,
+      selected: isSelected,
+      container: true,
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: Material(
+          color: isSelected ? colors.tertiary : Colors.transparent,
+          shape: CircleBorder(
+            side: isSelected
+                ? BorderSide.none
+                : BorderSide(color: colors.outline),
           ),
-          child: Text(
-            DateFormat.E().format(
-              _referenceMonday.add(Duration(days: weekday - DateTime.monday)),
+          child: InkWell(
+            onTap: onTap,
+            customBorder: const CircleBorder(),
+            child: Center(
+              child: ExcludeSemantics(
+                child: Text(
+                  letter,
+                  style: AppTextStyle.labelLarge.copyWith(
+                    color: isSelected
+                        ? context.extendedColors.onAccent
+                        : colors.onSurface,
+                  ),
+                ),
+              ),
             ),
-            style: AppTextStyle.labelMedium.copyWith(color: foregroundColor),
           ),
         ),
       ),

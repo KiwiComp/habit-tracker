@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:habit_tracker/add_activity/add_activity.dart';
+import 'package:habit_tracker/create_activity/create_activity.dart';
 import 'package:habit_tracker/l10n/l10n.dart';
 import 'package:habit_tracker/start_page/bloc/bloc.dart';
 import 'package:habit_tracker/start_page/models/models.dart';
@@ -19,7 +19,6 @@ class StartPage extends StatelessWidget {
       // TODO(you): temporary mock data to visually verify ScheduleList.
       // Remove once a real activity data source exists (see TODO.md).
       create: (_) => StartBloc()
-        // Mock data for now
         ..add(
           StartActivitiesLoaded([
             Activity(
@@ -60,6 +59,16 @@ class _StartViewState extends State<StartView> {
     unawaited(_daySelectorKey.currentState?.scrollToToday());
   }
 
+  Future<void> _onAddActivityTap(BuildContext context) async {
+    final type = await AddActivitySheet.show(context);
+    if (type == null || !context.mounted) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => CreateActivityPage(initialType: type),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -73,7 +82,6 @@ class _StartViewState extends State<StartView> {
       appBar: AppBar(
         leading: IconButton(
           tooltip: l10n.startMenuTooltip,
-          // icon: Icon(Icons.menu, color: context.extendedColors.accent),
           icon: Icon(Icons.menu, color: context.colorScheme.tertiary),
           onPressed: () {},
         ),
@@ -116,13 +124,12 @@ class _StartViewState extends State<StartView> {
       ),
       floatingActionButton: FloatingActionButton(
         tooltip: l10n.startAddActivityTooltip,
-        // backgroundColor: context.extendedColors.accent,
         backgroundColor: context.colorScheme.tertiary,
         foregroundColor: context.colorScheme.onTertiary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(context.radius.lg),
         ),
-        onPressed: () => AddActivitySheet.show(context),
+        onPressed: () => _onAddActivityTap(context),
         child: const Icon(Icons.add),
       ),
       bottomNavigationBar: const _StartNavigationBar(),
@@ -138,7 +145,6 @@ class _StartNavigationBar extends StatelessWidget {
     final l10n = context.l10n;
     Color colorFor(Set<WidgetState> states) {
       return states.contains(WidgetState.selected)
-          // ? context.extendedColors.accent
           ? context.colorScheme.tertiary
           : context.colorScheme.onSurfaceVariant;
     }

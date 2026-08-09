@@ -33,7 +33,7 @@ decision.
 ## Habit/task creation doesn't persist
 
 The start page's FAB opens `AddActivitySheet`
-(`lib/add_activity/view/add_activity_sheet.dart`); tapping "Habit" or "Task"
+(`lib/start_page/widgets/add_activity_sheet.dart`); tapping "Habit" or "Task"
 closes it and pushes `CreateActivityPage`
 (`lib/create_activity/view/create_activity_page.dart`), a single form for
 both (fields toggle based on the selected type, rather than two separate

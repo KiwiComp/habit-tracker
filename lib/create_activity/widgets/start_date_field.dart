@@ -26,41 +26,45 @@ class StartDateField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final borderRadius = context.radius.sm;
+    final colors = context.colorScheme;
+    final iconSize = context.iconSize.md;
+
     return Material(
-      color: context.colorScheme.surfaceContainerHigh,
-      borderRadius: BorderRadius.circular(context.radius.md),
+      color: colors.surfaceContainerLow,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(borderRadius),
+        side: BorderSide(color: colors.outline),
+      ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(context.radius.md),
+        borderRadius: BorderRadius.circular(borderRadius),
         onTap: () => _pickDate(context),
         child: Padding(
           padding: EdgeInsets.symmetric(
             horizontal: context.spacing.md,
-            vertical: context.spacing.sm,
+            vertical: context.spacing.md,
           ),
           child: Row(
+            mainAxisAlignment: .spaceBetween,
             children: [
-              Icon(
-                Icons.calendar_today_outlined,
-                size: context.iconSize.sm,
-                color: context.colorScheme.onSurfaceVariant,
+              Row(
+                children: [
+                  Icon(
+                    Icons.calendar_today_outlined,
+                    size: iconSize,
+                    color: colors.onSurfaceVariant,
+                  ),
+                  SizedBox(width: context.spacing.md),
+                  Text(
+                    DateFormat('d MMM yyyy').format(date),
+                    style: AppTextStyle.titleMedium,
+                  ),
+                ],
               ),
-              SizedBox(width: context.spacing.md),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      label,
-                      style: AppTextStyle.labelSmall.copyWith(
-                        color: context.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    Text(
-                      DateFormat('d MMM yyyy').format(date),
-                      style: AppTextStyle.titleMedium,
-                    ),
-                  ],
-                ),
+              Icon(
+                Icons.keyboard_arrow_down_sharp,
+                size: iconSize,
+                color: colors.onSurfaceVariant,
               ),
             ],
           ),

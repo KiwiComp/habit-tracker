@@ -27,24 +27,33 @@ class RepeatPatternSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return SegmentedButton<Frequency>(
-      style: SegmentedButton.styleFrom(
-        selectedBackgroundColor: context.colorScheme.tertiary,
-        selectedForegroundColor: context.extendedColors.onAccent,
+    final textStyle = AppTextStyle.titleMedium;
+
+    return SizedBox(
+      width: double.infinity,
+      child: SegmentedButton<Frequency>(
+        style: SegmentedButton.styleFrom(
+          selectedBackgroundColor: context.colorScheme.tertiary,
+          selectedForegroundColor: context.extendedColors.onAccent,
+          padding: EdgeInsets.symmetric(vertical: context.spacing.md),
+        ),
+        showSelectedIcon: false,
+        segments: [
+          ButtonSegment(
+            value: Frequency.daily,
+            label: Text(
+              l10n.createActivityRepeatDaily,
+              style: textStyle,
+            ),
+          ),
+          ButtonSegment(
+            value: Frequency.weekdays,
+            label: Text(l10n.createActivityRepeatWeekdays, style: textStyle),
+          ),
+        ],
+        selected: {selected},
+        onSelectionChanged: (values) => onChanged(values.first),
       ),
-      showSelectedIcon: false,
-      segments: [
-        ButtonSegment(
-          value: Frequency.daily,
-          label: Text(l10n.createActivityRepeatDaily),
-        ),
-        ButtonSegment(
-          value: Frequency.weekdays,
-          label: Text(l10n.createActivityRepeatWeekdays),
-        ),
-      ],
-      selected: {selected},
-      onSelectionChanged: (values) => onChanged(values.first),
     );
   }
 }
