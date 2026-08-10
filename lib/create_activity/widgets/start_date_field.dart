@@ -1,5 +1,6 @@
 import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:habit_tracker/l10n/l10n.dart';
 import 'package:intl/intl.dart';
 
 /// A tappable field that opens a date picker and displays the chosen date.
@@ -56,7 +57,10 @@ class StartDateField extends StatelessWidget {
                   ),
                   SizedBox(width: context.spacing.md),
                   Text(
-                    DateFormat('d MMM yyyy').format(date),
+                    DateFormat(
+                      'd MMM yyyy',
+                      context.locale.toString(),
+                    ).format(date),
                     style: AppTextStyle.titleMedium,
                   ),
                 ],

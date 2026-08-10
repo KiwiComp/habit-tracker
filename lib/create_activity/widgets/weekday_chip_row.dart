@@ -1,5 +1,6 @@
 import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:habit_tracker/l10n/l10n.dart';
 import 'package:intl/intl.dart';
 
 /// A reference Monday — used only to format each weekday's abbreviated,
@@ -64,7 +65,7 @@ class _WeekdayChip extends StatelessWidget {
       context,
     ).narrowWeekdays[weekday % DateTime.daysPerWeek];
 
-    final fullName = DateFormat.EEEE().format(
+    final fullName = DateFormat.EEEE(context.locale.toString()).format(
       _referenceMonday.add(Duration(days: weekday - DateTime.monday)),
     );
 

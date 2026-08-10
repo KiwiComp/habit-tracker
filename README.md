@@ -84,10 +84,6 @@ This project follows the [official internationalization guide for Flutter][inter
 ```arb
 {
     "@@locale": "en",
-    "counterAppBarTitle": "Counter",
-    "@counterAppBarTitle": {
-        "description": "Text shown in the AppBar of the Counter Page"
-    },
     "helloWorld": "Hello World",
     "@helloWorld": {
         "description": "Hello World greeting."
@@ -118,6 +114,7 @@ Update the `CFBundleLocalizations` array in the `Info.plist` at `ios/Runner/Info
 	<array>
 		<string>en</string>
 		<string>es</string>
+		<string>sv</string>
 	</array>
 
     ...
@@ -131,24 +128,21 @@ Update the `CFBundleLocalizations` array in the `Info.plist` at `ios/Runner/Info
 ├── l10n
 │   ├── arb
 │   │   ├── app_en.arb
-│   │   └── app_es.arb
+│   │   ├── app_es.arb
+│   │   └── app_sv.arb
 ```
 
-1. Add the translated strings to the new `.arb` file:
+1. Add the translated strings to the new `.arb` file. Descriptions are
+   developer-facing documentation for translators, so they only need to live
+   in the source-language file (`app_en.arb`) — omit `@key` description
+   blocks from the other locale files:
 
 `app_es.arb`
 
 ```arb
 {
     "@@locale": "es",
-    "counterAppBarTitle": "Contador",
-    "@counterAppBarTitle": {
-        "description": "Texto mostrado en la AppBar de la página del contador"
-    },
-    "helloWorld": "Hola Mundo",
-    "@helloWorld": {
-        "description": "Saludo Hola Mundo."
-    }    
+    "helloWorld": "Hola Mundo"
 }
 ```
 

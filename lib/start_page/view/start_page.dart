@@ -75,7 +75,10 @@ class _StartViewState extends State<StartView> {
           borderRadius: BorderRadius.circular(context.radius.sm),
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: context.spacing.xs),
-            child: Text(DateFormat('d MMM yyyy').format(selectedDate)),
+            child: Text(
+              DateFormat('d MMM yyyy', context.locale.toString())
+                  .format(selectedDate),
+            ),
           ),
         ),
         actions: [

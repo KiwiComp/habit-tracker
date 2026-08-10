@@ -1,9 +1,5 @@
 {
     "@@locale": "en",
-    "counterAppBarTitle": "Counter",
-    "@counterAppBarTitle": {
-        "description": "Text shown in the AppBar of the Counter Page"
-    },
     "startEmptyScheduleTitle": "There is nothing scheduled",
     "@startEmptyScheduleTitle": {
         "description": "Title shown when the selected day has no scheduled activities"
@@ -64,9 +60,13 @@
     "@createActivityAppBarTitle": {
         "description": "Title of the AppBar on the create habit/task page"
     },
+    "createActivityTypeLabel": "Type",
+    "@createActivityTypeLabel": {
+        "description": "Label for the activity-type section on the create habit/task page"
+    },
     "createActivityNameLabel": "Name",
     "@createActivityNameLabel": {
-        "description": "Label for the name text field on the create habit/task page"
+        "description": "Label for the name section and text field on the create habit/task page"
     },
     "createActivityNameHintHabit": "e.g. Drink water",
     "@createActivityNameHintHabit": {
@@ -88,9 +88,9 @@
     "@createActivityRepeatWeekdays": {
         "description": "Option for a habit that repeats on specific weekdays"
     },
-    "createActivityStartDateLabelHabit": "Starts on",
-    "@createActivityStartDateLabelHabit": {
-        "description": "Label for the date field when creating a habit"
+    "createActivityStartDateSectionLabel": "Starts on",
+    "@createActivityStartDateSectionLabel": {
+        "description": "Label for the start-date section heading on the create habit/task page; also used as the date field's own label when creating a habit"
     },
     "createActivityStartDateLabelTask": "Date",
     "@createActivityStartDateLabelTask": {

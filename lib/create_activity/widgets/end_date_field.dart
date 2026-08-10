@@ -64,7 +64,10 @@ class EndDateField extends StatelessWidget {
                   Text(
                     date == null
                         ? l10n.createActivityEndsNever
-                        : DateFormat('d MMM yyyy').format(date!),
+                        : DateFormat(
+                            'd MMM yyyy',
+                            context.locale.toString(),
+                          ).format(date!),
                     style: AppTextStyle.titleMedium,
                   ),
                 ],
