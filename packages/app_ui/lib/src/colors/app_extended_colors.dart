@@ -14,15 +14,14 @@ class AppExtendedColors extends ThemeExtension<AppExtendedColors> {
   static const AppExtendedColors light = AppExtendedColors(
     accent: Color(0xFFB6244F),
     onAccent: Color(0xFFFFFFFF),
-    disabledBtn: Color.fromARGB(255, 232, 232, 232),
+    disabledBtn: Color(0xFFD0D3C8),
   );
 
   /// The dark variant.
   static const AppExtendedColors dark = AppExtendedColors(
     accent: Color(0xFFB6244F),
     onAccent: Color(0xFFFFFFFF),
-    // disabledBtn: Color.fromARGB(255, 181, 181, 181),
-    disabledBtn: Color(0xFFD0D3C8),
+    disabledBtn: Color.fromARGB(255, 154, 156, 149),
   );
 
   /// The accent color.

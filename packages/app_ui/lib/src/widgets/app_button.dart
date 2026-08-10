@@ -21,11 +21,11 @@ class AppButton extends StatelessWidget {
   });
 
   const AppButton.primary({
+    required void Function()? onPressed,
+    required Widget child,
     AppButtonWidth width = AppButtonWidth.expand,
     AppButtonShape shape = AppButtonShape.round,
     AppButtonSize size = AppButtonSize.medium,
-    required void Function()? onPressed,
-    required Widget child,
     Key? key,
   }) : this._(
          width: width,
@@ -38,11 +38,11 @@ class AppButton extends StatelessWidget {
        );
 
   const AppButton.secondary({
+    required void Function()? onPressed,
+    required Widget child,
     AppButtonWidth width = AppButtonWidth.expand,
     AppButtonShape shape = AppButtonShape.round,
     AppButtonSize size = AppButtonSize.medium,
-    required void Function()? onPressed,
-    required Widget child,
     Key? key,
   }) : this._(
          width: width,
@@ -55,11 +55,11 @@ class AppButton extends StatelessWidget {
        );
 
   const AppButton.tertiary({
+    required void Function()? onPressed,
+    required Widget child,
     AppButtonWidth width = AppButtonWidth.expand,
     AppButtonShape shape = AppButtonShape.round,
     AppButtonSize size = AppButtonSize.medium,
-    required void Function()? onPressed,
-    required Widget child,
     Key? key,
   }) : this._(
          width: width,
@@ -93,8 +93,5 @@ class AppButton extends StatelessWidget {
       ),
       AppButtonWidth.shrink => button,
     };
-    // return SizedBox(
-    //   child: ElevatedButton(style: style, onPressed: onPressed, child: child),
-    // );
   }
 }

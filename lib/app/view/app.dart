@@ -6,12 +6,11 @@ import 'package:habit_tracker/start_page/start_page.dart';
 import 'package:habits_repository/habits_repository.dart';
 
 class App extends StatelessWidget {
-  /// Creates an [App]. [habitsRepository] lets tests supply a fake in place
-  /// of the real one — constructing a real [HabitsRepository] opens a file-
-  /// backed Drift connection that schedules a `Timer`, which trips
-  /// `flutter_test`'s fake-async widget tests if left to the default.
-  const App({super.key, HabitsRepository? habitsRepository})
-    : _habitsRepository = habitsRepository;
+  /// Creates an [App]. The `habitsRepository` argument lets tests supply a
+  /// fake in place of the real one — constructing a real [HabitsRepository]
+  /// opens a file-backed Drift connection that schedules a `Timer`, which
+  /// trips `flutter_test`'s fake-async widget tests if left to the default.
+  const App({super.key, this._habitsRepository});
 
   final HabitsRepository? _habitsRepository;
 
@@ -23,7 +22,6 @@ class App extends StatelessWidget {
       child: MaterialApp(
         theme: const AppTheme.light().themeData,
         darkTheme: const AppTheme.dark().themeData,
-        // themeMode: ThemeMode.system,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: const StartPage(),

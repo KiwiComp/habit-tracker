@@ -8,13 +8,12 @@ import 'package:habits_repository/habits_repository.dart';
 /// Manages which day is selected on the start page, and which activities
 /// are scheduled for it.
 class StartBloc extends Bloc<StartEvent, StartState> {
-  /// Creates a [StartBloc], defaulting the selected day to today.
-  /// [habitsRepository] is watched for the habits to schedule.
+  /// Creates a [StartBloc], defaulting the selected day to today. The
+  /// `habitsRepository` argument is watched for the habits to schedule.
   StartBloc({
-    required HabitsRepository habitsRepository,
+    required this._habitsRepository,
     DateTime? initialDate,
-  }) : _habitsRepository = habitsRepository,
-       super(StartState(selectedDate: initialDate ?? DateTime.now())) {
+  }) : super(StartState(selectedDate: initialDate ?? DateTime.now())) {
     on<StartDaySelected>(_onDaySelected);
     on<StartActivitiesLoaded>(_onActivitiesLoaded);
     _habitsSubscription = _habitsRepository.watchHabits().listen(

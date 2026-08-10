@@ -8,13 +8,13 @@ import 'package:habits_repository/habits_repository.dart';
 class CreateActivityBloc
     extends Bloc<CreateActivityEvent, CreateActivityState> {
   /// Creates a [CreateActivityBloc], seeded with [initialType] — whichever
-  /// option the user tapped in the add-activity sheet. [habitsRepository]
-  /// persists the activity once `CreateActivitySaveRequested` fires.
+  /// option the user tapped in the add-activity sheet. The
+  /// `habitsRepository` argument persists the activity once
+  /// `CreateActivitySaveRequested` fires.
   CreateActivityBloc({
     required ActivityType initialType,
-    required HabitsRepository habitsRepository,
-  }) : _habitsRepository = habitsRepository,
-       super(
+    required this._habitsRepository,
+  }) : super(
          CreateActivityState(
            activityType: initialType,
            frequency: initialType == ActivityType.task
