@@ -72,7 +72,7 @@ class _CreateActivityView extends StatelessWidget {
                   spacing: spacing.xs,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _Title(text: 'Type'), //TODO(k): l10n
+                    _Title(text: l10n.createActivityTypeLabel),
                     ActivityTypeToggle(
                       selected: state.activityType,
                       onChanged: (type) =>
@@ -84,7 +84,7 @@ class _CreateActivityView extends StatelessWidget {
                   spacing: spacing.xs,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _Title(text: 'Name'), //TODO(k): l10n
+                    _Title(text: l10n.createActivityNameLabel),
                     AppTextField(
                       onChanged: (name) =>
                           bloc.add(CreateActivityNameChanged(name)),
@@ -123,10 +123,10 @@ class _CreateActivityView extends StatelessWidget {
                   spacing: spacing.xs,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _Title(text: 'Starts on'), // TODO(k): l10n
+                    _Title(text: l10n.createActivityStartDateSectionLabel),
                     StartDateField(
                       label: isHabit
-                          ? l10n.createActivityStartDateLabelHabit
+                          ? l10n.createActivityStartDateSectionLabel
                           : l10n.createActivityStartDateLabelTask,
                       date: state.startDate,
                       onChanged: (date) =>

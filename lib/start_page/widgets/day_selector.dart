@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:habit_tracker/l10n/l10n.dart';
 import 'package:habit_tracker/start_page/bloc/bloc.dart';
 import 'package:habit_tracker/start_page/utils/date_time_x.dart';
 import 'package:intl/intl.dart';
@@ -111,6 +112,7 @@ class _DayChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = context.locale.toString();
     final backgroundColor = isSelected
         // ? context.extendedColors.accent
         ? context.colorScheme.tertiary
@@ -135,14 +137,14 @@ class _DayChip extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                DateFormat.E().format(date),
+                _capitalize(DateFormat.E(locale).format(date)),
                 style: AppTextStyle.labelSmall.copyWith(
                   color: foregroundColor,
                 ),
               ),
               SizedBox(height: context.spacing.xs),
               Text(
-                DateFormat('d MMM').format(date),
+                DateFormat('d MMM', locale).format(date),
                 style: AppTextStyle.labelMedium.copyWith(
                   color: foregroundColor,
                 ),
@@ -154,3 +156,9 @@ class _DayChip extends StatelessWidget {
     );
   }
 }
+
+/// CLDR's abbreviated weekday names are lowercase in some locales (e.g.
+/// Swedish "mån"), unlike English/Spanish — capitalize for a consistent
+/// look across locales.
+String _capitalize(String value) =>
+    value.isEmpty ? value : value[0].toUpperCase() + value.substring(1);

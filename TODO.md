@@ -116,10 +116,11 @@ indirectly through `HabitsRepository`'s tests — the same
 a different package. Worth a `min_coverage` decision (and possibly excluding
 `*.g.dart`) alongside that one rather than solving it separately.
 
-## Leftover counter boilerplate
+## Leftover counter boilerplate — resolved 2026-08-10
 
-`lib/counter/` and `test/counter/` are the original Very Good CLI example
-feature. `App` no longer renders `CounterPage` (it renders `StartPage`), so
-this is now dead code — remove it, along with the unused `counterAppBarTitle`
-string in `lib/l10n/arb/app_en.arb` / `app_es.arb`, once it's no longer
-useful as a bloc/test-structure reference.
+`lib/counter/`/`test/counter/` (the original Very Good CLI example feature)
+were already gone, and the unused `counterAppBarTitle` string was removed
+from `lib/l10n/arb/app_en.arb`/`app_es.arb` in this pass. `README.md`'s
+"Working with Translations" walkthrough was still using `counterAppBarTitle`
+as its example key (and only listed `en`/`es`, not the newly-added `sv`) —
+updated to use `helloWorld` instead and to reflect all three locales.
