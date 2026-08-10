@@ -114,9 +114,7 @@ class _DayChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final locale = context.locale.toString();
     final backgroundColor = isSelected
-        // ? context.extendedColors.accent
         ? context.colorScheme.tertiary
-        // : context.colorScheme.surfaceContainerHigh;
         : context.colorScheme.surfaceContainerHigh;
     final foregroundColor = isSelected
         ? context.extendedColors.onAccent

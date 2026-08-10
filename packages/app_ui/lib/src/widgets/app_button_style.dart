@@ -27,7 +27,7 @@ extension on ButtonStyle {
         }),
         foregroundColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.disabled)) {
-            return context.colorScheme.primary.withAlpha(100);
+            return context.colorScheme.onPrimary.withAlpha(100);
           }
           return context.colorScheme.onPrimary;
         }),

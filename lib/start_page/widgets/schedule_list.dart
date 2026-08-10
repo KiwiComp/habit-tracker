@@ -1,7 +1,6 @@
 import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:habits_repository/habits_repository.dart';
-import 'package:intl/intl.dart';
 
 /// The list of habits scheduled for the selected day.
 ///
@@ -23,14 +22,12 @@ class ScheduleList extends StatelessWidget {
   /// The day [activities] are scheduled for.
   ///
   /// `Habit` has no time-of-day of its own, so this is shown for every row
-  /// rather than a per-item time — see TODO.md's "ScheduleList items aren't
+  /// rather than a per-item time — see todo.md's "ScheduleList items aren't
   /// tappable yet" for what's still placeholder here.
   final DateTime selectedDate;
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colorScheme;
-
     return ListView.separated(
       padding: EdgeInsets.symmetric(
         horizontal: context.spacing.md,
@@ -56,9 +53,7 @@ class _HabitTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colorScheme;
     final foregroundColor = habit.frequency == Frequency.once
-        // ? colors.onSurface
         ? colors.onSurfaceVariant
-        // : colors.onPrimary;
         : colors.surfaceBright;
 
     return Material(
@@ -91,13 +86,6 @@ class _HabitTile extends StatelessWidget {
                 ),
               ],
             ),
-            // Text(
-            //   DateFormat.Hm().format(selectedDate),
-            //   style: AppTextStyle.bodyMedium.copyWith(
-            //     // color: context.colorScheme.onSurfaceVariant,
-            //     color: foregroundColor,
-            //   ),
-            // ),
           ],
         ),
       ),

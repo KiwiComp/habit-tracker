@@ -11,7 +11,7 @@ void main() {
     testWidgets('renders StartPage', (tester) async {
       final habitsRepository = _MockHabitsRepository();
       when(
-        () => habitsRepository.watchHabits(),
+        habitsRepository.watchHabits,
       ).thenAnswer((_) => const Stream.empty());
       when(habitsRepository.close).thenAnswer((_) async {});
 
