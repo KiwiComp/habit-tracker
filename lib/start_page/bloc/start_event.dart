@@ -1,4 +1,4 @@
-import 'package:habit_tracker/start_page/models/models.dart';
+import 'package:habits_repository/habits_repository.dart';
 
 /// Events handled by `StartBloc`.
 sealed class StartEvent {
@@ -19,6 +19,6 @@ final class StartActivitiesLoaded extends StartEvent {
   /// Creates a [StartActivitiesLoaded] event with the loaded [activities].
   const StartActivitiesLoaded(this.activities);
 
-  /// The activities to show for the currently selected day.
-  final List<Activity> activities;
+  /// The habits scheduled for the currently selected day.
+  final List<Habit> activities;
 }

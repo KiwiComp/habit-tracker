@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:habit_tracker/create_activity/create_activity.dart';
 import 'package:habit_tracker/l10n/l10n.dart';
 import 'package:habit_tracker/start_page/bloc/bloc.dart';
-import 'package:habit_tracker/start_page/models/models.dart';
 import 'package:habit_tracker/start_page/widgets/widgets.dart';
 import 'package:habits_repository/habits_repository.dart';
 import 'package:intl/intl.dart';
@@ -61,7 +60,7 @@ class _StartViewState extends State<StartView> {
     final selectedDate = context.select<StartBloc, DateTime>(
       (bloc) => bloc.state.selectedDate,
     );
-    final activities = context.select<StartBloc, List<Activity>>(
+    final activities = context.select<StartBloc, List<Habit>>(
       (bloc) => bloc.state.activities,
     );
     return Scaffold(
@@ -104,7 +103,10 @@ class _StartViewState extends State<StartView> {
           Expanded(
             child: activities.isEmpty
                 ? const EmptySchedule()
-                : ScheduleList(activities: activities),
+                : ScheduleList(
+                    activities: activities,
+                    selectedDate: selectedDate,
+                  ),
           ),
         ],
       ),

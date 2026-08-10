@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:habit_tracker/start_page/bloc/start_event.dart';
 import 'package:habit_tracker/start_page/bloc/start_state.dart';
-import 'package:habit_tracker/start_page/models/models.dart';
 import 'package:habits_repository/habits_repository.dart';
 
 /// Manages which day is selected on the start page, and which activities
@@ -48,18 +47,9 @@ class StartBloc extends Bloc<StartEvent, StartState> {
     emit(state.copyWith(activities: event.activities));
   }
 
-  /// Converts habits due on [date] into the placeholder `Activity` shape
-  /// `ScheduleList` renders.
-  ///
-  /// A [Habit] has no time-of-day, so every `Activity` here carries [date]
-  /// itself (midnight) rather than a real time — `ScheduleList`'s
-  /// `DateFormat.Hm()` will show 00:00 until it has a real design to
-  /// revisit this against.
-  List<Activity> _scheduledActivities(DateTime date) {
-    return _habits
-        .where((habit) => habit.isScheduledOn(date))
-        .map((habit) => Activity(id: habit.id, title: habit.name, date: date))
-        .toList();
+  /// The habits due on [date], per [Habit.isScheduledOn].
+  List<Habit> _scheduledActivities(DateTime date) {
+    return _habits.where((habit) => habit.isScheduledOn(date)).toList();
   }
 
   @override

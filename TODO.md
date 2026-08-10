@@ -72,27 +72,39 @@ The bottom nav on the start screen (`lib/start_page/view/start_page.dart`)
 shows a "Habits" destination, but there's no Habits page or route behind it
 yet — tapping it currently does nothing.
 
-## Activity/ScheduleList still placeholder shapes
+## ScheduleList still has placeholder gaps
 
 `StartBloc` now watches `HabitsRepository.watchHabits()` and maps whatever's
-due on the selected day (via `Habit.isScheduledOn`) into `StartState`, so
-real habits/tasks show up on the start page. Two things are still
-placeholder, though:
+due on the selected day (via `Habit.isScheduledOn`) directly into
+`StartState.activities: List<Habit>` — the old flattened `Activity`
+placeholder model (`lib/start_page/models/activity.dart`) was removed
+(2026-08-09) once every consumer worked with `Habit` directly instead. Two
+things are still placeholder, though:
 
-- `Activity` (`lib/start_page/models/activity.dart`) only carries
-  `id`/`title`/`date` — `Habit` has no time-of-day, so every mapped
-  `Activity` gets midnight and `ScheduleList`'s `DateFormat.Hm()` always
-  shows 00:00. There's also no completion state shown (a `Habit` being
-  scheduled vs. actually logged via an `Entry` are different things —
-  `watchEntries`/`watchEntriesOnDate` aren't consulted yet).
+- `Habit` has no time-of-day, so `ScheduleList` shows the same
+  `selectedDate` (formatted via `DateFormat.Hm()`, always 00:00) next to
+  every row instead of a per-item time. There's also no completion state
+  shown — a `Habit` being scheduled vs. actually logged via an `Entry` are
+  different things, and `watchEntries`/`watchEntriesOnDate` aren't consulted
+  yet.
 - `ScheduleList`'s visuals are still a functional placeholder (no design
-  reference for it yet, unlike `EmptySchedule`/`DayChip`) — revisit both
-  points above once one exists; the mapping in `StartBloc` will likely need
-  to change shape alongside it (e.g. carrying a `Habit`/`Entry` pair instead
-  of the flattened `Activity`).
+  reference for it yet, unlike `EmptySchedule`/`DayChip`) — revisit the
+  point above once one exists.
 - See "No behavior defined for a habit whose end date has passed" above —
   that entry is about a habits-*list* view, not this one; `isScheduledOn`
   (which `StartBloc` uses) already excludes an ended habit correctly.
+
+## ScheduleList items aren't tappable yet
+
+Each item in `ScheduleList` is meant to be tappable, opening a detail view
+with the full habit/task information. `ScheduleList` already renders `Habit`
+directly (see above), so no model change is needed for this — on tap, pass
+the tapped item's `habit.id` forward to a detail page/route, which watches
+the full `Habit` live from `HabitsRepository` rather than receiving a static
+snapshot, consistent with how the rest of the app streams from the
+repository (`StartBloc`, eventually a habits-list view). This needs a
+`watchHabit(id)`-style method on `HabitsRepository`, which doesn't exist yet
+(only `watchHabits()`, returning everything, does).
 
 ## habits_repository coverage gap
 

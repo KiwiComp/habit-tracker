@@ -55,14 +55,13 @@ void main() {
       'emits activities when StartActivitiesLoaded is added',
       build: () =>
           StartBloc(habitsRepository: habitsRepository, initialDate: today),
-      act: (bloc) => bloc.add(
-        StartActivitiesLoaded([Activity(id: '1', title: 'Read', date: today)]),
-      ),
+      act: (bloc) =>
+          bloc.add(StartActivitiesLoaded([habit(id: '1', name: 'Read')])),
       expect: () => [
         equals(
           StartState(
             selectedDate: today,
-            activities: [Activity(id: '1', title: 'Read', date: today)],
+            activities: [habit(id: '1', name: 'Read')],
           ),
         ),
       ],
@@ -78,7 +77,7 @@ void main() {
         equals(
           StartState(
             selectedDate: today,
-            activities: [Activity(id: '1', title: 'Drink water', date: today)],
+            activities: [habit(id: '1', name: 'Drink water')],
           ),
         ),
       ],
