@@ -10,6 +10,7 @@ environment:
 workspace:
   - packages/app_ui
   - packages/error_tracking
+  - packages/habits_repository
 
 dependencies:
   app_ui:
@@ -22,6 +23,8 @@ dependencies:
   flutter_bloc: ^9.1.1
   flutter_localizations:
     sdk: flutter
+  habits_repository:
+    path: packages/habits_repository
   intl: ^0.20.2
   meta: ^1.18.0
 

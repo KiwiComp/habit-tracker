@@ -39,5 +39,85 @@
     "startAddActivityTooltip": "Añadir actividad",
     "@startAddActivityTooltip": {
         "description": "Tooltip del botón flotante que añade una nueva actividad"
+    },
+    "addActivitySheetTitle": "Añadir actividad",
+    "@addActivitySheetTitle": {
+        "description": "Título de la hoja inferior mostrada al añadir una nueva actividad"
+    },
+    "addActivityHabitTitle": "Hábito",
+    "@addActivityHabitTitle": {
+        "description": "Título de la opción para añadir un hábito recurrente"
+    },
+    "addActivityHabitSubtitle": "Se repite según un horario",
+    "@addActivityHabitSubtitle": {
+        "description": "Subtítulo de la opción para añadir un hábito recurrente"
+    },
+    "addActivityTaskTitle": "Tarea",
+    "@addActivityTaskTitle": {
+        "description": "Título de la opción para añadir una tarea puntual"
+    },
+    "addActivityTaskSubtitle": "Ocurre una sola vez",
+    "@addActivityTaskSubtitle": {
+        "description": "Subtítulo de la opción para añadir una tarea puntual"
+    },
+    "createActivityAppBarTitle": "Nueva actividad",
+    "@createActivityAppBarTitle": {
+        "description": "Título de la AppBar en la página de creación de hábito/tarea"
+    },
+    "createActivityNameLabel": "Nombre",
+    "@createActivityNameLabel": {
+        "description": "Etiqueta del campo de texto del nombre en la página de creación de hábito/tarea"
+    },
+    "createActivityNameHintHabit": "p. ej. Beber agua",
+    "@createActivityNameHintHabit": {
+        "description": "Texto de ejemplo del campo de nombre al crear un hábito"
+    },
+    "createActivityNameHintTask": "p. ej. Renovar el pasaporte",
+    "@createActivityNameHintTask": {
+        "description": "Texto de ejemplo del campo de nombre al crear una tarea"
+    },
+    "createActivityRepeatLabel": "Repetir",
+    "@createActivityRepeatLabel": {
+        "description": "Etiqueta de la sección de patrón de repetición al crear un hábito"
+    },
+    "createActivityRepeatDaily": "Todos los días",
+    "@createActivityRepeatDaily": {
+        "description": "Opción para un hábito que se repite todos los días"
+    },
+    "createActivityRepeatWeekdays": "Días concretos",
+    "@createActivityRepeatWeekdays": {
+        "description": "Opción para un hábito que se repite en días concretos de la semana"
+    },
+    "createActivityStartDateLabelHabit": "Empieza el",
+    "@createActivityStartDateLabelHabit": {
+        "description": "Etiqueta del campo de fecha al crear un hábito"
+    },
+    "createActivityStartDateLabelTask": "Fecha",
+    "@createActivityStartDateLabelTask": {
+        "description": "Etiqueta del campo de fecha al crear una tarea"
+    },
+    "createActivitySaveButton": "Guardar",
+    "@createActivitySaveButton": {
+        "description": "Etiqueta del botón que guarda el nuevo hábito/tarea"
+    },
+    "createActivityEndsLabel": "Termina",
+    "@createActivityEndsLabel": {
+        "description": "Etiqueta de la sección de fecha de fin al crear un hábito"
+    },
+    "createActivityEndsNever": "Nunca",
+    "@createActivityEndsNever": {
+        "description": "Se muestra cuando un hábito no tiene fecha de fin, y como opción para quitarla"
+    },
+    "createActivityEndsOnDate": "En una fecha",
+    "@createActivityEndsOnDate": {
+        "description": "Opción para dar a un hábito una fecha de fin concreta"
+    },
+    "createActivityWeekdayWindowWarning": "Ninguno de los días seleccionados cae dentro de este rango: este hábito nunca ocurriría.",
+    "@createActivityWeekdayWindowWarning": {
+        "description": "Aviso mostrado cuando los días de la semana elegidos nunca ocurren entre la fecha de inicio y la de fin"
+    },
+    "createActivitySaveError": "No se pudo guardar. Inténtalo de nuevo.",
+    "@createActivitySaveError": {
+        "description": "Se muestra en un SnackBar cuando falla el guardado del nuevo hábito o tarea"
     }
 }

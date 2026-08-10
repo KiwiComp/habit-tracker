@@ -1,0 +1,104 @@
+import 'package:app_ui/app_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+/// A reference Monday — used only to format each weekday's abbreviated,
+/// locale-correct label (`DateFormat.E()` needs an actual date).
+final DateTime _referenceMonday = DateTime(2024);
+
+/// A row of toggleable chips for picking which weekdays a
+/// `Frequency.weekdays` habit repeats on.
+class WeekdayChipRow extends StatelessWidget {
+  /// Creates a [WeekdayChipRow].
+  const WeekdayChipRow({
+    required this.selected,
+    required this.onToggled,
+    super.key,
+  });
+
+  /// The currently selected weekdays, using `DateTime.monday` (1) through
+  /// `DateTime.sunday` (7).
+  final Set<int> selected;
+
+  /// Called with the weekday that was tapped.
+  final ValueChanged<int> onToggled;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      spacing: context.spacing.xs,
+      children: [
+        for (
+          var weekday = DateTime.monday;
+          weekday <= DateTime.sunday;
+          weekday++
+        )
+          Expanded(
+            child: _WeekdayChip(
+              weekday: weekday,
+              isSelected: selected.contains(weekday),
+              onTap: () => onToggled(weekday),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _WeekdayChip extends StatelessWidget {
+  const _WeekdayChip({
+    required this.weekday,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  final int weekday;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colorScheme;
+
+    final letter = MaterialLocalizations.of(
+      context,
+    ).narrowWeekdays[weekday % DateTime.daysPerWeek];
+
+    final fullName = DateFormat.EEEE().format(
+      _referenceMonday.add(Duration(days: weekday - DateTime.monday)),
+    );
+
+    return Semantics(
+      label: fullName,
+      selected: isSelected,
+      container: true,
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: Material(
+          color: isSelected ? colors.tertiary : Colors.transparent,
+          shape: CircleBorder(
+            side: isSelected
+                ? BorderSide.none
+                : BorderSide(color: colors.outline),
+          ),
+          child: InkWell(
+            onTap: onTap,
+            customBorder: const CircleBorder(),
+            child: Center(
+              child: ExcludeSemantics(
+                child: Text(
+                  letter,
+                  style: AppTextStyle.labelLarge.copyWith(
+                    color: isSelected
+                        ? context.extendedColors.onAccent
+                        : colors.onSurface,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

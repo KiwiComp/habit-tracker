@@ -3,10 +3,11 @@ import 'dart:async';
 import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:habit_tracker/create_activity/create_activity.dart';
 import 'package:habit_tracker/l10n/l10n.dart';
 import 'package:habit_tracker/start_page/bloc/bloc.dart';
-import 'package:habit_tracker/start_page/models/models.dart';
 import 'package:habit_tracker/start_page/widgets/widgets.dart';
+import 'package:habits_repository/habits_repository.dart';
 import 'package:intl/intl.dart';
 
 class StartPage extends StatelessWidget {
@@ -15,24 +16,8 @@ class StartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      // TODO(you): temporary mock data to visually verify ScheduleList.
-      // Remove once a real activity data source exists (see TODO.md).
-      create: (_) => StartBloc()
-        // Mock data for now
-        ..add(
-          StartActivitiesLoaded([
-            Activity(
-              id: '1',
-              title: 'Morning run',
-              date: DateTime(2026, 8, 6, 7),
-            ),
-            Activity(
-              id: '2',
-              title: 'Read 20 pages',
-              date: DateTime(2026, 8, 6, 20),
-            ),
-          ]),
-        ),
+      create: (context) =>
+          StartBloc(habitsRepository: context.read<HabitsRepository>()),
       child: const StartView(),
     );
   }
@@ -59,20 +44,29 @@ class _StartViewState extends State<StartView> {
     unawaited(_daySelectorKey.currentState?.scrollToToday());
   }
 
+  Future<void> _onAddActivityTap(BuildContext context) async {
+    final type = await AddActivitySheet.show(context);
+    if (type == null || !context.mounted) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => CreateActivityPage(initialType: type),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final selectedDate = context.select<StartBloc, DateTime>(
       (bloc) => bloc.state.selectedDate,
     );
-    final activities = context.select<StartBloc, List<Activity>>(
+    final activities = context.select<StartBloc, List<Habit>>(
       (bloc) => bloc.state.activities,
     );
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           tooltip: l10n.startMenuTooltip,
-          // icon: Icon(Icons.menu, color: context.extendedColors.accent),
           icon: Icon(Icons.menu, color: context.colorScheme.tertiary),
           onPressed: () {},
         ),
@@ -109,19 +103,21 @@ class _StartViewState extends State<StartView> {
           Expanded(
             child: activities.isEmpty
                 ? const EmptySchedule()
-                : ScheduleList(activities: activities),
+                : ScheduleList(
+                    activities: activities,
+                    selectedDate: selectedDate,
+                  ),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         tooltip: l10n.startAddActivityTooltip,
-        // backgroundColor: context.extendedColors.accent,
         backgroundColor: context.colorScheme.tertiary,
         foregroundColor: context.colorScheme.onTertiary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(context.radius.lg),
         ),
-        onPressed: () {},
+        onPressed: () => _onAddActivityTap(context),
         child: const Icon(Icons.add),
       ),
       bottomNavigationBar: const _StartNavigationBar(),
@@ -137,7 +133,6 @@ class _StartNavigationBar extends StatelessWidget {
     final l10n = context.l10n;
     Color colorFor(Set<WidgetState> states) {
       return states.contains(WidgetState.selected)
-          // ? context.extendedColors.accent
           ? context.colorScheme.tertiary
           : context.colorScheme.onSurfaceVariant;
     }

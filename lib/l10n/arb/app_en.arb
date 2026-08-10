@@ -39,5 +39,85 @@
     "startAddActivityTooltip": "Add activity",
     "@startAddActivityTooltip": {
         "description": "Tooltip for the floating action button that adds a new activity"
+    },
+    "addActivitySheetTitle": "Add activity",
+    "@addActivitySheetTitle": {
+        "description": "Title of the bottom sheet shown when adding a new activity"
+    },
+    "addActivityHabitTitle": "Habit",
+    "@addActivityHabitTitle": {
+        "description": "Title of the option for adding a recurring habit"
+    },
+    "addActivityHabitSubtitle": "Repeats on a schedule",
+    "@addActivityHabitSubtitle": {
+        "description": "Subtitle of the option for adding a recurring habit"
+    },
+    "addActivityTaskTitle": "Task",
+    "@addActivityTaskTitle": {
+        "description": "Title of the option for adding a one-off task"
+    },
+    "addActivityTaskSubtitle": "Happens once",
+    "@addActivityTaskSubtitle": {
+        "description": "Subtitle of the option for adding a one-off task"
+    },
+    "createActivityAppBarTitle": "New activity",
+    "@createActivityAppBarTitle": {
+        "description": "Title of the AppBar on the create habit/task page"
+    },
+    "createActivityNameLabel": "Name",
+    "@createActivityNameLabel": {
+        "description": "Label for the name text field on the create habit/task page"
+    },
+    "createActivityNameHintHabit": "e.g. Drink water",
+    "@createActivityNameHintHabit": {
+        "description": "Hint text for the name field when creating a habit"
+    },
+    "createActivityNameHintTask": "e.g. Renew passport",
+    "@createActivityNameHintTask": {
+        "description": "Hint text for the name field when creating a task"
+    },
+    "createActivityRepeatLabel": "Repeat",
+    "@createActivityRepeatLabel": {
+        "description": "Label for the repeat-pattern section when creating a habit"
+    },
+    "createActivityRepeatDaily": "Every day",
+    "@createActivityRepeatDaily": {
+        "description": "Option for a habit that repeats every day"
+    },
+    "createActivityRepeatWeekdays": "Specific days",
+    "@createActivityRepeatWeekdays": {
+        "description": "Option for a habit that repeats on specific weekdays"
+    },
+    "createActivityStartDateLabelHabit": "Starts on",
+    "@createActivityStartDateLabelHabit": {
+        "description": "Label for the date field when creating a habit"
+    },
+    "createActivityStartDateLabelTask": "Date",
+    "@createActivityStartDateLabelTask": {
+        "description": "Label for the date field when creating a task"
+    },
+    "createActivitySaveButton": "Save",
+    "@createActivitySaveButton": {
+        "description": "Label for the button that saves the new habit/task"
+    },
+    "createActivityEndsLabel": "Ends",
+    "@createActivityEndsLabel": {
+        "description": "Label for the end-date section when creating a habit"
+    },
+    "createActivityEndsNever": "Never",
+    "@createActivityEndsNever": {
+        "description": "Shown when a habit has no end date, and as the option to clear one"
+    },
+    "createActivityEndsOnDate": "On a date",
+    "@createActivityEndsOnDate": {
+        "description": "Option to give a habit a specific end date"
+    },
+    "createActivityWeekdayWindowWarning": "None of the selected days fall within this range — this habit would never occur.",
+    "@createActivityWeekdayWindowWarning": {
+        "description": "Warning shown when the chosen weekdays never occur between the start and end date"
+    },
+    "createActivitySaveError": "Couldn't save. Please try again.",
+    "@createActivitySaveError": {
+        "description": "Shown in a SnackBar when saving the new habit/task fails"
     }
 }

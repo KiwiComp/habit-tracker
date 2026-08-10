@@ -1,4 +1,4 @@
-import 'package:habit_tracker/start_page/models/models.dart';
+import 'package:habits_repository/habits_repository.dart';
 import 'package:meta/meta.dart';
 
 /// The state of `StartBloc`.
@@ -13,14 +13,11 @@ final class StartState {
   /// The currently selected day.
   final DateTime selectedDate;
 
-  /// The activities scheduled for [selectedDate].
-  ///
-  /// Empty until something populates it — there's no data source wired up
-  /// yet. See `StartActivitiesLoaded`.
-  final List<Activity> activities;
+  /// The habits scheduled for [selectedDate] — see `StartActivitiesLoaded`.
+  final List<Habit> activities;
 
   /// Returns a copy of this state with the given fields replaced.
-  StartState copyWith({DateTime? selectedDate, List<Activity>? activities}) {
+  StartState copyWith({DateTime? selectedDate, List<Habit>? activities}) {
     return StartState(
       selectedDate: selectedDate ?? this.selectedDate,
       activities: activities ?? this.activities,
@@ -37,7 +34,7 @@ final class StartState {
   @override
   int get hashCode => Object.hash(selectedDate, Object.hashAll(activities));
 
-  bool _activitiesEqual(List<Activity> a, List<Activity> b) {
+  bool _activitiesEqual(List<Habit> a, List<Habit> b) {
     if (a.length != b.length) return false;
     for (var i = 0; i < a.length; i++) {
       if (a[i] != b[i]) return false;
