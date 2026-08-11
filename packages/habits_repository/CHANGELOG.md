@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.0+4
+
+- Add `HabitsRepository.getHabit(String id)`, a one-shot lookup by id — needed by the new go_router-based habit/task detail routes, which must be able to self-load from a bare id (e.g. a tapped notification with no in-app origin).
+- Add `Habit.isTask` (`frequency == Frequency.once`), a readability helper for call sites choosing between the habit and task routes.
+
 ## 0.1.0+3
 
 - `createHabit` now accepts an optional `endDate`, matching `Habit`'s constructor. Previously only settable after creation via `updateHabit`.

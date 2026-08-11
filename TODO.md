@@ -66,11 +66,15 @@ Flagged, not decided: whether an ended habit should disappear from the main
 list, move to a distinct archived/ended section, or stay visible with its
 history and streak stats intact.
 
-## Habits tab
+## Habits tab — resolved 2026-08-11
 
-The bottom nav on the start screen (`lib/start_page/view/start_page.dart`)
-shows a "Habits" destination, but there's no Habits page or route behind it
-yet — tapping it currently does nothing.
+Resolved by the `go_router` migration (`ROUTING.md`): the bottom nav now
+lives in `lib/routing/widgets/shell_scaffold.dart`, with a real third
+`Tasks` destination alongside it, and `Habits`/`Tasks` tap through to
+`HabitsListPage`/`TasksListPage` (routes `/habits`/`/tasks`). Both list
+pages are still functional placeholders — a bare `ListTile` per habit/task,
+name-only — same caveat as `ScheduleList` below; revisit once a design
+exists.
 
 ## ScheduleList still has placeholder gaps
 
@@ -94,17 +98,40 @@ things are still placeholder, though:
   that entry is about a habits-*list* view, not this one; `isScheduledOn`
   (which `StartBloc` uses) already excludes an ended habit correctly.
 
-## ScheduleList items aren't tappable yet
+## ScheduleList items aren't tappable yet — resolved 2026-08-11
 
-Each item in `ScheduleList` is meant to be tappable, opening a detail view
-with the full habit/task information. `ScheduleList` already renders `Habit`
-directly (see above), so no model change is needed for this — on tap, pass
-the tapped item's `habit.id` forward to a detail page/route, which watches
-the full `Habit` live from `HabitsRepository` rather than receiving a static
-snapshot, consistent with how the rest of the app streams from the
-repository (`StartBloc`, eventually a habits-list view). This needs a
-`watchHabit(id)`-style method on `HabitsRepository`, which doesn't exist yet
-(only `watchHabits()`, returning everything, does).
+Resolved by the `go_router` migration (`ROUTING.md`): each `ScheduleList`
+row now pushes `/habit/:id` or `/task/:id` (chosen via the new `Habit.isTask`
+helper), landing on `HabitPage`/`TaskPage`. Those load by a **one-shot**
+`HabitsRepository.getHabit(id)` rather than a `watchHabit(id)` stream — a
+deliberate choice, not an oversight: the page is a full-screen modal, so
+it's the only possible writer of the habit while open, and a tapped
+notification (planned) opens the app cold with only an id, which a static
+`extra` payload can't serve. See `ROUTING.md`'s "Data loading" section for
+the full reasoning.
+
+Both pages are still stubs — they confirm the *right* entity loaded (show
+its name) but have no edit form yet. That's the next gap, tracked below.
+
+## HabitPage / TaskPage have no edit form yet
+
+`ROUTING.md`'s routing migration deliberately stopped short of building
+the edit section itself (form fields, Save, validation, save→pop-on-success)
+for `HabitPage`/`TaskPage` — see its "Build order" step 3. Both pages
+currently just load the habit/task by id and show its name.
+`CreateActivityBloc`'s save/error shape (status enum + `BlocListener` +
+SnackBar-on-failure, see its handler in
+`lib/create_activity/bloc/create_activity_bloc.dart`) is the intended
+pattern to reuse once this gets built.
+
+## New feature folders' blocs/widgets have no tests yet
+
+The `go_router` migration (`ROUTING.md`) added `HabitsListBloc`,
+`TasksListBloc`, `HabitBloc`, `TaskBloc`, `HabitListTile`, `TaskListTile`,
+and the `ShellScaffold`/`GoRouter` wiring in `lib/routing/` — none have
+tests yet, deferred alongside the rest of these still-undesigned screens
+(same standing decision as `create_activity`'s test suite, above). Write
+these together once each screen gets a real design pass.
 
 ## habits_repository coverage gap
 
@@ -124,3 +151,57 @@ from `lib/l10n/arb/app_en.arb`/`app_es.arb` in this pass. `README.md`'s
 "Working with Translations" walkthrough was still using `counterAppBarTitle`
 as its example key (and only listed `en`/`es`, not the newly-added `sv`) —
 updated to use `helloWorld` instead and to reflect all three locales.
+
+## AppBar + "jump to today" FAB (part of the go_router migration)
+
+Planned alongside the routing restructure in `ROUTING.md` (kept out of that
+file — it's chrome, not routing). **Do this *after* the go_router shell
+exists**, not before: the routing work moves the add-activity FAB off
+`StartPage`'s `Scaffold` and onto the shell, which frees `StartPage`'s
+`Scaffold` for the new FAB below. Doing it earlier forces a throwaway
+two-FABs-on-one-`Scaffold` layout that gets torn apart once the add FAB
+relocates.
+
+**Status as of the shell landing (2026-08-11): the FAB hasn't moved yet.**
+`ROUTING.md` ended up explicitly scoping the add-activity FAB's relocation
+*out* of the routing migration itself (it's chrome, not routing — same
+reasoning as this whole section being kept out of `ROUTING.md`). The
+add-activity FAB is still on `StartPage`'s `Scaffold`, just retargeted to
+`context.push('/create', extra: type)`; only the bottom nav bar moved to
+`lib/routing/widgets/shell_scaffold.dart`. So this task still needs to do
+the FAB relocation itself, not assume it's already done.
+
+**Shared `HabitTrackerAppBar` widget.** One `PreferredSizeWidget` with the
+leading (menu) button and the actions (search, calendar-view, help) defined
+*once*, so they're identical on every tab and any action wired up later behaves
+the same app-wide. It takes a `title` parameter; each tab's `Scaffold` uses it.
+No tab has a *tappable* title (see the FAB below) — the title is display-only:
+
+- **Today:** the selected date, read from the page-local `StartBloc`
+  (`selectedDate`), so it updates as the day changes.
+- **Habits / Tasks:** the tab name (`"Habits"` / `"Tasks"`) — add l10n keys,
+  don't hardcode.
+
+Only meaningful once a second tab (`HabitsListPage`) exists to share it, so extract
+it during the routing work, not before.
+
+**"Jump to today" FAB.** Replaces the old tappable-title action. Lives inside
+`StartPage` (owns its behaviour), positioned bottom-left
+(`FloatingActionButtonLocation.startFloat`, not "left", for RTL-correctness),
+paired with the shell's bottom-right add FAB. Visible only when the selected
+date is not today (date-only comparison, matching `habits_repository`'s
+`dateOnly` discipline); hidden when today is selected. On press it does what the
+title's `onTap` does today (`_onDateTitleTap`): select today + scroll the
+`DaySelector` to today via the existing `GlobalKey`. That logic transplants
+directly from the title to the FAB.
+
+Details still open / to watch:
+
+- **Icon** — e.g. `Icons.today` or `Icons.event` (undecided).
+- **Two FABs on two `Scaffold`s** (add on the shell, jump on `StartPage`) should
+  align vertically since the page `Scaffold` sits above the shell's nav bar —
+  verify visually when implementing; if they don't align, the fallback (both on
+  one `Scaffold`) re-introduces `StartBloc` coupling we're avoiding.
+- **Midnight rollover** — the FAB's visibility is relative to "today" and won't
+  recompute on its own if the app sits open past midnight (same edge as the
+  `ScheduleList` entry above).

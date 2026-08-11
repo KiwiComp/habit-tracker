@@ -4,6 +4,7 @@
     "startEmptyScheduleSubtitle": "Prueba añadiendo nuevas actividades",
     "startNavToday": "Hoy",
     "startNavHabits": "Hábitos",
+    "startNavTasks": "Tareas",
     "startMenuTooltip": "Menú",
     "startSearchTooltip": "Buscar",
     "startCalendarViewTooltip": "Vista de calendario",
@@ -29,5 +30,7 @@
     "createActivityEndsNever": "Nunca",
     "createActivityEndsOnDate": "En una fecha",
     "createActivityWeekdayWindowWarning": "Ninguno de los días seleccionados cae dentro de este rango: este hábito nunca ocurriría.",
-    "createActivitySaveError": "No se pudo guardar. Inténtalo de nuevo."
+    "createActivitySaveError": "No se pudo guardar. Inténtalo de nuevo.",
+    "habitPageNotFoundMessage": "Hábito no encontrado",
+    "taskPageNotFoundMessage": "Tarea no encontrada"
 }

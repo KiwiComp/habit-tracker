@@ -52,6 +52,9 @@ class Habit {
   /// Whether this habit has been archived.
   bool get isArchived => archivedAt != null;
 
+  /// Whether this is a one-off task rather than a recurring habit.
+  bool get isTask => frequency == Frequency.once;
+
   /// Whether this habit is due on [date] according to its schedule.
   ///
   /// The calendar is rendered from this rather than from stored rows — no

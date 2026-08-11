@@ -31,6 +31,18 @@ class HabitsRepository {
     return query.watch().map((rows) => rows.map(_habitFromRow).toList());
   }
 
+  /// Reads [id] once, or `null` if no habit with that id exists.
+  ///
+  /// One-shot rather than a stream: the pages that call this are the only
+  /// possible writer of the habit while they're open, so there's nothing
+  /// external to watch for.
+  Future<Habit?> getHabit(String id) async {
+    final query = _database.select(_database.habitsTable)
+      ..where((table) => table.id.equals(id));
+    final row = await query.getSingleOrNull();
+    return row == null ? null : _habitFromRow(row);
+  }
+
   /// Creates a new habit and returns it.
   ///
   /// Returns the persisted row via `insertReturning` rather than the

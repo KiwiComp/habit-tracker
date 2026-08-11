@@ -13,6 +13,7 @@ class ScheduleList extends StatelessWidget {
   const ScheduleList({
     required this.activities,
     required this.selectedDate,
+    required this.onActivityTap,
     super.key,
   });
 
@@ -22,9 +23,12 @@ class ScheduleList extends StatelessWidget {
   /// The day [activities] are scheduled for.
   ///
   /// `Habit` has no time-of-day of its own, so this is shown for every row
-  /// rather than a per-item time — see todo.md's "ScheduleList items aren't
-  /// tappable yet" for what's still placeholder here.
+  /// rather than a per-item time — see todo.md's "ScheduleList still has
+  /// placeholder gaps" for what's still placeholder here.
   final DateTime selectedDate;
+
+  /// Called with the tapped row's habit, to open its detail page.
+  final ValueChanged<Habit> onActivityTap;
 
   @override
   Widget build(BuildContext context) {
@@ -37,17 +41,26 @@ class ScheduleList extends StatelessWidget {
       separatorBuilder: (_, _) => SizedBox(height: context.spacing.sm),
       itemBuilder: (context, index) {
         final habit = activities[index];
-        return _HabitTile(habit: habit, selectedDate: selectedDate);
+        return _HabitTile(
+          habit: habit,
+          selectedDate: selectedDate,
+          onTap: () => onActivityTap(habit),
+        );
       },
     );
   }
 }
 
 class _HabitTile extends StatelessWidget {
-  const _HabitTile({required this.habit, required this.selectedDate});
+  const _HabitTile({
+    required this.habit,
+    required this.selectedDate,
+    required this.onTap,
+  });
 
   final Habit habit;
   final DateTime selectedDate;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -61,32 +74,36 @@ class _HabitTile extends StatelessWidget {
           ? colors.tertiary.withAlpha(40)
           : colors.tertiary.withAlpha(150),
       borderRadius: BorderRadius.circular(context.radius.md),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: context.spacing.md,
-          vertical: context.spacing.md,
-        ),
-        child: Row(
-          mainAxisAlignment: .spaceBetween,
-          children: [
-            Row(
-              spacing: context.spacing.sm,
-              children: [
-                Icon(
-                  habit.frequency == Frequency.once
-                      ? Icons.task_alt_outlined
-                      : Icons.military_tech_outlined,
-                  color: foregroundColor,
-                ),
-                Text(
-                  habit.name,
-                  style: AppTextStyle.titleMedium.copyWith(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(context.radius.md),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.spacing.md,
+            vertical: context.spacing.md,
+          ),
+          child: Row(
+            mainAxisAlignment: .spaceBetween,
+            children: [
+              Row(
+                spacing: context.spacing.sm,
+                children: [
+                  Icon(
+                    habit.frequency == Frequency.once
+                        ? Icons.task_alt_outlined
+                        : Icons.military_tech_outlined,
                     color: foregroundColor,
                   ),
-                ),
-              ],
-            ),
-          ],
+                  Text(
+                    habit.name,
+                    style: AppTextStyle.titleMedium.copyWith(
+                      color: foregroundColor,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

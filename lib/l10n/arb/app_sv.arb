@@ -4,6 +4,7 @@
     "startEmptyScheduleSubtitle": "Prova att lägga till nya aktiviteter",
     "startNavToday": "Idag",
     "startNavHabits": "Vanor",
+    "startNavTasks": "Uppgifter",
     "startMenuTooltip": "Meny",
     "startSearchTooltip": "Sök",
     "startCalendarViewTooltip": "Kalendervy",
@@ -29,5 +30,7 @@
     "createActivityEndsNever": "Aldrig",
     "createActivityEndsOnDate": "På ett datum",
     "createActivityWeekdayWindowWarning": "Ingen av de valda dagarna faller inom det här intervallet – vanan skulle aldrig inträffa.",
-    "createActivitySaveError": "Kunde inte spara. Försök igen."
+    "createActivitySaveError": "Kunde inte spara. Försök igen.",
+    "habitPageNotFoundMessage": "Vanan hittades inte",
+    "taskPageNotFoundMessage": "Uppgiften hittades inte"
 }
