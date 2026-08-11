@@ -128,10 +128,12 @@ pattern to reuse once this gets built.
 
 The `go_router` migration (`ROUTING.md`) added `HabitsListBloc`,
 `TasksListBloc`, `HabitBloc`, `TaskBloc`, `HabitListTile`, `TaskListTile`,
-and the `ShellScaffold`/`GoRouter` wiring in `lib/routing/` — none have
-tests yet, deferred alongside the rest of these still-undesigned screens
-(same standing decision as `create_activity`'s test suite, above). Write
-these together once each screen gets a real design pass.
+and the `ShellScaffold`/`GoRouter` wiring in `lib/routing/`; the AppBar/FAB
+follow-up added `HabitTrackerAppBar` (`lib/widgets/`) and the shell's
+add-activity FAB. None have tests yet, deferred alongside the rest of these
+still-undesigned screens (same standing decision as `create_activity`'s
+test suite, above). Write these together once each screen gets a real
+design pass.
 
 ## habits_repository coverage gap
 
@@ -152,24 +154,14 @@ from `lib/l10n/arb/app_en.arb`/`app_es.arb` in this pass. `README.md`'s
 as its example key (and only listed `en`/`es`, not the newly-added `sv`) —
 updated to use `helloWorld` instead and to reflect all three locales.
 
-## AppBar + "jump to today" FAB (part of the go_router migration)
+## AppBar + "jump to today" FAB — resolved 2026-08-11
 
 Planned alongside the routing restructure in `ROUTING.md` (kept out of that
-file — it's chrome, not routing). **Do this *after* the go_router shell
-exists**, not before: the routing work moves the add-activity FAB off
-`StartPage`'s `Scaffold` and onto the shell, which frees `StartPage`'s
-`Scaffold` for the new FAB below. Doing it earlier forces a throwaway
-two-FABs-on-one-`Scaffold` layout that gets torn apart once the add FAB
-relocates.
-
-**Status as of the shell landing (2026-08-11): the FAB hasn't moved yet.**
-`ROUTING.md` ended up explicitly scoping the add-activity FAB's relocation
-*out* of the routing migration itself (it's chrome, not routing — same
-reasoning as this whole section being kept out of `ROUTING.md`). The
-add-activity FAB is still on `StartPage`'s `Scaffold`, just retargeted to
-`context.push('/create', extra: type)`; only the bottom nav bar moved to
-`lib/routing/widgets/shell_scaffold.dart`. So this task still needs to do
-the FAB relocation itself, not assume it's already done.
+file — it's chrome, not routing). Landed after the go_router shell (the
+`ROUTING.md` migration had explicitly scoped this relocation *out* of
+routing itself), so it could move the add-activity FAB off `StartPage`'s
+`Scaffold` onto the shell without a throwaway two-FABs-on-one-`Scaffold`
+layout.
 
 **Shared `HabitTrackerAppBar` widget.** One `PreferredSizeWidget` with the
 leading (menu) button and the actions (search, calendar-view, help) defined
@@ -185,6 +177,25 @@ No tab has a *tappable* title (see the FAB below) — the title is display-only:
 Only meaningful once a second tab (`HabitsListPage`) exists to share it, so extract
 it during the routing work, not before.
 
+**Location: `lib/widgets/habit_tracker_app_bar.dart`** — a shared, app-level
+widgets folder (this is the first genuinely cross-feature widget, so it creates
+that bucket). Deliberately *not* the two homes first considered:
+
+- *Not* `lib/routing/widgets/` (next to `shell_scaffold.dart`): the shell does
+  **not** own the app bar — each tab page renders its own via
+  `appBar: HabitTrackerAppBar(...)`. Colocating with the shell would signal a
+  coupling we deliberately avoided (the per-page setup exists precisely because
+  the Today title couples to `StartBloc`).
+- *Not* a `lib/app_bar/` feature folder: it's a single stateless
+  `PreferredSizeWidget`, not a screen — no bloc/view/widgets split to justify a
+  feature folder.
+
+It stays in `lib/` rather than `packages/app_ui/` because it uses the app's
+l10n tooltips and app-specific nav actions (search / calendar-view / help),
+which `app_ui` — a standalone, generic design-system package — has no access
+to. Putting it inside any one feature (e.g. `start_page/widgets/`) is also out,
+since `habits_list`/`tasks_list` would then have to depend on that feature.
+
 **"Jump to today" FAB.** Replaces the old tappable-title action. Lives inside
 `StartPage` (owns its behaviour), positioned bottom-left
 (`FloatingActionButtonLocation.startFloat`, not "left", for RTL-correctness),
@@ -195,13 +206,20 @@ title's `onTap` does today (`_onDateTitleTap`): select today + scroll the
 `DaySelector` to today via the existing `GlobalKey`. That logic transplants
 directly from the title to the FAB.
 
-Details still open / to watch:
+**Icon:** `Icons.today` — reads specifically as "go to today" rather than a
+generic calendar/event glyph.
 
-- **Icon** — e.g. `Icons.today` or `Icons.event` (undecided).
-- **Two FABs on two `Scaffold`s** (add on the shell, jump on `StartPage`) should
-  align vertically since the page `Scaffold` sits above the shell's nav bar —
-  verify visually when implementing; if they don't align, the fallback (both on
-  one `Scaffold`) re-introduces `StartBloc` coupling we're avoiding.
+**Alignment:** the two FABs (`endFloat` on the shell, `startFloat` on
+`StartPage`) weren't verified by tapping through the simulator — terminal
+Accessibility access wasn't available in the environment this landed in, so
+taps couldn't be simulated there. Verified instead via a temporary widget
+test (both FABs' presence/absence toggling correctly with the selected
+date) plus reasoning that both use `Scaffold`'s standard FAB positioning
+(not custom layout code), which aligns them by construction. Worth an
+actual glance next time this screen is open on a device/simulator.
+
+Still open:
+
 - **Midnight rollover** — the FAB's visibility is relative to "today" and won't
   recompute on its own if the app sits open past midnight (same edge as the
   `ScheduleList` entry above).

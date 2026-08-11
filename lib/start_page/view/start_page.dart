@@ -6,7 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:habit_tracker/l10n/l10n.dart';
 import 'package:habit_tracker/start_page/bloc/bloc.dart';
+import 'package:habit_tracker/start_page/utils/date_time_x.dart';
 import 'package:habit_tracker/start_page/widgets/widgets.dart';
+import 'package:habit_tracker/widgets/widgets.dart';
 import 'package:habits_repository/habits_repository.dart';
 import 'package:intl/intl.dart';
 
@@ -38,16 +40,10 @@ class _StartViewState extends State<StartView> {
   final GlobalKey<DaySelectorState> _daySelectorKey =
       GlobalKey<DaySelectorState>();
 
-  void _onDateTitleTap() {
+  void _onJumpToTodayTap() {
     final today = DateTime.now();
     context.read<StartBloc>().add(StartDaySelected(today));
     unawaited(_daySelectorKey.currentState?.scrollToToday());
-  }
-
-  Future<void> _onAddActivityTap(BuildContext context) async {
-    final type = await AddActivitySheet.show(context);
-    if (type == null || !context.mounted) return;
-    await context.push('/create', extra: type);
   }
 
   @override
@@ -59,43 +55,14 @@ class _StartViewState extends State<StartView> {
     final activities = context.select<StartBloc, List<Habit>>(
       (bloc) => bloc.state.activities,
     );
+    final isToday = selectedDate.isSameDayAs(DateTime.now());
+
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          tooltip: l10n.startMenuTooltip,
-          icon: Icon(Icons.menu, color: context.colorScheme.tertiary),
-          onPressed: () {},
-        ),
-        title: InkWell(
-          onTap: _onDateTitleTap,
-          borderRadius: BorderRadius.circular(context.radius.sm),
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: context.spacing.xs),
-            child: Text(
-              DateFormat(
-                'd MMM yyyy',
-                context.locale.toString(),
-              ).format(selectedDate),
-            ),
-          ),
-        ),
-        actions: [
-          IconButton(
-            tooltip: l10n.startSearchTooltip,
-            icon: const Icon(Icons.search),
-            onPressed: () {},
-          ),
-          IconButton(
-            tooltip: l10n.startCalendarViewTooltip,
-            icon: const Icon(Icons.calendar_view_month_outlined),
-            onPressed: () {},
-          ),
-          IconButton(
-            tooltip: l10n.startHelpTooltip,
-            icon: const Icon(Icons.help_outline),
-            onPressed: () {},
-          ),
-        ],
+      appBar: HabitTrackerAppBar(
+        title: DateFormat(
+          'd MMM yyyy',
+          context.locale.toString(),
+        ).format(selectedDate),
       ),
       body: Column(
         children: [
@@ -114,16 +81,19 @@ class _StartViewState extends State<StartView> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        tooltip: l10n.startAddActivityTooltip,
-        backgroundColor: context.colorScheme.tertiary,
-        foregroundColor: context.colorScheme.onTertiary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(context.radius.lg),
-        ),
-        onPressed: () => _onAddActivityTap(context),
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: isToday
+          ? null
+          : FloatingActionButton(
+              tooltip: l10n.startJumpToTodayTooltip,
+              backgroundColor: context.colorScheme.tertiary,
+              foregroundColor: context.colorScheme.onTertiary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(context.radius.lg),
+              ),
+              onPressed: _onJumpToTodayTap,
+              child: const Icon(Icons.today),
+            ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
 }

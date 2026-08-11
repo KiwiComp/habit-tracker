@@ -10,6 +10,7 @@
     "startCalendarViewTooltip": "Vista de calendario",
     "startHelpTooltip": "Ayuda",
     "startAddActivityTooltip": "Añadir actividad",
+    "startJumpToTodayTooltip": "Ir a hoy",
     "addActivitySheetTitle": "Añadir actividad",
     "addActivityHabitTitle": "Hábito",
     "addActivityHabitSubtitle": "Se repite según un horario",

@@ -40,6 +40,10 @@
     "@startAddActivityTooltip": {
         "description": "Tooltip for the floating action button that adds a new activity"
     },
+    "startJumpToTodayTooltip": "Jump to today",
+    "@startJumpToTodayTooltip": {
+        "description": "Tooltip for the floating action button that jumps back to today, shown only when a different day is selected"
+    },
     "addActivitySheetTitle": "Add activity",
     "@addActivitySheetTitle": {
         "description": "Title of the bottom sheet shown when adding a new activity"

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:habit_tracker/l10n/l10n.dart';
 import 'package:habit_tracker/tasks_list/bloc/bloc.dart';
 import 'package:habit_tracker/tasks_list/widgets/widgets.dart';
+import 'package:habit_tracker/widgets/widgets.dart';
 import 'package:habits_repository/habits_repository.dart';
 
 /// The Tasks tab (route `/tasks`): every one-off task, tap to open its
@@ -32,7 +33,7 @@ class _TasksListView extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.startNavTasks)),
+      appBar: HabitTrackerAppBar(title: context.l10n.startNavTasks),
       body: ListView.builder(
         itemCount: tasks.length,
         itemBuilder: (context, index) {

@@ -2,11 +2,14 @@ import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:habit_tracker/l10n/l10n.dart';
+import 'package:habit_tracker/start_page/widgets/widgets.dart';
 
 /// The shell scaffold behind `StatefulShellRoute.indexedStack`.
 ///
-/// Owns the bottom nav bar shared across the Today/Habits/Tasks tabs — see
-/// `ROUTING.md`. Switching tabs goes through `navigationShell.goBranch`,
+/// Owns the chrome shared across the Today/Habits/Tasks tabs — see
+/// `ROUTING.md` and `TODO.md`'s "AppBar + jump to today FAB" entry: the
+/// bottom nav bar, and the add-activity FAB (available from any tab, not
+/// just Today). Switching tabs goes through `navigationShell.goBranch`,
 /// never `context.go`, so each branch's stack and state survive the switch.
 class ShellScaffold extends StatelessWidget {
   /// Creates a [ShellScaffold] wrapping [navigationShell].
@@ -15,10 +18,26 @@ class ShellScaffold extends StatelessWidget {
   /// The shell's navigation state, supplied by `StatefulShellRoute`.
   final StatefulNavigationShell navigationShell;
 
+  Future<void> _onAddActivityTap(BuildContext context) async {
+    final type = await AddActivitySheet.show(context);
+    if (type == null || !context.mounted) return;
+    await context.push('/create', extra: type);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: navigationShell,
+      floatingActionButton: FloatingActionButton(
+        tooltip: context.l10n.startAddActivityTooltip,
+        backgroundColor: context.colorScheme.tertiary,
+        foregroundColor: context.colorScheme.onTertiary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(context.radius.lg),
+        ),
+        onPressed: () => _onAddActivityTap(context),
+        child: const Icon(Icons.add),
+      ),
       bottomNavigationBar: _ShellNavigationBar(
         navigationShell: navigationShell,
       ),

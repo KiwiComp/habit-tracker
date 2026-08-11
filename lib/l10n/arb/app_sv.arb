@@ -10,6 +10,7 @@
     "startCalendarViewTooltip": "Kalendervy",
     "startHelpTooltip": "Hjälp",
     "startAddActivityTooltip": "Lägg till aktivitet",
+    "startJumpToTodayTooltip": "Hoppa till idag",
     "addActivitySheetTitle": "Lägg till aktivitet",
     "addActivityHabitTitle": "Vana",
     "addActivityHabitSubtitle": "Upprepas enligt ett schema",
