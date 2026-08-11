@@ -25,6 +25,12 @@ class _AppState extends State<App> {
   late final GoRouter _router = buildAppRouter();
 
   @override
+  void dispose() {
+    _router.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return RepositoryProvider(
       create: (_) => widget._habitsRepository ?? HabitsRepository(),
