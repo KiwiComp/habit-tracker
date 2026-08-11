@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:habit_tracker/create_activity/create_activity.dart';
+import 'package:go_router/go_router.dart';
 import 'package:habit_tracker/l10n/l10n.dart';
 import 'package:habit_tracker/start_page/bloc/bloc.dart';
+import 'package:habit_tracker/start_page/utils/date_time_x.dart';
 import 'package:habit_tracker/start_page/widgets/widgets.dart';
+import 'package:habit_tracker/widgets/widgets.dart';
 import 'package:habits_repository/habits_repository.dart';
 import 'package:intl/intl.dart';
 
@@ -38,20 +40,10 @@ class _StartViewState extends State<StartView> {
   final GlobalKey<DaySelectorState> _daySelectorKey =
       GlobalKey<DaySelectorState>();
 
-  void _onDateTitleTap() {
+  void _onJumpToTodayTap() {
     final today = DateTime.now();
     context.read<StartBloc>().add(StartDaySelected(today));
     unawaited(_daySelectorKey.currentState?.scrollToToday());
-  }
-
-  Future<void> _onAddActivityTap(BuildContext context) async {
-    final type = await AddActivitySheet.show(context);
-    if (type == null || !context.mounted) return;
-    await Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => CreateActivityPage(initialType: type),
-      ),
-    );
   }
 
   @override
@@ -63,41 +55,14 @@ class _StartViewState extends State<StartView> {
     final activities = context.select<StartBloc, List<Habit>>(
       (bloc) => bloc.state.activities,
     );
+    final isToday = selectedDate.isSameDayAs(DateTime.now());
+
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          tooltip: l10n.startMenuTooltip,
-          icon: Icon(Icons.menu, color: context.colorScheme.tertiary),
-          onPressed: () {},
-        ),
-        title: InkWell(
-          onTap: _onDateTitleTap,
-          borderRadius: BorderRadius.circular(context.radius.sm),
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: context.spacing.xs),
-            child: Text(
-              DateFormat('d MMM yyyy', context.locale.toString())
-                  .format(selectedDate),
-            ),
-          ),
-        ),
-        actions: [
-          IconButton(
-            tooltip: l10n.startSearchTooltip,
-            icon: const Icon(Icons.search),
-            onPressed: () {},
-          ),
-          IconButton(
-            tooltip: l10n.startCalendarViewTooltip,
-            icon: const Icon(Icons.calendar_view_month_outlined),
-            onPressed: () {},
-          ),
-          IconButton(
-            tooltip: l10n.startHelpTooltip,
-            icon: const Icon(Icons.help_outline),
-            onPressed: () {},
-          ),
-        ],
+      appBar: HabitTrackerAppBar(
+        title: DateFormat(
+          'd MMM yyyy',
+          context.locale.toString(),
+        ).format(selectedDate),
       ),
       body: Column(
         children: [
@@ -109,61 +74,26 @@ class _StartViewState extends State<StartView> {
                 : ScheduleList(
                     activities: activities,
                     selectedDate: selectedDate,
+                    onActivityTap: (habit) => context.push(
+                      habit.isTask ? '/task/${habit.id}' : '/habit/${habit.id}',
+                    ),
                   ),
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        tooltip: l10n.startAddActivityTooltip,
-        backgroundColor: context.colorScheme.tertiary,
-        foregroundColor: context.colorScheme.onTertiary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(context.radius.lg),
-        ),
-        onPressed: () => _onAddActivityTap(context),
-        child: const Icon(Icons.add),
-      ),
-      bottomNavigationBar: const _StartNavigationBar(),
-    );
-  }
-}
-
-class _StartNavigationBar extends StatelessWidget {
-  const _StartNavigationBar();
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    Color colorFor(Set<WidgetState> states) {
-      return states.contains(WidgetState.selected)
-          ? context.colorScheme.tertiary
-          : context.colorScheme.onSurfaceVariant;
-    }
-
-    return NavigationBarTheme(
-      data: NavigationBarThemeData(
-        iconTheme: WidgetStateProperty.resolveWith(
-          (states) => IconThemeData(color: colorFor(states)),
-        ),
-        labelTextStyle: WidgetStateProperty.resolveWith(
-          (states) =>
-              AppTextStyle.labelMedium.copyWith(color: colorFor(states)),
-        ),
-      ),
-      child: NavigationBar(
-        onDestinationSelected: (_) {},
-        indicatorColor: Colors.transparent,
-        destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.event_available_outlined),
-            label: l10n.startNavToday,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.military_tech_outlined),
-            label: l10n.startNavHabits,
-          ),
-        ],
-      ),
+      floatingActionButton: isToday
+          ? null
+          : FloatingActionButton(
+              tooltip: l10n.startJumpToTodayTooltip,
+              backgroundColor: context.colorScheme.tertiary,
+              foregroundColor: context.colorScheme.onTertiary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(context.radius.lg),
+              ),
+              onPressed: _onJumpToTodayTap,
+              child: const Icon(Icons.today),
+            ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
 }

@@ -16,6 +16,10 @@
     "@startNavHabits": {
         "description": "Label for the Habits tab in the bottom navigation bar"
     },
+    "startNavTasks": "Tasks",
+    "@startNavTasks": {
+        "description": "Label for the Tasks tab in the bottom navigation bar"
+    },
     "startMenuTooltip": "Menu",
     "@startMenuTooltip": {
         "description": "Tooltip for the AppBar's menu button"
@@ -35,6 +39,10 @@
     "startAddActivityTooltip": "Add activity",
     "@startAddActivityTooltip": {
         "description": "Tooltip for the floating action button that adds a new activity"
+    },
+    "startJumpToTodayTooltip": "Jump to today",
+    "@startJumpToTodayTooltip": {
+        "description": "Tooltip for the floating action button that jumps back to today, shown only when a different day is selected"
     },
     "addActivitySheetTitle": "Add activity",
     "@addActivitySheetTitle": {
@@ -119,5 +127,13 @@
     "createActivitySaveError": "Couldn't save. Please try again.",
     "@createActivitySaveError": {
         "description": "Shown in a SnackBar when saving the new habit/task fails"
+    },
+    "habitPageNotFoundMessage": "Habit not found",
+    "@habitPageNotFoundMessage": {
+        "description": "Shown on the habit detail page when no habit exists for the given id"
+    },
+    "taskPageNotFoundMessage": "Task not found",
+    "@taskPageNotFoundMessage": {
+        "description": "Shown on the task detail page when no task exists for the given id"
     }
 }

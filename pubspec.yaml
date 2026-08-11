@@ -23,6 +23,7 @@ dependencies:
   flutter_bloc: ^9.1.1
   flutter_localizations:
     sdk: flutter
+  go_router: ^16.2.4
   habits_repository:
     path: packages/habits_repository
   intl: ^0.20.2

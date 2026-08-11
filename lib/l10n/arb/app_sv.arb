@@ -4,11 +4,13 @@
     "startEmptyScheduleSubtitle": "Prova att lägga till nya aktiviteter",
     "startNavToday": "Idag",
     "startNavHabits": "Vanor",
+    "startNavTasks": "Uppgifter",
     "startMenuTooltip": "Meny",
     "startSearchTooltip": "Sök",
     "startCalendarViewTooltip": "Kalendervy",
     "startHelpTooltip": "Hjälp",
     "startAddActivityTooltip": "Lägg till aktivitet",
+    "startJumpToTodayTooltip": "Hoppa till idag",
     "addActivitySheetTitle": "Lägg till aktivitet",
     "addActivityHabitTitle": "Vana",
     "addActivityHabitSubtitle": "Upprepas enligt ett schema",
@@ -29,5 +31,7 @@
     "createActivityEndsNever": "Aldrig",
     "createActivityEndsOnDate": "På ett datum",
     "createActivityWeekdayWindowWarning": "Ingen av de valda dagarna faller inom det här intervallet – vanan skulle aldrig inträffa.",
-    "createActivitySaveError": "Kunde inte spara. Försök igen."
+    "createActivitySaveError": "Kunde inte spara. Försök igen.",
+    "habitPageNotFoundMessage": "Vanan hittades inte",
+    "taskPageNotFoundMessage": "Uppgiften hittades inte"
 }
