@@ -25,8 +25,8 @@ jobs:
   # `coverage_excludes` drops generated code (Drift `*.g.dart`, l10n `gen/`)
   # from the denominator so the percentage reflects hand-written code only.
   #
-  # app_ui and error_tracking have no real test suite yet, so they get no
-  # job here — see TODO.md. Add them once they're tested.
+  # error_tracking has no real test suite yet, so it gets no job here — see
+  # TODO.md. Add it once it's tested.
   build-app:
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v1
     with:
@@ -48,6 +48,16 @@ jobs:
       coverage_excludes: "**/*.g.dart"
       # No blocs in this package, so nothing for bloc_lint to check (and it
       # has no bloc_tools dependency to run it with).
+      run_bloc_lint: false
+
+  build-app-ui:
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v1
+    with:
+      flutter_version: "3.44.x"
+      working_directory: packages/app_ui
+      # Pure design-system package with no generated code — fully covered, so
+      # its finished-package target is 100%.
+      min_coverage: 100
       run_bloc_lint: false
 
   spell-check:

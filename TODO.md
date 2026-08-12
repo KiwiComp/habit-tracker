@@ -36,6 +36,11 @@ should hold and `coverage_excludes` dropping generated code (`*.g.dart`,
 - **`build-habits-repository`** (`packages/habits_repository`) — target
   **90%**. This suite previously never ran in CI at all; the old root-only
   job is why. `run_bloc_lint: false` here (no blocs, no `bloc_tools` dep).
+- **`build-app-ui`** (`packages/app_ui`) — target **100%**. Added
+  2026-08-12 alongside a full test suite (tokens, typography, theme,
+  context extension, `AppButton` across every variant/state/shape/size,
+  `AppTextField`'s clear flow); the package is at 100% line coverage, no
+  generated code, so this gate is **green**. `run_bloc_lint: false`.
 
 The earlier "~77%, driven by `AppSpacing`/`AppRadius`/… getters" note was a
 mismeasurement — that came from running coverage at the root, where
@@ -52,10 +57,9 @@ suites bring each package up to target. Path to green: write the deferred
 feature tests (root) and cover the last `HabitsTable`/`EntriesTable` getters
 (habits_repository, see below).
 
-`app_ui` (no tests at all — empty `test/src/`) and `error_tracking` (~17%,
-one thin test) deliberately have **no CI job yet**; a job for `app_ui` would
-error outright ("no test files"). Add jobs for them once each has a real
-suite.
+`error_tracking` (~17%, one thin test) deliberately has **no CI job yet**;
+add one once it has a real suite. (`app_ui`, previously in this same boat,
+now has a full suite and its own `build-app-ui` job — see above.)
 
 ## Habit/task creation flow isn't tested
 
