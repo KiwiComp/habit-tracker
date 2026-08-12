@@ -21,14 +21,41 @@ identifier are still the Very Good CLI placeholder
 real device distribution, store submission, or setting up a Firebase
 project (Firebase config is tied to this identifier).
 
-## CI coverage threshold
+## CI coverage — targets set, deliberately red until met (2026-08-12)
 
-Coverage is at the implicit default of 100% (from
-`VeryGoodOpenSource/very_good_workflows`'s reusable workflow) but actual
-coverage is ~77%, driven by untested getters in `AppSpacing`/`AppRadius`/
-`AppIconSize`/`AppExtendedColors`/`AppContextExtension`. Either write tests
-for those or explicitly set a lower `min_coverage` once that's a deliberate
-decision.
+The single `build` job (implicit 100% coverage, root working directory only)
+was replaced in `.github/workflows/main.yaml` by one job per *tested*
+package, each with a `min_coverage` set to the level the finished package
+should hold and `coverage_excludes` dropping generated code (`*.g.dart`,
+`lib/l10n/gen/`) from the denominator:
+
+- **`build-app`** (root, working dir `.`) — target **80%**. Also excludes
+  `packages/**` so it measures the app's own `lib` only (the packages are
+  gated by their own jobs), not the imported package code the root's tests
+  happen to touch.
+- **`build-habits-repository`** (`packages/habits_repository`) — target
+  **90%**. This suite previously never ran in CI at all; the old root-only
+  job is why. `run_bloc_lint: false` here (no blocs, no `bloc_tools` dep).
+
+The earlier "~77%, driven by `AppSpacing`/`AppRadius`/… getters" note was a
+mismeasurement — that came from running coverage at the root, where
+`collect_coverage_from: imports` folds every imported package's `lib` into
+the number. Measured per package (generated code excluded), the real state
+as of this change is: root app own-lib **~28%** (entire `create_activity`/
+`habits_list`/`tasks_list`/`habit_page`/`task_page` folders untested — see
+those TODO entries), `habits_repository` **~81%**.
+
+**These gates are red right now, on purpose.** The decision (2026-08-12) was
+*not* to lower thresholds to today's numbers just to go green — a green check
+should mean "at the approved bar," so CI stays red until the deferred test
+suites bring each package up to target. Path to green: write the deferred
+feature tests (root) and cover the last `HabitsTable`/`EntriesTable` getters
+(habits_repository, see below).
+
+`app_ui` (no tests at all — empty `test/src/`) and `error_tracking` (~17%,
+one thin test) deliberately have **no CI job yet**; a job for `app_ui` would
+error outright ("no test files"). Add jobs for them once each has a real
+suite.
 
 ## Habit/task creation flow isn't tested
 
@@ -137,13 +164,15 @@ design pass.
 
 ## habits_repository coverage gap
 
-Coverage is dragged down by Drift's generated `database.g.dart` (~27%,
-boilerplate no one hand-writes tests against) and by `HabitsTable`/
-`EntriesTable` column getters showing as unhit despite being exercised
-indirectly through `HabitsRepository`'s tests — the same
-"untested getters" shape as the `CI coverage threshold` entry above, just in
-a different package. Worth a `min_coverage` decision (and possibly excluding
-`*.g.dart`) alongside that one rather than solving it separately.
+Generated `database.g.dart` is now excluded from the coverage denominator
+(`coverage_excludes: "**/*.g.dart"` on the `build-habits-repository` job —
+see "CI coverage" above), so the remaining gap to the **90%** target is just
+the hand-written `HabitsTable`/`EntriesTable` column getters, which show as
+unhit despite being exercised indirectly through `HabitsRepository`'s tests
+(`entries_table.dart` at 0%, `habits_table.dart` ~46%). Note the converters
+in `habits_table.dart` (`DateOnlyConverter`/`WeekdaysConverter`) are real
+logic and *are* worth covering directly — so close the gap by testing those
+column/converter files, not by excluding the table definitions wholesale.
 
 ## Leftover counter boilerplate — resolved 2026-08-10
 
