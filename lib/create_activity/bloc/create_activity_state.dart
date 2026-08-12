@@ -37,7 +37,16 @@ final class CreateActivityState {
     DateTime? startDate,
     this.endDate,
     this.status = CreateActivitySaveStatus.idle,
-  }) : startDate = startDate ?? DateTime.now();
+  }) : startDate = _dateOnly(startDate ?? DateTime.now());
+
+  // Normalizes to local midnight so the form's date comparisons (`canSave`,
+  // `hasUnreachableWeekdayWindow`) never measure a calendar day against an
+  // instant — the same "calendar day, not instant" rule `habits_repository`
+  // enforces on write. Without this, the default `DateTime.now()` start date
+  // carries a time-of-day, and an end date of the same day (which the picker
+  // returns at midnight) reads as "before" the start, wrongly blocking save.
+  static DateTime _dateOnly(DateTime date) =>
+      DateTime(date.year, date.month, date.day);
 
   /// Whether the user is creating a recurring habit or a one-off task.
   final ActivityType activityType;

@@ -61,16 +61,27 @@ feature tests (root) and cover the last `HabitsTable`/`EntriesTable` getters
 add one once it has a real suite. (`app_ui`, previously in this same boat,
 now has a full suite and its own `build-app-ui` job — see above.)
 
-## Habit/task creation flow isn't tested
+## Habit/task creation flow — tested (2026-08-12)
 
-`CreateActivityBloc`'s `CreateActivitySaveRequested` handler now persists via
-`HabitsRepository.createHabit` (which accepts `endDate`), and a
-`HabitsRepository` is provided app-wide via `RepositoryProvider` in
-`lib/app/view/app.dart` — also used by `StartBloc` (see "Activity/
-ScheduleList still placeholder shapes" below). Neither the bloc's save/error
-path nor the `endDate` addition has its own test yet, deferred alongside the
-rest of `create_activity`'s test suite. Write these together once
-`create_activity` gets a test pass.
+`lib/create_activity` now has a full test suite (models, `CreateActivityBloc`
+including the save success/failure paths, `CreateActivityState`'s `canSave`/
+`hasUnreachableWeekdayWindow`/`copyWith`/equality, the page, and every widget
+including the date-picker and end-date-sheet flows) — **100%** line coverage,
+analyzer-clean. Part of retiring the "defer tests" convention (see "Untested
+feature folders" below). The same-day-end-date bug this surfaced is fixed —
+see its entry below.
+
+## Same-day end date can't be saved — fixed (2026-08-12)
+
+`CreateActivityState.startDate` used to default to `DateTime.now()` — an
+instant with a time-of-day — while both date pickers yield date-only midnight,
+so a habit left on today's default start with its end date set to today had
+`canSave` compare midnight-today against now-today and return `false`, silently
+disabling Save (and the same mismatch could misfire
+`hasUnreachableWeekdayWindow` on a window's final day). Fixed by normalizing to
+local midnight in the state initializer (`_dateOnly(...)`), the same "calendar
+day, not instant" discipline `habits_repository` enforces on write. Covered by
+regression tests in `create_activity_state_test.dart`.
 
 ## No behavior defined for a habit whose end date has passed
 
@@ -155,16 +166,26 @@ SnackBar-on-failure, see its handler in
 `lib/create_activity/bloc/create_activity_bloc.dart`) is the intended
 pattern to reuse once this gets built.
 
-## New feature folders' blocs/widgets have no tests yet
+## Untested feature folders — pending work, no longer deferred
 
-The `go_router` migration (`ROUTING.md`) added `HabitsListBloc`,
-`TasksListBloc`, `HabitBloc`, `TaskBloc`, `HabitListTile`, `TaskListTile`,
-and the `ShellScaffold`/`GoRouter` wiring in `lib/routing/`; the AppBar/FAB
-follow-up added `HabitTrackerAppBar` (`lib/widgets/`) and the shell's
-add-activity FAB. None have tests yet, deferred alongside the rest of these
-still-undesigned screens (same standing decision as `create_activity`'s
-test suite, above). Write these together once each screen gets a real
-design pass.
+The **"defer tests until the screen is designed" convention is retired**
+(2026-08-12, stated by the user). These are now pending work to write, not
+accepted gaps. Done so far: `packages/app_ui` and `lib/create_activity` (both
+100%, analyzer-clean). Still to do:
+
+- `lib/habits_list`, `lib/tasks_list` (`HabitsListBloc`/`TasksListBloc` +
+  `HabitListTile`/`TaskListTile` + views)
+- `lib/habit_page`, `lib/task_page` (`HabitBloc`/`TaskBloc` + views)
+- `lib/start_page` widgets + view (bloc is already tested)
+- `lib/routing` (`ShellScaffold`/`GoRouter` wiring), `lib/widgets`
+  (`HabitTrackerAppBar`), and the shell's add-activity FAB
+- `packages/error_tracking` (~17%, one thin test)
+- loose files: `lib/bootstrap.dart`, `lib/main_*.dart`,
+  `lib/app/app_bloc_observer.dart`
+
+Some of these widgets/screens are still visually placeholder; that doesn't
+block testing their current behavior (a bare `ListTile` per row is still
+testable). Bring each into CI (see "CI coverage" above) as its suite lands.
 
 ## habits_repository coverage gap
 
