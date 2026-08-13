@@ -139,6 +139,36 @@ void main() {
     });
   });
 
+  group('Habit.isTask', () {
+    Habit habitWith(Frequency frequency) => Habit(
+      id: '1',
+      name: 'x',
+      frequency: frequency,
+      startDate: DateTime(2026),
+      createdAt: DateTime(2026),
+    );
+
+    test('is true only for a once frequency', () {
+      expect(habitWith(Frequency.once).isTask, isTrue);
+      expect(habitWith(Frequency.daily).isTask, isFalse);
+      expect(habitWith(Frequency.weekdays).isTask, isFalse);
+    });
+  });
+
+  group('Habit.toString', () {
+    test('includes the id, name and frequency', () {
+      final habit = Habit(
+        id: '1',
+        name: 'Read',
+        frequency: Frequency.daily,
+        startDate: DateTime(2026),
+        createdAt: DateTime(2026),
+      );
+
+      expect(habit.toString(), 'Habit(1, Read, daily)');
+    });
+  });
+
   group('Habit equality', () {
     test('two habits with the same fields are equal', () {
       final a = Habit(

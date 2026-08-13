@@ -68,6 +68,22 @@ void main() {
     });
   });
 
+  group('getHabit', () {
+    test('returns the habit when one exists for the id', () async {
+      final created = await repository.createHabit(
+        name: 'Drink water',
+        frequency: Frequency.daily,
+        startDate: DateTime(2026),
+      );
+
+      expect(await repository.getHabit(created.id), created);
+    });
+
+    test('returns null when no habit has that id', () async {
+      expect(await repository.getHabit('missing'), isNull);
+    });
+  });
+
   group('watchHabits', () {
     test('excludes archived habits by default', () async {
       final habit = await repository.createHabit(

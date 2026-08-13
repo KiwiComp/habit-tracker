@@ -273,7 +273,7 @@ Stubbing first lets the router compile and the risky shell mechanics be tested
 on day one, instead of after the pages are built out.
 
 Out of scope for the whole migration — a separate post-shell workstream tracked
-in `TODO.md`: the **AppBar + "jump to today" FAB** refactor.
+in `KNOWN_GAPS.md`: the **AppBar + "jump to today" FAB** refactor.
 
 ## Example flows
 
