@@ -172,14 +172,15 @@ pattern to reuse once this gets built.
 
 The **"defer tests until the screen is designed" convention is retired**
 (2026-08-12, stated by the user). These are now pending work to write, not
-accepted gaps. Done so far: `packages/app_ui`, `lib/create_activity`, and
-`lib/start_page` (all 100%, analyzer-clean). Still to do:
+accepted gaps. Done so far: `packages/app_ui`, `lib/create_activity`,
+`lib/start_page`, `lib/widgets`, and `packages/habits_repository` (all 100%
+except habits_repository's single untestable DB-default line). Still to do:
 
 - `lib/habits_list`, `lib/tasks_list` (`HabitsListBloc`/`TasksListBloc` +
   `HabitListTile`/`TaskListTile` + views)
 - `lib/habit_page`, `lib/task_page` (`HabitBloc`/`TaskBloc` + views)
-- `lib/routing` (`ShellScaffold`/`GoRouter` wiring), `lib/widgets`
-  (`HabitTrackerAppBar`), and the shell's add-activity FAB
+- `lib/routing` (`ShellScaffold`/`GoRouter` wiring) and the shell's
+  add-activity FAB
 - `packages/error_tracking` (~17%, one thin test)
 - loose files: `lib/bootstrap.dart`, `lib/main_*.dart`,
   `lib/app/app_bloc_observer.dart`
