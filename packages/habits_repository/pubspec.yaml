@@ -20,7 +20,7 @@ dependencies:
 dev_dependencies:
   async: ^2.13.1
   build_runner: ^2.15.1
-  drift_dev: ^2.33.0
+  drift_dev: ^2.34.5
   flutter_test:
     sdk: flutter
   mocktail: ^1.0.5
