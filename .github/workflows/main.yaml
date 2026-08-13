@@ -60,6 +60,15 @@ jobs:
       min_coverage: 100
       run_bloc_lint: false
 
+  build-error-tracking:
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v1
+    with:
+      flutter_version: "3.44.x"
+      working_directory: packages/error_tracking
+      # No generated code, fully covered → target 100%.
+      min_coverage: 100
+      run_bloc_lint: false
+
   spell-check:
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/spell_check.yml@v1
     with:

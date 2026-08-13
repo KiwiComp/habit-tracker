@@ -59,9 +59,10 @@ suites bring each package up to target. Path to green: write the deferred
 feature tests (root) and cover the last `HabitsTable`/`EntriesTable` getters
 (habits_repository, see below).
 
-`error_tracking` (~17%, one thin test) deliberately has **no CI job yet**;
-add one once it has a real suite. (`app_ui`, previously in this same boat,
-now has a full suite and its own `build-app-ui` job — see above.)
+Every package now has a CI job: `app_ui`, `habits_repository`, and
+`error_tracking` each gained a full suite and a matching gate
+(`build-app-ui`/`build-habits-repository`/`build-error-tracking`) — the last
+of the "no tests → no job" cases is closed.
 
 ## Habit/task creation flow — tested (2026-08-12)
 
@@ -172,15 +173,14 @@ pattern to reuse once this gets built.
 
 The **"defer tests until the screen is designed" convention is retired**
 (2026-08-12, stated by the user). These are now pending work to write, not
-accepted gaps. Done so far: `packages/app_ui`, `lib/create_activity`,
-`lib/start_page`, `lib/widgets`, `lib/routing`, and
+accepted gaps. Done so far: `packages/app_ui`, `packages/error_tracking`,
+`lib/create_activity`, `lib/start_page`, `lib/widgets`, `lib/routing`, and
 `packages/habits_repository` (all 100% except habits_repository's single
 untestable DB-default line). Still to do:
 
 - `lib/habits_list`, `lib/tasks_list` (`HabitsListBloc`/`TasksListBloc` +
   `HabitListTile`/`TaskListTile` + views)
 - `lib/habit_page`, `lib/task_page` (`HabitBloc`/`TaskBloc` + views)
-- `packages/error_tracking` (~17%, one thin test)
 - loose files: `lib/bootstrap.dart`, `lib/main_*.dart`,
   `lib/app/app_bloc_observer.dart`
 
