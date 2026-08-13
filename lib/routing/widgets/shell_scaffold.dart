@@ -7,7 +7,7 @@ import 'package:habit_tracker/start_page/widgets/widgets.dart';
 /// The shell scaffold behind `StatefulShellRoute.indexedStack`.
 ///
 /// Owns the chrome shared across the Today/Habits/Tasks tabs — see
-/// `ROUTING.md` and `TODO.md`'s "AppBar + jump to today FAB" entry: the
+/// `ROUTING.md` and `KNOWN_GAPS.md`'s "AppBar + jump to today FAB" entry: the
 /// bottom nav bar, and the add-activity FAB (available from any tab, not
 /// just Today). Switching tabs goes through `navigationShell.goBranch`,
 /// never `context.go`, so each branch's stack and state survive the switch.

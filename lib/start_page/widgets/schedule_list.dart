@@ -23,7 +23,7 @@ class ScheduleList extends StatelessWidget {
   /// The day [activities] are scheduled for.
   ///
   /// `Habit` has no time-of-day of its own, so this is shown for every row
-  /// rather than a per-item time — see todo.md's "ScheduleList still has
+  /// rather than a per-item time — see KNOWN_GAPS.md's "ScheduleList still has
   /// placeholder gaps" for what's still placeholder here.
   final DateTime selectedDate;
 

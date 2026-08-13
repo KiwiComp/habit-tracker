@@ -1,4 +1,4 @@
-# TODO
+# Known gaps & deferred follow-ups
 
 Known, accepted gaps and follow-ups — things we've deliberately deferred
 rather than issues we've missed. Check this file when picking up new work,
@@ -50,7 +50,7 @@ mismeasurement — that came from running coverage at the root, where
 the number. Measured per package (generated code excluded), the real state
 as of this change is: root app own-lib **~28%** (entire `create_activity`/
 `habits_list`/`tasks_list`/`habit_page`/`task_page` folders untested — see
-those TODO entries), `habits_repository` **~81%**.
+those entries), `habits_repository` **~81%**.
 
 **These gates are red right now, on purpose.** The decision (2026-08-12) was
 *not* to lower thresholds to today's numbers just to go green — a green check
