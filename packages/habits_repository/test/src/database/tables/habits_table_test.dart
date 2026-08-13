@@ -2,6 +2,32 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:habits_repository/src/database/tables/habits_table.dart';
 
 void main() {
+  group('HabitsTable', () {
+    test('is named "habits"', () {
+      expect(HabitsTable().tableName, 'habits');
+    });
+  });
+
+  group('WeekdaysConverter', () {
+    const converter = WeekdaysConverter();
+
+    test('serializes to a sorted, comma-joined string', () {
+      expect(converter.toSql({3, 1, 5}), '1,3,5');
+    });
+
+    test('serializes an empty set to an empty string', () {
+      expect(converter.toSql(const {}), '');
+    });
+
+    test('parses a comma-joined string', () {
+      expect(converter.fromSql('1,3,5'), {1, 3, 5});
+    });
+
+    test('parses an empty string to an empty set', () {
+      expect(converter.fromSql(''), const <int>{});
+    });
+  });
+
   group('DateOnlyConverter', () {
     const converter = DateOnlyConverter();
 

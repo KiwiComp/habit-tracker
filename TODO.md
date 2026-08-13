@@ -34,8 +34,10 @@ should hold and `coverage_excludes` dropping generated code (`*.g.dart`,
   gated by their own jobs), not the imported package code the root's tests
   happen to touch.
 - **`build-habits-repository`** (`packages/habits_repository`) — target
-  **90%**. This suite previously never ran in CI at all; the old root-only
-  job is why. `run_bloc_lint: false` here (no blocs, no `bloc_tools` dep).
+  **95%** (raised from 90 on 2026-08-13 once the suite reached 99.4%; the one
+  untestable real-DB-default line is left as honest headroom). This suite
+  previously never ran in CI at all; the old root-only job is why.
+  `run_bloc_lint: false` here (no blocs, no `bloc_tools` dep).
 - **`build-app-ui`** (`packages/app_ui`) — target **100%**. Added
   2026-08-12 alongside a full test suite (tokens, typography, theme,
   context extension, `AppButton` across every variant/state/shape/size,
@@ -186,17 +188,27 @@ Some of these widgets/screens are still visually placeholder; that doesn't
 block testing their current behavior (a bare `ListTile` per row is still
 testable). Bring each into CI (see "CI coverage" above) as its suite lands.
 
-## habits_repository coverage gap
+## habits_repository coverage — resolved 2026-08-13
 
-Generated `database.g.dart` is now excluded from the coverage denominator
-(`coverage_excludes: "**/*.g.dart"` on the `build-habits-repository` job —
-see "CI coverage" above), so the remaining gap to the **90%** target is just
-the hand-written `HabitsTable`/`EntriesTable` column getters, which show as
-unhit despite being exercised indirectly through `HabitsRepository`'s tests
-(`entries_table.dart` at 0%, `habits_table.dart` ~46%). Note the converters
-in `habits_table.dart` (`DateOnlyConverter`/`WeekdaysConverter`) are real
-logic and *are* worth covering directly — so close the gap by testing those
-column/converter files, not by excluding the table definitions wholesale.
+Now at **99.4%** (excluding generated `database.g.dart`, which the
+`build-habits-repository` job already drops via `coverage_excludes`). What
+changed: the `HabitsTable`/`EntriesTable` column-and-key getters turned out to
+be genuinely *uncoverable* — drift's column builders throw
+"should not be called at runtime" (the generated table overrides them), so
+they're build-time metadata, not runtime logic. They're now wrapped in
+`// coverage:ignore-start/end`, leaving the real logic — the
+`DateOnlyConverter`/`WeekdaysConverter` (tested directly) and the whole
+`HabitsRepository` API including the new `getHabit` tests — counted and at
+100%.
+
+The single remaining uncovered line is `habits_repository.dart`'s
+`?? HabitsDatabase()` default-constructor branch: it opens the real
+on-device Drift database, which needs Flutter's file system and so can't run
+in a unit test. Left honest (uncovered) rather than ignored.
+
+Gate raised **90% → 95%** (2026-08-13) to match the real 99.4%, keeping the
+one untestable real-DB-default line as honest headroom rather than ignoring
+it to force 100%.
 
 ## Leftover counter boilerplate — resolved 2026-08-10
 

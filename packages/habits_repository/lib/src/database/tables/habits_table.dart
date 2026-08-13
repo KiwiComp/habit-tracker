@@ -45,6 +45,12 @@ class HabitsTable extends Table {
   @override
   String get tableName => 'habits';
 
+  // coverage:ignore-start
+  // Drift reads these column and key definitions at build time to generate
+  // the real table; the generated class overrides them, and the column
+  // builders throw if called at runtime. There's no runtime logic to test
+  // here — that lives in the converters above — so exclude them from coverage.
+
   /// Uniquely identifies the habit.
   TextColumn get id => text()();
 
@@ -74,4 +80,5 @@ class HabitsTable extends Table {
 
   @override
   Set<Column> get primaryKey => {id};
+  // coverage:ignore-end
 }

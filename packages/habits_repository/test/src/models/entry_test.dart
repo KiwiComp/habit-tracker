@@ -38,4 +38,18 @@ void main() {
       expect(a, isNot(b));
     });
   });
+
+  group('Entry.toString', () {
+    test('includes the habitId and date', () {
+      final entry = Entry(
+        id: '1',
+        habitId: 'habit-1',
+        date: DateTime(2026),
+        createdAt: DateTime(2026),
+      );
+
+      expect(entry.toString(), startsWith('Entry('));
+      expect(entry.toString(), contains('habit-1'));
+    });
+  });
 }

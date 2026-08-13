@@ -11,6 +11,11 @@ class EntriesTable extends Table {
   @override
   String get tableName => 'entries';
 
+  // coverage:ignore-start
+  // Build-time schema metadata: drift's generated table overrides these, and
+  // the column builders throw if called at runtime, so they can't be (and
+  // needn't be) covered — see the note in habits_table.dart.
+
   /// Uniquely identifies the entry.
   TextColumn get id => text()();
 
@@ -31,4 +36,5 @@ class EntriesTable extends Table {
   List<Set<Column>> get uniqueKeys => [
     {habitId, date},
   ];
+  // coverage:ignore-end
 }

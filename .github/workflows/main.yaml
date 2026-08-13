@@ -44,7 +44,7 @@ jobs:
     with:
       flutter_version: "3.44.x"
       working_directory: packages/habits_repository
-      min_coverage: 90
+      min_coverage: 95
       coverage_excludes: "**/*.g.dart"
       # No blocs in this package, so nothing for bloc_lint to check (and it
       # has no bloc_tools dependency to run it with).
