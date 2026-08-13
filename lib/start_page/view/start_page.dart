@@ -84,6 +84,7 @@ class _StartViewState extends State<StartView> {
       floatingActionButton: isToday
           ? null
           : FloatingActionButton(
+              heroTag: 'startPageJumpToTodayFab',
               tooltip: l10n.startJumpToTodayTooltip,
               backgroundColor: context.colorScheme.tertiary,
               foregroundColor: context.colorScheme.onTertiary,

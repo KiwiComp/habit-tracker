@@ -29,6 +29,7 @@ class ShellScaffold extends StatelessWidget {
     return Scaffold(
       body: navigationShell,
       floatingActionButton: FloatingActionButton(
+        heroTag: 'shellAddActivityFab',
         tooltip: context.l10n.startAddActivityTooltip,
         backgroundColor: context.colorScheme.tertiary,
         foregroundColor: context.colorScheme.onTertiary,
