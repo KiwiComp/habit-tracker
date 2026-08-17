@@ -63,10 +63,12 @@ class _StartViewState extends State<StartView> {
 
     return Scaffold(
       appBar: HabitTrackerAppBar(
-        title: DateFormat(
-          'd MMM yyyy',
-          context.locale.toString(),
-        ).format(selectedDate),
+        title: isToday
+            ? l10n.startNavToday
+            : DateFormat(
+                'd MMM yyyy',
+                context.locale.toString(),
+              ).format(selectedDate),
       ),
       body: Column(
         children: [
