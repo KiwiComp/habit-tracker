@@ -39,6 +39,15 @@ void main() {
         final state = StartState(selectedDate: date, activities: [habit('1')]);
         expect(state.copyWith(), state);
       });
+
+      test('replaces completedHabitIds and keeps everything else', () {
+        final state = StartState(selectedDate: date, activities: [habit('1')]);
+        final updated = state.copyWith(completedHabitIds: {'1'});
+
+        expect(updated.completedHabitIds, {'1'});
+        expect(updated.selectedDate, state.selectedDate);
+        expect(updated.activities, state.activities);
+      });
     });
 
     group('equality', () {
@@ -71,6 +80,20 @@ void main() {
         expect(
           StartState(selectedDate: date, activities: [habit('1')]),
           isNot(StartState(selectedDate: date, activities: [habit('2')])),
+        );
+      });
+
+      test('not equal when completedHabitIds differ', () {
+        expect(
+          StartState(selectedDate: date, completedHabitIds: const {'1'}),
+          isNot(StartState(selectedDate: date)),
+        );
+      });
+
+      test('equal regardless of completedHabitIds iteration order', () {
+        expect(
+          StartState(selectedDate: date, completedHabitIds: const {'1', '2'}),
+          StartState(selectedDate: date, completedHabitIds: const {'2', '1'}),
         );
       });
     });

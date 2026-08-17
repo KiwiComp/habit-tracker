@@ -12,6 +12,7 @@ class ScheduleList extends StatelessWidget {
   /// [selectedDate].
   const ScheduleList({
     required this.activities,
+    required this.completedHabitIds,
     required this.selectedDate,
     required this.onActivityTap,
     super.key,
@@ -19,6 +20,9 @@ class ScheduleList extends StatelessWidget {
 
   /// The habits to display, in the order they should be shown.
   final List<Habit> activities;
+
+  /// List of existing Entries for selected date.
+  final Set<String> completedHabitIds;
 
   /// The day [activities] are scheduled for.
   ///
@@ -43,6 +47,7 @@ class ScheduleList extends StatelessWidget {
         final habit = activities[index];
         return _HabitTile(
           habit: habit,
+          completedHabitIds: completedHabitIds,
           selectedDate: selectedDate,
           onTap: () => onActivityTap(habit),
         );
@@ -54,11 +59,13 @@ class ScheduleList extends StatelessWidget {
 class _HabitTile extends StatelessWidget {
   const _HabitTile({
     required this.habit,
+    required this.completedHabitIds,
     required this.selectedDate,
     required this.onTap,
   });
 
   final Habit habit;
+  final Set<String> completedHabitIds;
   final DateTime selectedDate;
   final VoidCallback onTap;
 
@@ -101,6 +108,11 @@ class _HabitTile extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+              Icon(
+                completedHabitIds.contains(habit.id)
+                    ? Icons.check_box
+                    : Icons.check_box_outline_blank,
               ),
             ],
           ),

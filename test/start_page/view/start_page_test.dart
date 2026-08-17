@@ -16,6 +16,7 @@ class _MockHabitsRepository extends Mock implements HabitsRepository {}
 void main() {
   late _MockHabitsRepository repo;
   late StreamController<List<Habit>> habits;
+  late StreamController<List<Entry>> entries;
 
   Habit dailyHabit({String id = '1', String name = 'Read'}) => Habit(
     id: id,
@@ -28,10 +29,17 @@ void main() {
   setUp(() {
     repo = _MockHabitsRepository();
     habits = StreamController<List<Habit>>.broadcast();
+    entries = StreamController<List<Entry>>.broadcast();
     when(() => repo.watchHabits()).thenAnswer((_) => habits.stream);
+    when(
+      () => repo.watchEntriesOnDate(any()),
+    ).thenAnswer((_) => entries.stream);
   });
 
-  tearDown(() => habits.close());
+  tearDown(() async {
+    await habits.close();
+    await entries.close();
+  });
 
   Future<void> pumpStartPage(WidgetTester tester) async {
     final router = GoRouter(

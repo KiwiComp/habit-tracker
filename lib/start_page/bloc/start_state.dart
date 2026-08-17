@@ -8,6 +8,7 @@ final class StartState {
   const StartState({
     required this.selectedDate,
     this.activities = const [],
+    this.completedHabitIds = const {},
   });
 
   /// The currently selected day.
@@ -16,11 +17,20 @@ final class StartState {
   /// The habits scheduled for [selectedDate] — see `StartActivitiesLoaded`.
   final List<Habit> activities;
 
+  /// Ids of the habits with an `Entry` logged on [selectedDate] — see
+  /// `StartEntriesLoaded`.
+  final Set<String> completedHabitIds;
+
   /// Returns a copy of this state with the given fields replaced.
-  StartState copyWith({DateTime? selectedDate, List<Habit>? activities}) {
+  StartState copyWith({
+    DateTime? selectedDate,
+    List<Habit>? activities,
+    Set<String>? completedHabitIds,
+  }) {
     return StartState(
       selectedDate: selectedDate ?? this.selectedDate,
       activities: activities ?? this.activities,
+      completedHabitIds: completedHabitIds ?? this.completedHabitIds,
     );
   }
 
@@ -28,11 +38,17 @@ final class StartState {
   bool operator ==(Object other) {
     return other is StartState &&
         other.selectedDate == selectedDate &&
-        _activitiesEqual(other.activities, activities);
+        _activitiesEqual(other.activities, activities) &&
+        other.completedHabitIds.length == completedHabitIds.length &&
+        other.completedHabitIds.containsAll(completedHabitIds);
   }
 
   @override
-  int get hashCode => Object.hash(selectedDate, Object.hashAll(activities));
+  int get hashCode => Object.hash(
+    selectedDate,
+    Object.hashAll(activities),
+    Object.hashAllUnordered(completedHabitIds),
+  );
 
   bool _activitiesEqual(List<Habit> a, List<Habit> b) {
     if (a.length != b.length) return false;
