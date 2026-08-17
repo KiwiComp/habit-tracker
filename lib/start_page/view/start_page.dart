@@ -79,11 +79,11 @@ class _StartViewState extends State<StartView> {
                     activities: activities,
                     completedHabitIds: completeHabitIds,
                     selectedDate: selectedDate,
-                    // onActivityTap: (habit) => context.push(
-                    //   habit.isTask ? '/task/${habit.id}' : '/habit/${habit.id}',
-                    // ),
                     onActivityTap: (habit) =>
                         bloc.add(ToggleActivityMarking(habit.id, selectedDate)),
+                    onOpenActivity: (habit) => context.push(
+                      habit.isTask ? '/task/${habit.id}' : '/habit/${habit.id}',
+                    ),
                   ),
           ),
         ],

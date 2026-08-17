@@ -19,9 +19,13 @@ void main() {
   final readHabit = habit('h', 'Read', Frequency.daily);
   final passportTask = habit('t', 'Passport', Frequency.once);
 
-  Widget list({required ValueChanged<Habit> onTap}) => Scaffold(
+  Widget list({
+    required ValueChanged<Habit> onTap,
+    Set<String> completedHabitIds = const {},
+  }) => Scaffold(
     body: ScheduleList(
       activities: [readHabit, passportTask],
+      completedHabitIds: completedHabitIds,
       selectedDate: selectedDate,
       onActivityTap: onTap,
     ),
