@@ -49,11 +49,15 @@ class _StartViewState extends State<StartView> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final bloc = context.read<StartBloc>();
     final selectedDate = context.select<StartBloc, DateTime>(
       (bloc) => bloc.state.selectedDate,
     );
     final activities = context.select<StartBloc, List<Habit>>(
       (bloc) => bloc.state.activities,
+    );
+    final completeHabitIds = context.select<StartBloc, Set<String>>(
+      (bloc) => bloc.state.completedHabitIds,
     );
     final isToday = selectedDate.isSameDayAs(DateTime.now());
 
@@ -73,8 +77,10 @@ class _StartViewState extends State<StartView> {
                 ? const EmptySchedule()
                 : ScheduleList(
                     activities: activities,
-                    selectedDate: selectedDate,
-                    onActivityTap: (habit) => context.push(
+                    completedHabitIds: completeHabitIds,
+                    onActivityTap: (habit) =>
+                        bloc.add(ToggleActivityMarking(habit.id, selectedDate)),
+                    onOpenActivity: (habit) => context.push(
                       habit.isTask ? '/task/${habit.id}' : '/habit/${habit.id}',
                     ),
                   ),

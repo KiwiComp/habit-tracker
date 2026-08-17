@@ -21,6 +21,9 @@ void main() {
     repo = _MockHabitsRepository();
     habits = StreamController<List<Habit>>.broadcast();
     when(() => repo.watchHabits()).thenAnswer((_) => habits.stream);
+    when(
+      () => repo.watchEntriesOnDate(any()),
+    ).thenAnswer((_) => const Stream.empty());
   });
 
   tearDown(() => habits.close());

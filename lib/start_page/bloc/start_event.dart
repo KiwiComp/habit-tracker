@@ -22,3 +22,24 @@ final class StartActivitiesLoaded extends StartEvent {
   /// The habits scheduled for the currently selected day.
   final List<Habit> activities;
 }
+
+/// The entries logged for the currently selected day were (re)loaded.
+final class StartEntriesLoaded extends StartEvent {
+  /// Creates a [StartEntriesLoaded] event with the loaded [entries].
+  const StartEntriesLoaded(this.entries);
+
+  /// The entries logged on the currently selected day, across all habits.
+  final List<Entry> entries;
+}
+
+/// The user tapped a `ScheduleList` row's completion control for [habitId].
+final class ToggleActivityMarking extends StartEvent {
+  /// Creates a [ToggleActivityMarking] event for [habitId] on [date].
+  const ToggleActivityMarking(this.habitId, this.date);
+
+  /// The habit whose completion is being toggled.
+  final String habitId;
+
+  /// The day being toggled — always the currently selected day.
+  final DateTime date;
+}

@@ -33,5 +33,7 @@
     "createActivityWeekdayWindowWarning": "Ingen av de valda dagarna faller inom det här intervallet – vanan skulle aldrig inträffa.",
     "createActivitySaveError": "Kunde inte spara. Försök igen.",
     "habitPageNotFoundMessage": "Vanan hittades inte",
-    "taskPageNotFoundMessage": "Uppgiften hittades inte"
+    "taskPageNotFoundMessage": "Uppgiften hittades inte",
+    "startActivityOpenDetailsAction": "Öppna detaljer",
+    "startActivityToggleDoneHint": "ändra klarmarkering"
 }

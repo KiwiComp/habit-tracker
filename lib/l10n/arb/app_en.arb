@@ -135,5 +135,13 @@
     "taskPageNotFoundMessage": "Task not found",
     "@taskPageNotFoundMessage": {
         "description": "Shown on the task detail page when no task exists for the given id"
+    },
+    "startActivityOpenDetailsAction": "Open details",
+    "@startActivityOpenDetailsAction": {
+        "description": "Screen-reader action on a schedule row that opens the habit/task detail page — the accessible equivalent of the slide-to-reveal gesture"
+    },
+    "startActivityToggleDoneHint": "toggle done",
+    "@startActivityToggleDoneHint": {
+        "description": "Screen-reader hint for tapping a schedule row, announced as e.g. 'Double tap to toggle done'"
     }
 }

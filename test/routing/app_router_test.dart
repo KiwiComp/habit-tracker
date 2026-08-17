@@ -23,6 +23,9 @@ void main() {
     when(
       () => repo.watchHabits(),
     ).thenAnswer((_) => Stream.value(const <Habit>[]));
+    when(
+      () => repo.watchEntriesOnDate(any()),
+    ).thenAnswer((_) => Stream.value(const <Entry>[]));
     when(() => repo.getHabit('h1')).thenAnswer((_) async => null);
     when(() => repo.getHabit('t1')).thenAnswer((_) async => null);
     when(() => repo.close()).thenAnswer((_) async {});

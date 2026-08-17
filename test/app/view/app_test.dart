@@ -13,6 +13,9 @@ void main() {
       when(
         habitsRepository.watchHabits,
       ).thenAnswer((_) => const Stream.empty());
+      when(
+        () => habitsRepository.watchEntriesOnDate(any()),
+      ).thenAnswer((_) => const Stream.empty());
       when(habitsRepository.close).thenAnswer((_) async {});
 
       await tester.pumpWidget(App(habitsRepository: habitsRepository));
