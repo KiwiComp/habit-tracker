@@ -34,6 +34,18 @@ void main() {
     when(
       () => repo.watchEntriesOnDate(any()),
     ).thenAnswer((_) => entries.stream);
+    when(
+      () => repo.logEntry(
+        habitId: any(named: 'habitId'),
+        date: any(named: 'date'),
+      ),
+    ).thenAnswer((_) async {});
+    when(
+      () => repo.unlogEntry(
+        habitId: any(named: 'habitId'),
+        date: any(named: 'date'),
+      ),
+    ).thenAnswer((_) async {});
   });
 
   tearDown(() async {
@@ -85,7 +97,7 @@ void main() {
       expect(find.byType(ScheduleList), findsNothing);
     });
 
-    testWidgets('lists due activities and opens the tapped one', (
+    testWidgets('lists due activities and toggles the tapped one done', (
       tester,
     ) async {
       await pumpStartPage(tester);
@@ -95,7 +107,26 @@ void main() {
       expect(find.byType(ScheduleList), findsOneWidget);
       expect(find.text('Read'), findsOneWidget);
 
+      // Tapping a row marks it done for the selected day; opening its detail
+      // page moved to the slide-reveal action (see the next test).
       await tester.tap(find.text('Read'));
+      await tester.pumpAndSettle();
+
+      verify(
+        () => repo.logEntry(habitId: '1', date: any(named: 'date')),
+      ).called(1);
+    });
+
+    testWidgets("a row's slide action opens its detail page", (tester) async {
+      await pumpStartPage(tester);
+      habits.add([dailyHabit()]);
+      await tester.pumpAndSettle();
+
+      // The action only becomes hit-testable once the row is open.
+      await tester.drag(find.text('Read'), const Offset(-64, 0));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.chevron_right));
       await tester.pumpAndSettle();
 
       expect(find.text('habit-1'), findsOneWidget);

@@ -52,6 +52,24 @@ as of this change is: root app own-lib **~28%** (entire `create_activity`/
 `habits_list`/`tasks_list`/`habit_page`/`task_page` folders untested — see
 those entries), `habits_repository` **~81%**.
 
+**Amended 2026-08-17 — treat the ~28% above as stale, and re-measure before
+citing it.** Two corrections:
+
+- The `create_activity` folder was never untested. The same commit that
+  wrote this section (`0359243`) also added nine `test/create_activity/`
+  files, so that parenthetical was wrong on arrival. Genuinely untested
+  today: `habits_list`, `tasks_list`, `habit_page`, `task_page`.
+- `start_page` gained two suites on 2026-08-17 —
+  `slide_to_reveal_tile_test.dart` (7 tests) and an expanded
+  `schedule_list_test.dart` (2 → 6) — plus a repaired `start_page_test.dart`.
+  The root suite went from 104 passing / 1 failing to **117 passing, 0
+  failing**.
+
+No new percentage is recorded here on purpose: `flutter test --coverage`
+only reports libraries a test actually loaded, so it reads higher than CI's
+`collect_coverage_from: imports`. Re-measure with the CI tooling rather than
+trusting a local number.
+
 **These gates are red right now, on purpose.** The decision (2026-08-12) was
 *not* to lower thresholds to today's numbers just to go green — a green check
 should mean "at the approved bar," so CI stays red until the deferred test
@@ -127,18 +145,40 @@ exists.
 due on the selected day (via `Habit.isScheduledOn`) directly into
 `StartState.activities: List<Habit>` — the old flattened `Activity`
 placeholder model (`lib/start_page/models/activity.dart`) was removed
-(2026-08-09) once every consumer worked with `Habit` directly instead. Two
-things are still placeholder, though:
+(2026-08-09) once every consumer worked with `Habit` directly instead.
+What's still open (revised 2026-08-17, after the done-toggle and
+slide-to-reveal work):
 
-- `Habit` has no time-of-day, so `ScheduleList` shows the same
-  `selectedDate` (formatted via `DateFormat.Hm()`, always 00:00) next to
-  every row instead of a per-item time. There's also no completion state
-  shown — a `Habit` being scheduled vs. actually logged via an `Entry` are
-  different things, and `watchEntries`/`watchEntriesOnDate` aren't consulted
-  yet.
+- `Habit` still has no time-of-day. The always-00:00 `DateFormat.Hm()` stamp
+  this entry used to describe was dropped (2026-08-17) when the row was
+  rebuilt around a completion checkbox — rows now show no time at all, which
+  is honest rather than misleading, but still not the per-item time a real
+  schedule wants.
+- **`selectedDate` is now dead weight** (2026-08-17). It's still a required
+  constructor arg on `ScheduleList` and still threaded down into the private
+  `_HabitTile`, but nothing reads it since the time stamp was removed — the
+  analyzer doesn't flag unused widget fields, so it went unnoticed. Either
+  delete it from both (and from the widget tests) or give it a use; don't
+  leave it as a parameter that looks load-bearing and isn't.
+- Completion state is **no longer** a gap: `StartBloc` consults
+  `watchEntriesOnDate` and feeds `completedHabitIds` into the row's
+  checkbox, and tapping a row toggles it via `logEntry`/`unlogEntry`.
+- **The slide-reveal action has no accessible equivalent** (2026-08-17). A
+  row's detail page is reachable *only* by a horizontal drag on
+  `SlideToRevealTile` — there's no `Semantics` action, no long-press
+  fallback, no visible affordance. A screen-reader user cannot open a habit
+  at all, and a sighted user has nothing telling them the gesture exists.
+  This is the largest open cost of the shrink-to-reveal design and it wasn't
+  a considered trade — flagged, not decided: `customSemanticsActions` vs a
+  long-press fallback vs a persistent chevron.
+- Two smaller interaction details, both deliberate-for-now: `_onDragEnd`
+  settles on position only and ignores `details.primaryVelocity`, so a fast
+  flick stopping short of halfway snaps closed; and a 45° drag resolves to
+  the horizontal recognizer, so a sloppy diagonal swipe opens a row instead
+  of scrolling the list (same behavior as `Dismissible`).
 - `ScheduleList`'s visuals are still a functional placeholder (no design
   reference for it yet, unlike `EmptySchedule`/`DayChip`) — revisit the
-  point above once one exists.
+  time-of-day point above once one exists.
 - See "No behavior defined for a habit whose end date has passed" above —
   that entry is about a habits-*list* view, not this one; `isScheduledOn`
   (which `StartBloc` uses) already excludes an ended habit correctly.
@@ -157,6 +197,12 @@ the full reasoning.
 
 Both pages are still stubs — they confirm the *right* entity loaded (show
 its name) but have no edit form yet. That's the next gap, tracked below.
+
+**Amended 2026-08-17:** a row's *tap* no longer navigates — it toggles the
+habit done for the selected day. Navigation moved to the action revealed by
+dragging the row left (`SlideToRevealTile`), which still pushes the same
+`/habit/:id` / `/task/:id` routes. See the accessibility bullet under
+"ScheduleList still has placeholder gaps" for what that costs.
 
 ## HabitPage / TaskPage have no edit form yet
 
