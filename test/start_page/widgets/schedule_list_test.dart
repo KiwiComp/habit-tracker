@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:habit_tracker/start_page/widgets/widgets.dart';
 import 'package:habits_repository/habits_repository.dart';
@@ -31,7 +32,6 @@ void main() {
     body: ScheduleList(
       activities: [readHabit, passportTask],
       completedHabitIds: completedHabitIds,
-      selectedDate: selectedDate,
       onActivityTap: onTap,
       onOpenActivity: onOpen,
     ),
@@ -118,6 +118,71 @@ void main() {
 
       expect(tileWidth(tester, 'Read'), moreOrLessEquals(closedWidth));
       expect(tileWidth(tester, 'Passport'), lessThan(closedWidth));
+    });
+
+    testWidgets('exposes each row as one checkable node', (tester) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpApp(
+        list(onTap: (_) {}, completedHabitIds: {readHabit.id}),
+      );
+
+      expect(
+        tester.getSemantics(find.bySemanticsLabel('Read')),
+        isSemantics(isChecked: true, hasCheckedState: true),
+      );
+      expect(
+        tester.getSemantics(find.bySemanticsLabel('Passport')),
+        isSemantics(isChecked: false, hasCheckedState: true),
+      );
+      handle.dispose();
+    });
+
+    testWidgets('the reveal action is not its own semantics node', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpApp(list(onTap: (_) {}));
+
+      // The row is a leaf: nothing from its subtree — the chevron button
+      // included — escapes as a node of its own. An unlabelled button per
+      // row would be noise, so opening is offered as a named custom action
+      // on the row instead (asserted below).
+      final node = tester.getSemantics(find.bySemanticsLabel('Read'));
+      expect(node.childrenCount, 0);
+      expect(node, isSemantics(hasTapAction: true));
+      handle.dispose();
+    });
+
+    testWidgets('offers opening the activity as a semantics action', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      Habit? opened;
+      await tester.pumpApp(
+        list(onTap: (_) {}, onOpen: (habit) => opened = habit),
+      );
+
+      final node = tester.getSemantics(find.bySemanticsLabel('Passport'));
+      final actionId = CustomSemanticsAction.getIdentifier(
+        const CustomSemanticsAction(label: 'Open details'),
+      );
+      // Not the only id on the node: `onTapHint` is itself implemented as an
+      // overriding custom action, so it registers one too.
+      expect(
+        node.getSemanticsData().customSemanticsActionIds,
+        contains(actionId),
+      );
+
+      // Performing it navigates without the drag gesture ever happening.
+      node.owner!.performAction(
+        node.id,
+        SemanticsAction.customAction,
+        actionId,
+      );
+      await tester.pumpAndSettle();
+
+      expect(opened, passportTask);
+      handle.dispose();
     });
 
     testWidgets('a vertical drag does not open a row', (tester) async {

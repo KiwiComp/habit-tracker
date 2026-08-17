@@ -78,7 +78,6 @@ class _StartViewState extends State<StartView> {
                 : ScheduleList(
                     activities: activities,
                     completedHabitIds: completeHabitIds,
-                    selectedDate: selectedDate,
                     onActivityTap: (habit) =>
                         bloc.add(ToggleActivityMarking(habit.id, selectedDate)),
                     onOpenActivity: (habit) => context.push(

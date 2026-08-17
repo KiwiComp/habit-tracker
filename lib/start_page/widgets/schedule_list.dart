@@ -1,5 +1,7 @@
 import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
+import 'package:habit_tracker/l10n/l10n.dart';
 import 'package:habit_tracker/start_page/widgets/slide_to_reveal_tile.dart';
 import 'package:habits_repository/habits_repository.dart';
 
@@ -9,12 +11,10 @@ import 'package:habits_repository/habits_repository.dart';
 /// yet (unlike `EmptySchedule`/`DayChip`, which came from a screenshot).
 /// Revisit once one exists.
 class ScheduleList extends StatefulWidget {
-  /// Creates a [ScheduleList] for the given [activities], all scheduled on
-  /// [selectedDate].
+  /// Creates a [ScheduleList] for the given [activities].
   const ScheduleList({
     required this.activities,
     required this.completedHabitIds,
-    required this.selectedDate,
     required this.onActivityTap,
     required this.onOpenActivity,
     super.key,
@@ -23,18 +23,11 @@ class ScheduleList extends StatefulWidget {
   /// The habits to display, in the order they should be shown.
   final List<Habit> activities;
 
-  /// List of existing Entries for selected date.
+  /// The ids of the [activities] already logged for the selected day.
   final Set<String> completedHabitIds;
 
-  /// The day [activities] are scheduled for.
-  ///
-  /// `Habit` has no time-of-day of its own, so this is shown for every row
-  /// rather than a per-item time — see KNOWN_GAPS.md's "ScheduleList still has
-  /// placeholder gaps" for what's still placeholder here.
-  final DateTime selectedDate;
-
-  /// Called with the tapped row's habit, to toggle it done for
-  /// [selectedDate].
+  /// Called with the tapped row's habit, to toggle it done for the selected
+  /// day.
   final ValueChanged<Habit> onActivityTap;
 
   /// Called with the habit whose slide-reveal action was tapped, to open
@@ -78,15 +71,22 @@ class _ScheduleListState extends State<ScheduleList> {
           revealWidth: context.spacing.xxxl,
           isDesignatedOpen: habit.id == _openHabitId,
           onOpenChanged: (open) => _onRowOpenChanged(habit.id, open: open),
-          action: _OpenDetailAction(
-            onTap: () => widget.onOpenActivity(habit),
+          // Excluded from semantics: it's a visual affordance for the drag
+          // gesture, and an unlabelled chevron button on every row is noise
+          // to a screen reader. The same navigation is offered as a named
+          // custom action on the row itself (see [_HabitTile]), which
+          // doesn't require performing the gesture at all.
+          action: ExcludeSemantics(
+            child: _OpenDetailAction(
+              onTap: () => widget.onOpenActivity(habit),
+            ),
           ),
           childBuilder: (context, revealFraction) => _HabitTile(
             habit: habit,
             completedHabitIds: widget.completedHabitIds,
-            selectedDate: widget.selectedDate,
             revealFraction: revealFraction,
             onTap: () => widget.onActivityTap(habit),
+            onOpen: () => widget.onOpenActivity(habit),
           ),
         );
       },
@@ -98,14 +98,13 @@ class _HabitTile extends StatelessWidget {
   const _HabitTile({
     required this.habit,
     required this.completedHabitIds,
-    required this.selectedDate,
     required this.revealFraction,
     required this.onTap,
+    required this.onOpen,
   });
 
   final Habit habit;
   final Set<String> completedHabitIds;
-  final DateTime selectedDate;
 
   /// How far the enclosing [SlideToRevealTile] is open, 0 (closed) to 1
   /// (fully open) — squares off the right corners as it opens, so the tile
@@ -114,13 +113,16 @@ class _HabitTile extends StatelessWidget {
 
   final VoidCallback onTap;
 
+  /// Opens the habit's detail page.
+  ///
+  /// Same destination as the slide-reveal action, offered here as a named
+  /// semantics action so it doesn't depend on the drag gesture.
+  final VoidCallback onOpen;
+
   @override
   Widget build(BuildContext context) {
-    final colors = context.colorScheme;
-    final extColors = context.extendedColors;
-    final foregroundColor = habit.frequency == Frequency.once
-        ? colors.onSurfaceVariant
-        : colors.surfaceBright;
+    final l10n = context.l10n;
+    final isDone = completedHabitIds.contains(habit.id);
     final leftRadius = Radius.circular(context.radius.md);
     final rightRadius = Radius.circular(
       context.radius.md * (1 - revealFraction),
@@ -131,6 +133,40 @@ class _HabitTile extends StatelessWidget {
       topRight: rightRadius,
       bottomRight: rightRadius,
     );
+
+    // One node per row, carrying the name, the done state, and both actions.
+    // The subtree is excluded rather than merged: its own nodes would be an
+    // unlabelled icon, the name, and a second unlabelled icon, which reads
+    // as noise and loses the checkbox state entirely (an `Icon` without a
+    // `semanticLabel` is invisible to a screen reader). Excluding it means
+    // this node must supply `onTap` itself — the `InkWell` below still
+    // handles real pointer taps, but its semantics no longer escape.
+    return Semantics(
+      container: true,
+      checked: isDone,
+      label: habit.name,
+      onTap: onTap,
+      onTapHint: l10n.startActivityToggleDoneHint,
+      customSemanticsActions: {
+        CustomSemanticsAction(label: l10n.startActivityOpenDetailsAction):
+            onOpen,
+      },
+      child: ExcludeSemantics(
+        child: _tile(context, borderRadius: borderRadius, isDone: isDone),
+      ),
+    );
+  }
+
+  Widget _tile(
+    BuildContext context, {
+    required BorderRadius borderRadius,
+    required bool isDone,
+  }) {
+    final colors = context.colorScheme;
+    final extColors = context.extendedColors;
+    final foregroundColor = habit.frequency == Frequency.once
+        ? colors.onSurfaceVariant
+        : colors.surfaceBright;
 
     return Material(
       color: habit.frequency == Frequency.once
@@ -165,11 +201,9 @@ class _HabitTile extends StatelessWidget {
                   ),
                 ],
               ),
-              //TODO(kb): Colours for icon below.
               Icon(
-                completedHabitIds.contains(habit.id)
-                    ? Icons.check_box
-                    : Icons.check_box_outline_blank,
+                isDone ? Icons.check_box : Icons.check_box_outline_blank,
+                color: foregroundColor,
               ),
             ],
           ),

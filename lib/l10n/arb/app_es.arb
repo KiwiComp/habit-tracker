@@ -33,5 +33,7 @@
     "createActivityWeekdayWindowWarning": "Ninguno de los días seleccionados cae dentro de este rango: este hábito nunca ocurriría.",
     "createActivitySaveError": "No se pudo guardar. Inténtalo de nuevo.",
     "habitPageNotFoundMessage": "Hábito no encontrado",
-    "taskPageNotFoundMessage": "Tarea no encontrada"
+    "taskPageNotFoundMessage": "Tarea no encontrada",
+    "startActivityOpenDetailsAction": "Abrir detalles",
+    "startActivityToggleDoneHint": "cambiar el estado de completado"
 }
