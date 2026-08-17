@@ -154,12 +154,10 @@ slide-to-reveal work):
   rebuilt around a completion checkbox — rows now show no time at all, which
   is honest rather than misleading, but still not the per-item time a real
   schedule wants.
-- **`selectedDate` is now dead weight** (2026-08-17). It's still a required
-  constructor arg on `ScheduleList` and still threaded down into the private
-  `_HabitTile`, but nothing reads it since the time stamp was removed — the
-  analyzer doesn't flag unused widget fields, so it went unnoticed. Either
-  delete it from both (and from the widget tests) or give it a use; don't
-  leave it as a parameter that looks load-bearing and isn't.
+- `selectedDate` is **no longer dead weight**: removed from `ScheduleList`,
+  `_HabitTile`, and the widget tests (2026-08-17), in the same change that
+  added `Semantics` support — that work already had to touch every call
+  site, so the unused param was deleted rather than left for later.
 - Completion state is **no longer** a gap: `StartBloc` consults
   `watchEntriesOnDate` and feeds `completedHabitIds` into the row's
   checkbox, and tapping a row toggles it via `logEntry`/`unlogEntry`.
