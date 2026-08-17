@@ -9,7 +9,7 @@ import 'package:habits_repository/habits_repository.dart';
 /// Minimal, functional placeholder — there's no reference design for this
 /// yet (unlike `EmptySchedule`/`DayChip`, which came from a screenshot).
 /// Revisit once one exists.
-class ScheduleList extends StatelessWidget {
+class ScheduleList extends StatefulWidget {
   /// Creates a [ScheduleList] for the given [activities], all scheduled on
   /// [selectedDate].
   const ScheduleList({
@@ -43,26 +43,51 @@ class ScheduleList extends StatelessWidget {
   final ValueChanged<Habit> onOpenActivity;
 
   @override
+  State<ScheduleList> createState() => _ScheduleListState();
+}
+
+class _ScheduleListState extends State<ScheduleList> {
+  /// The id of whichever row currently has its slide action open, if any.
+  ///
+  /// Only one row may be open at a time — this is ephemeral, presentation-
+  /// only state specific to this widget, not app state, so it lives here
+  /// rather than in `StartBloc`/`StartState` (same reasoning as
+  /// `StartView`'s `_daySelectorKey`).
+  String? _openHabitId;
+
+  void _onRowOpenChanged(String habitId, {required bool open}) {
+    final nextOpenId = open
+        ? habitId
+        : (_openHabitId == habitId ? null : _openHabitId);
+    if (nextOpenId == _openHabitId) return;
+    setState(() => _openHabitId = nextOpenId);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ListView.separated(
       padding: EdgeInsets.symmetric(
         horizontal: context.spacing.md,
         vertical: context.spacing.sm,
       ),
-      itemCount: activities.length,
+      itemCount: widget.activities.length,
       separatorBuilder: (_, _) => SizedBox(height: context.spacing.sm),
       itemBuilder: (context, index) {
-        final habit = activities[index];
+        final habit = widget.activities[index];
         return _SlideToRevealTile(
           key: ValueKey(habit.id),
           revealWidth: context.spacing.xxxl,
-          action: _OpenDetailAction(onTap: () => onOpenActivity(habit)),
+          isDesignatedOpen: habit.id == _openHabitId,
+          onOpenChanged: (open) => _onRowOpenChanged(habit.id, open: open),
+          action: _OpenDetailAction(
+            onTap: () => widget.onOpenActivity(habit),
+          ),
           childBuilder: (context, revealFraction) => _HabitTile(
             habit: habit,
-            completedHabitIds: completedHabitIds,
-            selectedDate: selectedDate,
+            completedHabitIds: widget.completedHabitIds,
+            selectedDate: widget.selectedDate,
             revealFraction: revealFraction,
-            onTap: () => onActivityTap(habit),
+            onTap: () => widget.onActivityTap(habit),
           ),
         );
       },
@@ -174,6 +199,8 @@ class _SlideToRevealTile extends StatefulWidget {
     required this.revealWidth,
     required this.action,
     required this.childBuilder,
+    required this.isDesignatedOpen,
+    required this.onOpenChanged,
     super.key,
   });
 
@@ -192,6 +219,15 @@ class _SlideToRevealTile extends StatefulWidget {
   /// not wherever the content is constructed.
   final Widget Function(BuildContext context, double revealFraction)
   childBuilder;
+
+  /// Whether the parent still wants this row open. Set to `false` (e.g.
+  /// because another row just opened) to force this one shut, even if it
+  /// was mid-drag or already settled open.
+  final bool isDesignatedOpen;
+
+  /// Called once a drag settles, reporting whether this row ended up open
+  /// or closed — lets the parent track which single row is open.
+  final ValueChanged<bool> onOpenChanged;
 
   @override
   State<_SlideToRevealTile> createState() => _SlideToRevealTileState();
@@ -219,6 +255,17 @@ class _SlideToRevealTileState extends State<_SlideToRevealTile>
   void _onDragEnd(DragEndDetails details) {
     final open = _controller.value > 0.5;
     unawaited(_controller.animateTo(open ? 1 : 0, curve: Curves.easeOut));
+    widget.onOpenChanged(open);
+  }
+
+  @override
+  void didUpdateWidget(covariant _SlideToRevealTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Another row became the designated-open one — close this one even if
+    // it was mid-drag or already settled open.
+    if (oldWidget.isDesignatedOpen && !widget.isDesignatedOpen) {
+      unawaited(_controller.animateTo(0, curve: Curves.easeOut));
+    }
   }
 
   @override
