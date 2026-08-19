@@ -9,6 +9,7 @@ import 'package:habit_tracker/l10n/l10n.dart';
 import 'package:habit_tracker/start_page/start_page.dart';
 import 'package:habit_tracker/start_page/widgets/widgets.dart';
 import 'package:habits_repository/habits_repository.dart';
+import 'package:intl/intl.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockHabitsRepository extends Mock implements HabitsRepository {}
@@ -155,5 +156,33 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byTooltip('Jump to today'), findsNothing);
     });
+
+    testWidgets(
+      'app bar title shows Today for the current day and the formatted '
+      'date otherwise',
+      (tester) async {
+        await pumpStartPage(tester);
+        habits.add([]);
+        await tester.pumpAndSettle();
+
+        expect(find.text('Today'), findsOneWidget);
+
+        final pastDate = DateTime(2020);
+        tester
+            .element(find.byType(DaySelector))
+            .read<StartBloc>()
+            .add(StartDaySelected(pastDate));
+        await tester.pumpAndSettle();
+
+        final expectedTitle = DateFormat(
+          'd MMM yyyy',
+          Localizations.localeOf(
+            tester.element(find.byType(DaySelector)),
+          ).toString(),
+        ).format(pastDate);
+        expect(find.text(expectedTitle), findsOneWidget);
+        expect(find.text('Today'), findsNothing);
+      },
+    );
   });
 }
