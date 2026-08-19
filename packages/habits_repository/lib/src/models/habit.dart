@@ -16,10 +16,20 @@ class Habit {
     required this.frequency,
     required this.startDate,
     required this.createdAt,
-    this.weekdays = const {},
+    Set<int> weekdays = const {},
     this.endDate,
     this.archivedAt,
-  });
+  }) : weekdays = frequency == Frequency.daily ? _allWeekdays : weekdays;
+
+  static const Set<int> _allWeekdays = {
+    DateTime.monday,
+    DateTime.tuesday,
+    DateTime.wednesday,
+    DateTime.thursday,
+    DateTime.friday,
+    DateTime.saturday,
+    DateTime.sunday,
+  };
 
   /// Uniquely identifies this habit.
   final String id;
@@ -31,7 +41,10 @@ class Habit {
   final Frequency frequency;
 
   /// Days this habit is due, using `DateTime.monday` (1) through
-  /// `DateTime.sunday` (7). Empty unless [frequency] is [Frequency.weekdays].
+  /// `DateTime.sunday` (7). Always all seven days when [frequency] is
+  /// [Frequency.daily] — enforced by the constructor regardless of what's
+  /// passed in, so it reads correctly for both newly-created habits and rows
+  /// loaded from storage. Empty when [frequency] is [Frequency.once].
   final Set<int> weekdays;
 
   /// First day the habit applies. Local midnight.

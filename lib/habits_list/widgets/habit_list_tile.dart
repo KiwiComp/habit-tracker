@@ -1,3 +1,4 @@
+import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:habits_repository/habits_repository.dart';
 
@@ -18,6 +19,46 @@ class HabitListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(title: Text(habit.name), onTap: onTap);
+    final colors = context.colorScheme;
+    final extColors = context.extendedColors;
+    final spacing = context.spacing;
+    final borderRadius = BorderRadius.circular(context.radius.md);
+    final foregroundColor = colors.surfaceBright;
+
+    return Material(
+      color: extColors.habitTile,
+      borderRadius: borderRadius,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: borderRadius,
+        child: Padding(
+          padding: EdgeInsets.all(spacing.md),
+          child: Column(
+            spacing: spacing.md,
+            children: [
+              Row(
+                spacing: spacing.sm,
+                children: [
+                  Icon(
+                    Icons.military_tech_outlined,
+                    color: foregroundColor,
+                  ),
+                  Text(
+                    habit.name,
+                    style: AppTextStyle.bodyLarge.copyWith(
+                      color: foregroundColor,
+                    ),
+                  ),
+                ],
+              ),
+              WeekdayChipRow(
+                weekdays: habit.weekdays,
+                onToggled: null,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -1,28 +1,20 @@
 import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:habit_tracker/l10n/l10n.dart';
 import 'package:intl/intl.dart';
 
 /// A reference Monday — used only to format each weekday's abbreviated,
 /// locale-correct label (`DateFormat.E()` needs an actual date).
 final DateTime _referenceMonday = DateTime(2024);
 
-/// A row of toggleable chips for picking which weekdays a
-/// `Frequency.weekdays` habit repeats on.
 class WeekdayChipRow extends StatelessWidget {
-  /// Creates a [WeekdayChipRow].
   const WeekdayChipRow({
-    required this.selected,
+    required this.weekdays,
     required this.onToggled,
     super.key,
   });
 
-  /// The currently selected weekdays, using `DateTime.monday` (1) through
-  /// `DateTime.sunday` (7).
-  final Set<int> selected;
-
-  /// Called with the weekday that was tapped.
-  final ValueChanged<int> onToggled;
+  final Set<int> weekdays;
+  final ValueChanged<int>? onToggled;
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +29,8 @@ class WeekdayChipRow extends StatelessWidget {
           Expanded(
             child: _WeekdayChip(
               weekday: weekday,
-              isSelected: selected.contains(weekday),
-              onTap: () => onToggled(weekday),
+              isSelected: weekdays.contains(weekday),
+              onTap: onToggled != null ? () => onToggled!(weekday) : null,
             ),
           ),
       ],
@@ -55,7 +47,7 @@ class _WeekdayChip extends StatelessWidget {
 
   final int weekday;
   final bool isSelected;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -65,9 +57,10 @@ class _WeekdayChip extends StatelessWidget {
       context,
     ).narrowWeekdays[weekday % DateTime.daysPerWeek];
 
-    final fullName = DateFormat.EEEE(context.locale.toString()).format(
-      _referenceMonday.add(Duration(days: weekday - DateTime.monday)),
-    );
+    final fullName = DateFormat.EEEE(Localizations.localeOf(context).toString())
+        .format(
+          _referenceMonday.add(Duration(days: weekday - DateTime.monday)),
+        );
 
     return Semantics(
       label: fullName,

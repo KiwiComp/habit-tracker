@@ -1,16 +1,14 @@
+import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:habit_tracker/create_activity/create_activity.dart';
 
-import '../../helpers/helpers.dart';
+import '../../helpers/pump_app.dart';
 
 void main() {
   group('WeekdayChipRow', () {
     testWidgets('renders one chip per weekday', (tester) async {
       await tester.pumpApp(
-        Scaffold(
-          body: WeekdayChipRow(selected: const {}, onToggled: (_) {}),
-        ),
+        WeekdayChipRow(weekdays: const {}, onToggled: (_) {}),
       );
 
       // Seven tappable chips, one per day of the week.
@@ -20,11 +18,9 @@ void main() {
     testWidgets('reports Monday as weekday 1 when tapped', (tester) async {
       int? toggled;
       await tester.pumpApp(
-        Scaffold(
-          body: WeekdayChipRow(
-            selected: const {},
-            onToggled: (weekday) => toggled = weekday,
-          ),
+        WeekdayChipRow(
+          weekdays: const {},
+          onToggled: (weekday) => toggled = weekday,
         ),
       );
 
@@ -35,11 +31,9 @@ void main() {
     testWidgets('reports Sunday as weekday 7 when tapped', (tester) async {
       int? toggled;
       await tester.pumpApp(
-        Scaffold(
-          body: WeekdayChipRow(
-            selected: const {},
-            onToggled: (weekday) => toggled = weekday,
-          ),
+        WeekdayChipRow(
+          weekdays: const {},
+          onToggled: (weekday) => toggled = weekday,
         ),
       );
 
@@ -50,11 +44,9 @@ void main() {
     testWidgets('marks a selected weekday via semantics', (tester) async {
       final handle = tester.ensureSemantics();
       await tester.pumpApp(
-        Scaffold(
-          body: WeekdayChipRow(
-            selected: const {DateTime.monday},
-            onToggled: (_) {},
-          ),
+        WeekdayChipRow(
+          weekdays: const {DateTime.monday},
+          onToggled: (_) {},
         ),
       );
 
@@ -63,6 +55,24 @@ void main() {
         isSemantics(isSelected: true),
       );
       handle.dispose();
+    });
+
+    testWidgets('disables tapping when onToggled is null', (tester) async {
+      await tester.pumpApp(
+        const WeekdayChipRow(weekdays: {}, onToggled: null),
+      );
+
+      final inkWells = tester.widgetList<InkWell>(find.byType(InkWell));
+      expect(
+        inkWells,
+        everyElement(
+          isA<InkWell>().having(
+            (inkWell) => inkWell.onTap,
+            'onTap',
+            isNull,
+          ),
+        ),
+      );
     });
   });
 }

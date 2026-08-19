@@ -1,3 +1,4 @@
+import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:habit_tracker/habit_page/bloc/bloc.dart';
@@ -35,15 +36,40 @@ class _HabitView extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.watch<HabitBloc>().state;
     final l10n = context.l10n;
+    final spacing = context.spacing;
 
     return Scaffold(
       appBar: AppBar(),
-      body: Center(
+      body: Padding(
+        padding: EdgeInsets.all(spacing.md),
         child: switch (state.status) {
-          HabitStatus.loading => const CircularProgressIndicator(),
-          HabitStatus.notFound => Text(l10n.habitPageNotFoundMessage),
-          HabitStatus.loaded => Text(state.habit!.name),
+          HabitStatus.loading => const Center(
+            child: CircularProgressIndicator(),
+          ),
+          HabitStatus.notFound => Center(
+            child: Text(l10n.habitPageNotFoundMessage),
+          ),
+          HabitStatus.loaded => _HabitDetails(habit: state.habit!),
         },
+      ),
+    );
+  }
+}
+
+class _HabitDetails extends StatelessWidget {
+  const _HabitDetails({required this.habit});
+
+  final Habit habit;
+
+  @override
+  Widget build(BuildContext context) {
+    final spacing = context.spacing;
+
+    return Material(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: spacing.xs,
+        children: [Text(habit.name)],
       ),
     );
   }

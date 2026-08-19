@@ -84,6 +84,41 @@ void main() {
     });
   });
 
+  group('Habit.weekdays', () {
+    test('is always all seven days for a daily frequency', () {
+      final habit = Habit(
+        id: '1',
+        name: 'Drink water',
+        frequency: Frequency.daily,
+        startDate: DateTime(2026),
+        createdAt: DateTime(2026),
+      );
+
+      expect(habit.weekdays, {
+        DateTime.monday,
+        DateTime.tuesday,
+        DateTime.wednesday,
+        DateTime.thursday,
+        DateTime.friday,
+        DateTime.saturday,
+        DateTime.sunday,
+      });
+    });
+
+    test('ignores an explicitly passed weekdays for a daily frequency', () {
+      final habit = Habit(
+        id: '1',
+        name: 'Drink water',
+        frequency: Frequency.daily,
+        weekdays: const {DateTime.monday},
+        startDate: DateTime(2026),
+        createdAt: DateTime(2026),
+      );
+
+      expect(habit.weekdays.length, 7);
+    });
+  });
+
   group('Habit.isArchived', () {
     test('is false when archivedAt is null', () {
       final habit = Habit(

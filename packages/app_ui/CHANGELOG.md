@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0+4
+
+- Add `WeekdayChipRow`, a row of seven toggleable weekday chips (pass `onToggled: null` for a read-only display).
+
 ## 0.1.0+3
 
 - Add `initialValue` to `AppTextField`, to pre-fill the field when editing existing text.
