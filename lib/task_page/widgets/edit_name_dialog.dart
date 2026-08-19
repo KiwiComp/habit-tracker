@@ -47,8 +47,8 @@ class _EditNameDialogState extends State<_EditNameDialog> {
       ),
       child: Padding(
         padding: EdgeInsets.all(spacing.md),
-        child: SizedBox(
-          width: 320,
+        child: FractionallySizedBox(
+          widthFactor: 1,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             spacing: spacing.md,
