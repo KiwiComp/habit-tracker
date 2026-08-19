@@ -143,5 +143,9 @@
     "startActivityToggleDoneHint": "toggle done",
     "@startActivityToggleDoneHint": {
         "description": "Screen-reader hint for tapping a schedule row, announced as e.g. 'Double tap to toggle done'"
+    },
+    "deleteHabitOrTask": "Delete",
+    "@deleteHabitOrTask": {
+        "description": "Label for delete action on TaskPage and HabitPage"
     }
 }

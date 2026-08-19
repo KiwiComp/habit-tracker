@@ -35,5 +35,6 @@
     "habitPageNotFoundMessage": "Vanan hittades inte",
     "taskPageNotFoundMessage": "Uppgiften hittades inte",
     "startActivityOpenDetailsAction": "Öppna detaljer",
-    "startActivityToggleDoneHint": "ändra klarmarkering"
+    "startActivityToggleDoneHint": "ändra klarmarkering",
+    "deleteHabitOrTask": "Delete"
 }

@@ -1,3 +1,4 @@
+import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -31,18 +32,23 @@ class _TasksListView extends StatelessWidget {
     final tasks = context.select<TasksListBloc, List<Habit>>(
       (bloc) => bloc.state.tasks,
     );
+    final spacing = context.spacing;
 
     return Scaffold(
       appBar: HabitTrackerAppBar(title: context.l10n.startNavTasks),
-      body: ListView.builder(
-        itemCount: tasks.length,
-        itemBuilder: (context, index) {
-          final task = tasks[index];
-          return TaskListTile(
-            task: task,
-            onTap: () => context.push('/task/${task.id}'),
-          );
-        },
+      body: Padding(
+        padding: EdgeInsets.all(spacing.md),
+        child: ListView.separated(
+          itemCount: tasks.length,
+          separatorBuilder: (_, _) => SizedBox(height: context.spacing.sm),
+          itemBuilder: (context, index) {
+            final task = tasks[index];
+            return TaskListTile(
+              task: task,
+              onTap: () => context.push('/task/${task.id}'),
+            );
+          },
+        ),
       ),
     );
   }

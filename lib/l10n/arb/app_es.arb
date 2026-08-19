@@ -35,5 +35,6 @@
     "habitPageNotFoundMessage": "Hábito no encontrado",
     "taskPageNotFoundMessage": "Tarea no encontrada",
     "startActivityOpenDetailsAction": "Abrir detalles",
-    "startActivityToggleDoneHint": "cambiar el estado de completado"
+    "startActivityToggleDoneHint": "cambiar el estado de completado",
+    "deleteHabitOrTask": "Borrar"
 }
