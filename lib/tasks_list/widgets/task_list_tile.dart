@@ -17,11 +17,13 @@ class TaskListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colorScheme;
+    final extColors = context.extendedColors;
     final borderRadius = BorderRadius.circular(context.radius.md);
     final spacing = context.spacing;
+    final foregroundColor = colors.onSurfaceVariant;
 
     return Material(
-      color: colors.tertiary,
+      color: extColors.taskTile,
       borderRadius: borderRadius,
       child: InkWell(
         onTap: onTap,
@@ -33,12 +35,12 @@ class TaskListTile extends StatelessWidget {
             children: [
               Icon(
                 Icons.task_alt_outlined,
-                color: colors.onTertiary,
+                color: foregroundColor,
               ),
               Text(
                 task.name,
                 style: AppTextStyle.bodyLarge.copyWith(
-                  color: colors.onTertiary,
+                  color: foregroundColor,
                 ),
               ),
             ],
