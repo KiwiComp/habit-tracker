@@ -36,5 +36,6 @@
     "taskPageNotFoundMessage": "Uppgiften hittades inte",
     "startActivityOpenDetailsAction": "Öppna detaljer",
     "startActivityToggleDoneHint": "ändra klarmarkering",
-    "deleteHabitOrTask": "Delete"
+    "deleteHabitOrTask": "Delete",
+    "editNameSaveError": "Kunde inte spara. Försök igen."
 }

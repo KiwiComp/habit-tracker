@@ -36,5 +36,6 @@
     "taskPageNotFoundMessage": "Tarea no encontrada",
     "startActivityOpenDetailsAction": "Abrir detalles",
     "startActivityToggleDoneHint": "cambiar el estado de completado",
-    "deleteHabitOrTask": "Borrar"
+    "deleteHabitOrTask": "Borrar",
+    "editNameSaveError": "No se pudo guardar. Inténtalo de nuevo."
 }

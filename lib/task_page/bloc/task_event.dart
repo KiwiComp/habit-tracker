@@ -8,3 +8,11 @@ sealed class TaskEvent {
 final class TaskLoadRequested extends TaskEvent {
   const TaskLoadRequested();
 }
+
+/// The user submitted a new name from `EditNameDialog`.
+final class TaskNameChangeSubmitted extends TaskEvent {
+  const TaskNameChangeSubmitted(this.name);
+
+  /// The new, already-trimmed name to persist.
+  final String name;
+}

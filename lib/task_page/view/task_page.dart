@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:habit_tracker/l10n/l10n.dart';
 import 'package:habit_tracker/task_page/bloc/bloc.dart';
-import 'package:habit_tracker/task_page/widgets/task_details_tile.dart';
+import 'package:habit_tracker/task_page/widgets/widgets.dart';
 import 'package:habits_repository/habits_repository.dart';
 
 /// The full-screen detail/edit page for one task (route `/task/:id`).
 ///
 /// Opened from Today or the Tasks list — same page either way, see
-/// `ROUTING.md`. Stub: loads and confirms the right task opened; the edit
-/// form itself is a later PR.
+/// `ROUTING.md`. Editing the name is wired up; the start-date and delete
+/// tiles are still stubs.
 class TaskPage extends StatelessWidget {
   /// Creates a [TaskPage] for the task with the given [id].
   const TaskPage({required this.id, super.key});
@@ -37,19 +37,30 @@ class _TaskView extends StatelessWidget {
     final l10n = context.l10n;
     final spacing = context.spacing;
 
-    return Scaffold(
-      appBar: AppBar(),
-      body: Padding(
-        padding: EdgeInsets.all(spacing.md),
-        child: switch (state.status) {
-          TaskStatus.loading => const Center(
-            child: CircularProgressIndicator(),
-          ),
-          TaskStatus.notFound => Center(
-            child: Text(l10n.taskPageNotFoundMessage),
-          ),
-          TaskStatus.loaded => _TaskDetails(task: state.task!),
-        },
+    return BlocListener<TaskBloc, TaskState>(
+      listenWhen: (previous, current) =>
+          previous.saveStatus != current.saveStatus,
+      listener: (context, state) {
+        if (state.saveStatus == TaskSaveStatus.failure) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.editNameSaveError)));
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(),
+        body: Padding(
+          padding: EdgeInsets.all(spacing.md),
+          child: switch (state.status) {
+            TaskStatus.loading => const Center(
+              child: CircularProgressIndicator(),
+            ),
+            TaskStatus.notFound => Center(
+              child: Text(l10n.taskPageNotFoundMessage),
+            ),
+            TaskStatus.loaded => _TaskDetails(task: state.task!),
+          },
+        ),
       ),
     );
   }
@@ -72,7 +83,16 @@ class _TaskDetails extends StatelessWidget {
           TaskDetailsTile(
             label: task.name,
             icon: Icons.edit,
-            onTap: () {},
+            onTap: () async {
+              final bloc = context.read<TaskBloc>();
+              final newName = await showEditNameDialog(
+                context,
+                currentName: task.name,
+              );
+              if (newName != null) {
+                bloc.add(TaskNameChangeSubmitted(newName));
+              }
+            },
           ),
           const _Divider(),
           TaskDetailsTile(

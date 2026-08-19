@@ -6,19 +6,21 @@ class AppTextField extends StatefulWidget {
     required this.onChanged,
     required this.label,
     required this.hint,
+    this.initialValue,
     super.key,
   });
 
   final void Function(String)? onChanged;
   final String label;
   final String hint;
+  final String? initialValue;
 
   @override
   State<AppTextField> createState() => _AppTextFieldState();
 }
 
 class _AppTextFieldState extends State<AppTextField> {
-  final _controller = TextEditingController();
+  late final _controller = TextEditingController(text: widget.initialValue);
 
   @override
   void dispose() {

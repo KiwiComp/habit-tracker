@@ -147,5 +147,9 @@
     "deleteHabitOrTask": "Delete",
     "@deleteHabitOrTask": {
         "description": "Label for delete action on TaskPage and HabitPage"
+    },
+    "editNameSaveError": "Couldn't save. Please try again.",
+    "@editNameSaveError": {
+        "description": "Shown in a SnackBar when saving an edited name fails, on TaskPage and HabitPage"
     }
 }
