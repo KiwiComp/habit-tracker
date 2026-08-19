@@ -15,6 +15,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     : super(const TaskState()) {
     on<TaskLoadRequested>(_onLoadRequested);
     on<TaskNameChangeSubmitted>(_onNameChangeSubmitted);
+    on<TaskArchiveRequestSubmitted>(_onTaskArchiveRequestSubmitted);
     add(const TaskLoadRequested());
   }
 
@@ -58,6 +59,32 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       addError(error, stackTrace);
       emit(state.copyWith(saveStatus: TaskSaveStatus.failure));
       emit(state.copyWith(saveStatus: TaskSaveStatus.idle));
+    }
+  }
+
+  Future<void> _onTaskArchiveRequestSubmitted(
+    TaskArchiveRequestSubmitted event,
+    Emitter<TaskState> emit,
+  ) async {
+    final currentTask = state.task;
+    if (currentTask == null) return;
+
+    emit(state.copyWith(archiveStatus: TaskArchiveStatus.archiving));
+    try {
+      await _habitsRepository.archiveHabit(currentTask.id);
+      emit(
+        state.copyWith(
+          archiveStatus: TaskArchiveStatus.success,
+        ),
+      );
+    } on Exception catch (error, stackTrace) {
+      // Reported through the existing BlocObserver.onError logging (see
+      // AppBlocObserver) rather than rethrown, so the bloc keeps working —
+      // emitting failure below resets to idle instead of leaving the delete
+      // tile stuck mid-request after a failed retry.
+      addError(error, stackTrace);
+      emit(state.copyWith(archiveStatus: TaskArchiveStatus.failure));
+      emit(state.copyWith(archiveStatus: TaskArchiveStatus.idle));
     }
   }
 }

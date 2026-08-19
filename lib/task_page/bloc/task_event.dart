@@ -16,3 +16,9 @@ final class TaskNameChangeSubmitted extends TaskEvent {
   /// The new, already-trimmed name to persist.
   final String name;
 }
+
+/// The user confirmed archiving (soft-deleting) the task from
+/// `ArchiveConfirmationDialog`.
+final class TaskArchiveRequestSubmitted extends TaskEvent {
+  const TaskArchiveRequestSubmitted();
+}

@@ -86,5 +86,73 @@ void main() {
 
       await tester.pumpAndSettle(); // drain the SnackBar timer
     });
+
+    testWidgets('archiving via the delete tile pops the page on success', (
+      tester,
+    ) async {
+      when(
+        () => habitsRepository.archiveHabit(task.id),
+      ).thenAnswer((_) async {});
+
+      await tester.pumpApp(
+        Scaffold(
+          body: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => TaskPage(id: task.id)),
+              ),
+              child: const Text('open'),
+            ),
+          ),
+        ),
+        habitsRepository: habitsRepository,
+      );
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Delete'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Yes'));
+      await tester.pumpAndSettle();
+
+      verify(() => habitsRepository.archiveHabit(task.id)).called(1);
+      expect(find.byType(TaskPage), findsNothing);
+      expect(find.text('open'), findsOneWidget);
+    });
+
+    testWidgets('shows a SnackBar when archiving fails', (tester) async {
+      when(
+        () => habitsRepository.archiveHabit(task.id),
+      ).thenThrow(Exception('boom'));
+      await pumpPage(tester);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Delete'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Yes'));
+      await tester.pump(); // process the archive
+      await tester.pump(const Duration(seconds: 1)); // let the SnackBar in
+
+      expect(find.text("Couldn't delete. Please try again."), findsOneWidget);
+      // Still on the task page — a failed archive doesn't pop.
+      expect(find.byType(TaskPage), findsOneWidget);
+
+      await tester.pumpAndSettle(); // drain the SnackBar timer
+    });
+
+    testWidgets('tapping No on the confirmation dialog archives nothing', (
+      tester,
+    ) async {
+      await pumpPage(tester);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Delete'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(ElevatedButton, 'No'));
+      await tester.pumpAndSettle();
+
+      verifyNever(() => habitsRepository.archiveHabit(any()));
+      expect(find.byType(TaskPage), findsOneWidget);
+    });
   });
 }

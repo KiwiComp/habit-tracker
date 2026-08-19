@@ -133,6 +133,13 @@ void main() {
       expect(active, hasLength(1));
       expect(active.single.isArchived, isFalse);
     });
+
+    test('throws when no habit exists for the id', () async {
+      expect(
+        () => repository.archiveHabit('missing'),
+        throwsA(isException),
+      );
+    });
   });
 
   group('updateHabit', () {
@@ -155,6 +162,18 @@ void main() {
         expect(habits.single.startDate, DateTime(2026, 3, 8));
       },
     );
+
+    test('throws when no habit exists for the id', () async {
+      final habit = Habit(
+        id: 'missing',
+        name: 'Drink water',
+        frequency: Frequency.daily,
+        startDate: DateTime(2026),
+        createdAt: DateTime(2026),
+      );
+
+      expect(() => repository.updateHabit(habit), throwsA(isException));
+    });
   });
 
   group('deleteHabit', () {

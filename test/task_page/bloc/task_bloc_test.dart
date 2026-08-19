@@ -150,5 +150,89 @@ void main() {
         errors: () => [isA<Exception>()],
       );
     });
+
+    group('TaskArchiveRequestSubmitted', () {
+      blocTest<TaskBloc, TaskState>(
+        'does nothing before the task has loaded',
+        setUp: () => when(
+          () => habitsRepository.getHabit(task.id),
+        ).thenAnswer((_) async => null),
+        build: buildBloc,
+        act: (bloc) => bloc.add(const TaskArchiveRequestSubmitted()),
+        skip: 1, // the initial (notFound) load
+        expect: () => const <TaskState>[],
+        verify: (_) =>
+            verifyNever(() => habitsRepository.archiveHabit(any())),
+      );
+
+      blocTest<TaskBloc, TaskState>(
+        'archives the task and reports success',
+        setUp: () {
+          when(
+            () => habitsRepository.getHabit(task.id),
+          ).thenAnswer((_) async => task);
+          when(
+            () => habitsRepository.archiveHabit(task.id),
+          ).thenAnswer((_) async {});
+        },
+        build: buildBloc,
+        act: (bloc) async {
+          await Future<void>.delayed(Duration.zero);
+          bloc.add(const TaskArchiveRequestSubmitted());
+        },
+        skip: 1, // the initial load
+        expect: () => [
+          isA<TaskState>().having(
+            (s) => s.archiveStatus,
+            'archiveStatus',
+            TaskArchiveStatus.archiving,
+          ),
+          isA<TaskState>().having(
+            (s) => s.archiveStatus,
+            'archiveStatus',
+            TaskArchiveStatus.success,
+          ),
+        ],
+        verify: (_) {
+          verify(() => habitsRepository.archiveHabit(task.id)).called(1);
+        },
+      );
+
+      blocTest<TaskBloc, TaskState>(
+        'on failure emits archiving → failure → idle and reports the error',
+        setUp: () {
+          when(
+            () => habitsRepository.getHabit(task.id),
+          ).thenAnswer((_) async => task);
+          when(
+            () => habitsRepository.archiveHabit(task.id),
+          ).thenThrow(Exception('boom'));
+        },
+        build: buildBloc,
+        act: (bloc) async {
+          await Future<void>.delayed(Duration.zero);
+          bloc.add(const TaskArchiveRequestSubmitted());
+        },
+        skip: 1, // the initial load
+        expect: () => [
+          isA<TaskState>().having(
+            (s) => s.archiveStatus,
+            'archiveStatus',
+            TaskArchiveStatus.archiving,
+          ),
+          isA<TaskState>().having(
+            (s) => s.archiveStatus,
+            'archiveStatus',
+            TaskArchiveStatus.failure,
+          ),
+          isA<TaskState>().having(
+            (s) => s.archiveStatus,
+            'archiveStatus',
+            TaskArchiveStatus.idle,
+          ),
+        ],
+        errors: () => [isA<Exception>()],
+      );
+    });
   });
 }

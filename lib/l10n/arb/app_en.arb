@@ -151,5 +151,26 @@
     "editNameSaveError": "Couldn't save. Please try again.",
     "@editNameSaveError": {
         "description": "Shown in a SnackBar when saving an edited name fails, on TaskPage and HabitPage"
+    },
+    "archiveTaskError": "Couldn't delete. Please try again.",
+    "@archiveTaskError": {
+        "description": "Shown in a SnackBar when archiving (soft-deleting) fails, on TaskPage and HabitPage"
+    },
+    "commonYes": "Yes",
+    "@commonYes": {
+        "description": "Generic affirmative confirmation button label, reusable anywhere a Yes/No choice is needed"
+    },
+    "commonNo": "No",
+    "@commonNo": {
+        "description": "Generic negative confirmation button label, reusable anywhere a Yes/No choice is needed"
+    },
+    "deleteConfirmationMessage": "Do you wish to delete \"{name}\"?",
+    "@deleteConfirmationMessage": {
+        "description": "Confirmation dialog message before deleting (archiving) a habit or task, on TaskPage and HabitPage",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
     }
 }

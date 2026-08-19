@@ -12,12 +12,13 @@ void main() {
   );
 
   group('TaskState', () {
-    test('defaults to loading, no task, idle save', () {
+    test('defaults to loading, no task, idle save, idle archive', () {
       const state = TaskState();
 
       expect(state.status, TaskStatus.loading);
       expect(state.task, isNull);
       expect(state.saveStatus, TaskSaveStatus.idle);
+      expect(state.archiveStatus, TaskArchiveStatus.idle);
     });
 
     group('copyWith', () {
@@ -31,6 +32,18 @@ void main() {
         expect(updated.saveStatus, TaskSaveStatus.saving);
       });
 
+      test('replaces archiveStatus and keeps the rest', () {
+        final state = TaskState(status: TaskStatus.loaded, task: task);
+
+        final updated = state.copyWith(
+          archiveStatus: TaskArchiveStatus.archiving,
+        );
+
+        expect(updated.status, TaskStatus.loaded);
+        expect(updated.task, task);
+        expect(updated.archiveStatus, TaskArchiveStatus.archiving);
+      });
+
       test('falls back to the receiver when no argument is given', () {
         final state = TaskState(status: TaskStatus.loaded, task: task);
 
@@ -39,7 +52,8 @@ void main() {
     });
 
     group('equality', () {
-      test('equal when status, task, and saveStatus all match', () {
+      test('equal when status, task, saveStatus, and archiveStatus '
+          'all match', () {
         expect(
           TaskState(status: TaskStatus.loaded, task: task),
           TaskState(status: TaskStatus.loaded, task: task),
@@ -54,6 +68,19 @@ void main() {
               status: TaskStatus.loaded,
               task: task,
               saveStatus: TaskSaveStatus.saving,
+            ),
+          ),
+        );
+      });
+
+      test('unequal when archiveStatus differs', () {
+        expect(
+          TaskState(status: TaskStatus.loaded, task: task),
+          isNot(
+            TaskState(
+              status: TaskStatus.loaded,
+              task: task,
+              archiveStatus: TaskArchiveStatus.archiving,
             ),
           ),
         );

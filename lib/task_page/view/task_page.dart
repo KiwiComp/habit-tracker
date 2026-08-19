@@ -39,12 +39,21 @@ class _TaskView extends StatelessWidget {
 
     return BlocListener<TaskBloc, TaskState>(
       listenWhen: (previous, current) =>
-          previous.saveStatus != current.saveStatus,
+          previous.saveStatus != current.saveStatus ||
+          previous.archiveStatus != current.archiveStatus,
       listener: (context, state) {
         if (state.saveStatus == TaskSaveStatus.failure) {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(l10n.editNameSaveError)));
+        }
+        if (state.archiveStatus == TaskArchiveStatus.failure) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.archiveTaskError)));
+        }
+        if (state.archiveStatus == TaskArchiveStatus.success) {
+          Navigator.of(context).pop();
         }
       },
       child: Scaffold(
@@ -74,6 +83,7 @@ class _TaskDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final bloc = context.read<TaskBloc>();
 
     return Material(
       child: Column(
@@ -84,7 +94,6 @@ class _TaskDetails extends StatelessWidget {
             label: task.name,
             icon: Icons.edit,
             onTap: () async {
-              final bloc = context.read<TaskBloc>();
               final newName = await showEditNameDialog(
                 context,
                 currentName: task.name,
@@ -105,7 +114,15 @@ class _TaskDetails extends StatelessWidget {
           TaskDetailsTile(
             label: l10n.deleteHabitOrTask,
             icon: Icons.delete,
-            onTap: () {},
+            onTap: () async {
+              final confirmed = await showArchiveConfirmationDialog(
+                context,
+                name: task.name,
+              );
+              if (confirmed) {
+                bloc.add(const TaskArchiveRequestSubmitted());
+              }
+            },
           ),
         ],
       ),
