@@ -35,5 +35,11 @@
     "habitPageNotFoundMessage": "Hábito no encontrado",
     "taskPageNotFoundMessage": "Tarea no encontrada",
     "startActivityOpenDetailsAction": "Abrir detalles",
-    "startActivityToggleDoneHint": "cambiar el estado de completado"
+    "startActivityToggleDoneHint": "cambiar el estado de completado",
+    "deleteHabitOrTask": "Borrar",
+    "editNameSaveError": "No se pudo guardar. Inténtalo de nuevo.",
+    "archiveTaskError": "No se pudo borrar. Inténtalo de nuevo.",
+    "commonYes": "Sí",
+    "commonNo": "No",
+    "deleteConfirmationMessage": "¿Deseas borrar \"{name}\"?"
 }

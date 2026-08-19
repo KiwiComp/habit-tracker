@@ -1,6 +1,6 @@
 name: habits_repository
 description: Local persistence for habits and their completion history.
-version: 0.1.0+4
+version: 0.1.0+5
 publish_to: none
 
 environment:

@@ -213,24 +213,52 @@ SnackBar-on-failure, see its handler in
 `lib/create_activity/bloc/create_activity_bloc.dart`) is the intended
 pattern to reuse once this gets built.
 
+**Amended 2026-08-19 — `TaskPage` fully built.** It now has a working name
+edit (`EditNameDialog` + `TaskNameChangeSubmitted`), a start-date edit
+(`showDatePicker` directly from `_TaskDetails` + `TaskStartDateChangeSubmitted`),
+and a delete action (soft-delete via `ArchiveConfirmationDialog` +
+`TaskArchiveRequestSubmitted` → `HabitsRepository.archiveHabit`, popping
+the page on success). Name and start-date edits deliberately **share**
+`TaskSaveStatus`/`saveStatus` — both are the same kind of operation (an
+in-place field update via `updateHabit`), so one status enum and one
+`BlocListener` failure branch (`editNameSaveError`) covers both, rather than
+adding a third near-identical enum. Archiving is a genuinely different
+operation (soft-delete + pop-on-success) and keeps its own
+`TaskArchiveStatus`/`archiveStatus`. All three follow the same underlying
+status-enum + `BlocListener` + SnackBar-on-failure shape referenced above.
+No tiles left stubbed on `TaskPage`. `HabitPage` hasn't been touched at
+all — no name edit, no start-date edit, no delete, still just loads and
+shows the name.
+
 ## Untested feature folders — pending work, no longer deferred
 
 The **"defer tests until the screen is designed" convention is retired**
 (2026-08-12, stated by the user). These are now pending work to write, not
 accepted gaps. Done so far: `packages/app_ui`, `packages/error_tracking`,
-`lib/create_activity`, `lib/start_page`, `lib/widgets`, `lib/routing`, and
-`packages/habits_repository` (all 100% except habits_repository's single
-untestable DB-default line). Still to do:
+`lib/create_activity`, `lib/start_page`, `lib/widgets`, `lib/routing`,
+`lib/task_page`, and `packages/habits_repository` (all 100% except
+habits_repository's single untestable DB-default line). Still to do:
 
 - `lib/habits_list`, `lib/tasks_list` (`HabitsListBloc`/`TasksListBloc` +
   `HabitListTile`/`TaskListTile` + views)
-- `lib/habit_page`, `lib/task_page` (`HabitBloc`/`TaskBloc` + views)
+- `lib/habit_page` (`HabitBloc` + view)
 - loose files: `lib/bootstrap.dart`, `lib/main_*.dart`,
   `lib/app/app_bloc_observer.dart`
 
 Some of these widgets/screens are still visually placeholder; that doesn't
 block testing their current behavior (a bare `ListTile` per row is still
 testable). Bring each into CI (see "CI coverage" above) as its suite lands.
+
+**Amended 2026-08-19 — `lib/task_page` done, 100% line coverage, no
+exceptions.** `TaskBloc` (load, name-edit save success/failure, start-date
+save success/failure, archive success/failure), `TaskState`'s `copyWith`/
+equality across all three status enums, and every widget (`TaskPage`,
+`EditNameDialog`, `ArchiveConfirmationDialog`, `TaskDetailsTile`) are
+covered. The start-date widget test drives the real `showDatePicker` UI
+(tap a day cell, tap OK — same idiom as
+`test/create_activity/widgets/start_date_field_test.dart`), not just the
+bloc event directly. `lib/habit_page` is now the only page-level folder
+left on this list besides `habits_list`/`tasks_list`.
 
 ## habits_repository coverage — resolved 2026-08-13
 
@@ -253,6 +281,43 @@ in a unit test. Left honest (uncovered) rather than ignored.
 Gate raised **90% → 95%** (2026-08-13) to match the real 99.4%, keeping the
 one untestable real-DB-default line as honest headroom rather than ignoring
 it to force 100%.
+
+## `unarchiveHabit`/`deleteHabit` still silently no-op on a missing id
+
+`HabitsRepository.updateHabit` and `archiveHabit` were hardened
+(2026-08-19) to throw when the given id doesn't match any row, instead of
+resolving successfully having written nothing — surfaced by `TaskPage`'s
+delete flow silently "succeeding" (and popping the page) against a
+nonexistent id. `unarchiveHabit` and `deleteHabit` have the identical shape
+(`.write(...)`/`.go()` return an affected-row count that's discarded) and
+so have the identical gap, but weren't touched since nothing in the app
+currently calls either against a possibly-stale id. Worth the same
+treatment once `HabitPage`/`TasksListPage` grow an unarchive or hard-delete
+action that can race a deletion elsewhere.
+
+## TaskPage's "Delete" tile actually archives, not deletes
+
+`TaskDetailsTile`'s delete row (`l10n.deleteHabitOrTask`, "Delete") and its
+confirmation dialog (`l10n.deleteConfirmationMessage`, "Do you wish to
+delete...?") both read as a hard delete to the user, but the action behind
+them (`TaskArchiveRequestSubmitted` → `HabitsRepository.archiveHabit`) is a
+soft delete — the row and its entries stay in the database with
+`archivedAt` set, just filtered out of `watchHabits()`'s default result.
+
+This is deliberate, not an oversight: there's no archived-items view
+anywhere in the app yet, so "archive" and "delete" are functionally
+identical from the user's perspective today — an archived task is gone from
+every list they can see, same as a real delete would look. "Delete" was
+chosen as the user-facing word because it's the honest description of what
+the user currently experiences, not because the underlying operation was
+misidentified.
+
+**Revisit once an archived-items view exists** (`HabitPage`/`TasksListPage`
+gaining a way to browse/unarchive, per the entry above): at that point
+"Delete" becomes misleading — the item hasn't actually gone anywhere — and
+the UI should either relabel this action (e.g. "Archive", with a separate
+real "Delete" for `HabitsRepository.deleteHabit`) or surface archived items
+somewhere the "Delete" label's implied permanence is no longer contradicted.
 
 ## Leftover counter boilerplate — resolved 2026-08-10
 

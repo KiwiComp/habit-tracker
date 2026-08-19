@@ -76,14 +76,30 @@ class HabitsRepository {
   }
 
   /// Persists edits to an existing habit (name, schedule, etc).
-  Future<void> updateHabit(Habit habit) =>
-      _database.update(_database.habitsTable).replace(_habitToCompanion(habit));
+  ///
+  /// Throws if [habit]'s id doesn't match any existing row — e.g. a stale
+  /// reference to a habit deleted elsewhere while this one was open.
+  Future<void> updateHabit(Habit habit) async {
+    final replaced = await _database
+        .update(_database.habitsTable)
+        .replace(_habitToCompanion(habit));
+    if (!replaced) {
+      throw Exception('No habit found with id: ${habit.id}');
+    }
+  }
 
   /// Archives a habit. Its entries are kept, so past history survives.
-  Future<void> archiveHabit(String id) =>
-      (_database.update(_database.habitsTable)
-            ..where((table) => table.id.equals(id)))
-          .write(HabitsTableCompanion(archivedAt: Value(DateTime.now())));
+  ///
+  /// Throws if [id] doesn't match any existing habit.
+  Future<void> archiveHabit(String id) async {
+    final rowsAffected =
+        await (_database.update(_database.habitsTable)
+              ..where((table) => table.id.equals(id)))
+            .write(HabitsTableCompanion(archivedAt: Value(DateTime.now())));
+    if (rowsAffected == 0) {
+      throw Exception('No habit found with id: $id');
+    }
+  }
 
   /// Restores a previously archived habit.
   Future<void> unarchiveHabit(String id) =>

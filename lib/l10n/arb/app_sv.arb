@@ -35,5 +35,11 @@
     "habitPageNotFoundMessage": "Vanan hittades inte",
     "taskPageNotFoundMessage": "Uppgiften hittades inte",
     "startActivityOpenDetailsAction": "Öppna detaljer",
-    "startActivityToggleDoneHint": "ändra klarmarkering"
+    "startActivityToggleDoneHint": "ändra klarmarkering",
+    "deleteHabitOrTask": "Delete",
+    "editNameSaveError": "Kunde inte spara. Försök igen.",
+    "archiveTaskError": "Kunde inte ta bort. Försök igen.",
+    "commonYes": "Ja",
+    "commonNo": "Nej",
+    "deleteConfirmationMessage": "Vill du ta bort \"{name}\"?"
 }

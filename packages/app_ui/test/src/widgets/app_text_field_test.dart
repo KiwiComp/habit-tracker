@@ -53,6 +53,21 @@ void main() {
       expect(find.byIcon(Icons.cancel), findsOneWidget);
     });
 
+    testWidgets('pre-fills the field from initialValue', (tester) async {
+      await tester.pumpApp(
+        AppTextField(
+          onChanged: (_) {},
+          label: 'Name',
+          hint: 'hint',
+          initialValue: 'Renew passport',
+        ),
+      );
+
+      expect(find.text('Renew passport'), findsOneWidget);
+      // A pre-filled field starts non-empty, so the clear button is visible.
+      expect(find.byIcon(Icons.cancel), findsOneWidget);
+    });
+
     testWidgets('clear button empties the field and reports the change', (
       tester,
     ) async {

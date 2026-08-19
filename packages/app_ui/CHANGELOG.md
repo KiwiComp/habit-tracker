@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0+3
+
+- Add `initialValue` to `AppTextField`, to pre-fill the field when editing existing text.
+
 ## 0.1.0+2
 
 - Add `onAccent` to `AppExtendedColors` for content drawn on top of `accent`-colored surfaces.

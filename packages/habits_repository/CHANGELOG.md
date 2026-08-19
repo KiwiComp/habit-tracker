@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0+5
+
+- `updateHabit` and `archiveHabit` now throw if the given habit's id doesn't match any existing row, instead of silently succeeding with nothing changed. Previously an update/archive against a stale or nonexistent id (e.g. a habit deleted elsewhere while its detail page was still open) would resolve normally even though it wrote nothing — callers watching for a save/archive failure had no way to detect it.
+
 ## 0.1.0+4
 
 - Add `HabitsRepository.getHabit(String id)`, a one-shot lookup by id — needed by the new go_router-based habit/task detail routes, which must be able to self-load from a bare id (e.g. a tapped notification with no in-app origin).
