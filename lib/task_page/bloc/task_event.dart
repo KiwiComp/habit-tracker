@@ -17,6 +17,15 @@ final class TaskNameChangeSubmitted extends TaskEvent {
   final String name;
 }
 
+/// The user picked a new start date via `showDatePicker`, from
+/// `_TaskDetails`.
+final class TaskStartDateChangeSubmitted extends TaskEvent {
+  const TaskStartDateChangeSubmitted(this.date);
+
+  /// The new start date to persist.
+  final DateTime date;
+}
+
 /// The user confirmed archiving (soft-deleting) the task from
 /// `ArchiveConfirmationDialog`.
 final class TaskArchiveRequestSubmitted extends TaskEvent {

@@ -213,17 +213,22 @@ SnackBar-on-failure, see its handler in
 `lib/create_activity/bloc/create_activity_bloc.dart`) is the intended
 pattern to reuse once this gets built.
 
-**Amended 2026-08-19 — `TaskPage` partially built.** It now has a working
-name edit (`EditNameDialog` + `TaskNameChangeSubmitted`) and a delete
-action (soft-delete via `ArchiveConfirmationDialog` +
+**Amended 2026-08-19 — `TaskPage` fully built.** It now has a working name
+edit (`EditNameDialog` + `TaskNameChangeSubmitted`), a start-date edit
+(`showDatePicker` directly from `_TaskDetails` + `TaskStartDateChangeSubmitted`),
+and a delete action (soft-delete via `ArchiveConfirmationDialog` +
 `TaskArchiveRequestSubmitted` → `HabitsRepository.archiveHabit`, popping
-the page on success), both following the exact status-enum +
-`BlocListener` + SnackBar-on-failure shape referenced above — `TaskState`
-gained `saveStatus` and `archiveStatus` as two independent status enums for
-this. Still open on `TaskPage`: the start-date tile is a stub
-(`onTap: () {}` in `lib/task_page/view/task_page.dart`). `HabitPage` hasn't
-been touched at all — no name edit, no delete, still just loads and shows
-the name.
+the page on success). Name and start-date edits deliberately **share**
+`TaskSaveStatus`/`saveStatus` — both are the same kind of operation (an
+in-place field update via `updateHabit`), so one status enum and one
+`BlocListener` failure branch (`editNameSaveError`) covers both, rather than
+adding a third near-identical enum. Archiving is a genuinely different
+operation (soft-delete + pop-on-success) and keeps its own
+`TaskArchiveStatus`/`archiveStatus`. All three follow the same underlying
+status-enum + `BlocListener` + SnackBar-on-failure shape referenced above.
+No tiles left stubbed on `TaskPage`. `HabitPage` hasn't been touched at
+all — no name edit, no start-date edit, no delete, still just loads and
+shows the name.
 
 ## Untested feature folders — pending work, no longer deferred
 
@@ -244,15 +249,16 @@ Some of these widgets/screens are still visually placeholder; that doesn't
 block testing their current behavior (a bare `ListTile` per row is still
 testable). Bring each into CI (see "CI coverage" above) as its suite lands.
 
-**Amended 2026-08-19 — `lib/task_page` done.** `TaskBloc` (load, name-edit
+**Amended 2026-08-19 — `lib/task_page` done, 100% line coverage, no
+exceptions.** `TaskBloc` (load, name-edit save success/failure, start-date
 save success/failure, archive success/failure), `TaskState`'s `copyWith`/
 equality across all three status enums, and every widget (`TaskPage`,
 `EditNameDialog`, `ArchiveConfirmationDialog`, `TaskDetailsTile`) are
-covered — 100% line coverage except one line: the still-stub start-date
-tile's `onTap: () {}`, which nothing exercises because it does nothing yet
-(see the "no edit form yet" entry above, not a test gap). `lib/habit_page`
-is now the only page-level folder left on this list besides
-`habits_list`/`tasks_list`.
+covered. The start-date widget test drives the real `showDatePicker` UI
+(tap a day cell, tap OK — same idiom as
+`test/create_activity/widgets/start_date_field_test.dart`), not just the
+bloc event directly. `lib/habit_page` is now the only page-level folder
+left on this list besides `habits_list`/`tasks_list`.
 
 ## habits_repository coverage — resolved 2026-08-13
 

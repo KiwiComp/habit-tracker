@@ -15,6 +15,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     : super(const TaskState()) {
     on<TaskLoadRequested>(_onLoadRequested);
     on<TaskNameChangeSubmitted>(_onNameChangeSubmitted);
+    on<TaskStartDateChangeSubmitted>(_onTaskStartDateChangeSubmitted);
     on<TaskArchiveRequestSubmitted>(_onTaskArchiveRequestSubmitted);
     add(const TaskLoadRequested());
   }
@@ -56,6 +57,30 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       // AppBlocObserver) rather than rethrown, so the bloc keeps working —
       // emitting failure below resets to idle instead of leaving the sheet's
       // Save button stuck disabled after a failed retry.
+      addError(error, stackTrace);
+      emit(state.copyWith(saveStatus: TaskSaveStatus.failure));
+      emit(state.copyWith(saveStatus: TaskSaveStatus.idle));
+    }
+  }
+
+  Future<void> _onTaskStartDateChangeSubmitted(
+    TaskStartDateChangeSubmitted event,
+    Emitter<TaskState> emit,
+  ) async {
+    final currentTask = state.task;
+    if (currentTask == null) return;
+
+    emit(state.copyWith(saveStatus: TaskSaveStatus.saving));
+    try {
+      final updatedTask = currentTask.copyWith(startDate: event.date);
+      await _habitsRepository.updateHabit(updatedTask);
+      emit(
+        state.copyWith(
+          saveStatus: TaskSaveStatus.success,
+          task: updatedTask,
+        ),
+      );
+    } on Exception catch (error, stackTrace) {
       addError(error, stackTrace);
       emit(state.copyWith(saveStatus: TaskSaveStatus.failure));
       emit(state.copyWith(saveStatus: TaskSaveStatus.idle));

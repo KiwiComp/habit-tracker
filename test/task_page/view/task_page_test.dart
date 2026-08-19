@@ -87,6 +87,63 @@ void main() {
       await tester.pumpAndSettle(); // drain the SnackBar timer
     });
 
+    testWidgets('editing the start date persists it and updates the tile', (
+      tester,
+    ) async {
+      when(
+        () => habitsRepository.updateHabit(any()),
+      ).thenAnswer((_) async {});
+      await pumpPage(tester);
+      await tester.pumpAndSettle();
+
+      expect(find.text('5/1/2026'), findsOneWidget);
+
+      await tester.tap(find.text('Date'));
+      await tester.pumpAndSettle();
+
+      // The picker opens on January 2026 (task.startDate); pick the 20th.
+      await tester.tap(find.text('20'));
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+
+      verify(
+        () => habitsRepository.updateHabit(
+          any(
+            that: isA<Habit>().having(
+              (h) => h.startDate,
+              'startDate',
+              DateTime(2026, 1, 20),
+            ),
+          ),
+        ),
+      ).called(1);
+      expect(find.text('20/1/2026'), findsOneWidget);
+      expect(find.text('5/1/2026'), findsNothing);
+    });
+
+    testWidgets('shows a SnackBar when the start date save fails', (
+      tester,
+    ) async {
+      when(
+        () => habitsRepository.updateHabit(any()),
+      ).thenThrow(Exception('boom'));
+      await pumpPage(tester);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Date'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('20'));
+      await tester.tap(find.text('OK'));
+      await tester.pump(); // process the save
+      await tester.pump(const Duration(seconds: 1)); // let the SnackBar in
+
+      expect(find.text("Couldn't save. Please try again."), findsOneWidget);
+      // The displayed date is left unchanged after a failed save.
+      expect(find.text('5/1/2026'), findsOneWidget);
+
+      await tester.pumpAndSettle(); // drain the SnackBar timer
+    });
+
     testWidgets('archiving via the delete tile pops the page on success', (
       tester,
     ) async {

@@ -151,6 +151,110 @@ void main() {
       );
     });
 
+    group('TaskStartDateChangeSubmitted', () {
+      final newDate = DateTime(2026, 2);
+
+      blocTest<TaskBloc, TaskState>(
+        'does nothing before the task has loaded',
+        setUp: () => when(
+          () => habitsRepository.getHabit(task.id),
+        ).thenAnswer((_) async => null),
+        build: buildBloc,
+        act: (bloc) => bloc.add(TaskStartDateChangeSubmitted(newDate)),
+        skip: 1, // the initial (notFound) load
+        expect: () => const <TaskState>[],
+        verify: (_) => verifyNever(() => habitsRepository.updateHabit(any())),
+      );
+
+      blocTest<TaskBloc, TaskState>(
+        'persists the new start date and reports success',
+        setUp: () {
+          when(
+            () => habitsRepository.getHabit(task.id),
+          ).thenAnswer((_) async => task);
+          when(() => habitsRepository.updateHabit(any())).thenAnswer(
+            (_) async {},
+          );
+        },
+        build: buildBloc,
+        act: (bloc) async {
+          await Future<void>.delayed(Duration.zero);
+          bloc.add(TaskStartDateChangeSubmitted(newDate));
+        },
+        skip: 1, // the initial load
+        expect: () => [
+          isA<TaskState>().having(
+            (s) => s.saveStatus,
+            'saveStatus',
+            TaskSaveStatus.saving,
+          ),
+          isA<TaskState>()
+              .having(
+                (s) => s.saveStatus,
+                'saveStatus',
+                TaskSaveStatus.success,
+              )
+              .having((s) => s.task?.startDate, 'task.startDate', newDate),
+        ],
+        verify: (_) {
+          verify(
+            () => habitsRepository.updateHabit(
+              any(
+                that: isA<Habit>().having(
+                  (h) => h.startDate,
+                  'startDate',
+                  newDate,
+                ),
+              ),
+            ),
+          ).called(1);
+        },
+      );
+
+      blocTest<TaskBloc, TaskState>(
+        'on failure emits saving → failure → idle and reports the error, '
+        'keeping the old start date',
+        setUp: () {
+          when(
+            () => habitsRepository.getHabit(task.id),
+          ).thenAnswer((_) async => task);
+          when(
+            () => habitsRepository.updateHabit(any()),
+          ).thenThrow(Exception('boom'));
+        },
+        build: buildBloc,
+        act: (bloc) async {
+          await Future<void>.delayed(Duration.zero);
+          bloc.add(TaskStartDateChangeSubmitted(newDate));
+        },
+        skip: 1, // the initial load
+        expect: () => [
+          isA<TaskState>().having(
+            (s) => s.saveStatus,
+            'saveStatus',
+            TaskSaveStatus.saving,
+          ),
+          isA<TaskState>()
+              .having(
+                (s) => s.saveStatus,
+                'saveStatus',
+                TaskSaveStatus.failure,
+              )
+              .having(
+                (s) => s.task?.startDate,
+                'task.startDate',
+                task.startDate,
+              ),
+          isA<TaskState>().having(
+            (s) => s.saveStatus,
+            'saveStatus',
+            TaskSaveStatus.idle,
+          ),
+        ],
+        errors: () => [isA<Exception>()],
+      );
+    });
+
     group('TaskArchiveRequestSubmitted', () {
       blocTest<TaskBloc, TaskState>(
         'does nothing before the task has loaded',

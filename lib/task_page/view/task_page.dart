@@ -9,8 +9,8 @@ import 'package:habits_repository/habits_repository.dart';
 /// The full-screen detail/edit page for one task (route `/task/:id`).
 ///
 /// Opened from Today or the Tasks list — same page either way, see
-/// `ROUTING.md`. Editing the name is wired up; the start-date and delete
-/// tiles are still stubs.
+/// `ROUTING.md`. Editing the name and start date, and deleting (archiving)
+/// the task, are all wired up.
 class TaskPage extends StatelessWidget {
   /// Creates a [TaskPage] for the task with the given [id].
   const TaskPage({required this.id, super.key});
@@ -108,7 +108,17 @@ class _TaskDetails extends StatelessWidget {
             label: l10n.createActivityStartDateLabelTask,
             icon: Icons.today,
             date: task.startDate,
-            onTap: () {},
+            onTap: () async {
+              final newDate = await showDatePicker(
+                context: context,
+                initialDate: task.startDate,
+                firstDate: DateTime(task.startDate.year - 1),
+                lastDate: DateTime(task.startDate.year + 5),
+              );
+              if (newDate != null) {
+                bloc.add(TaskStartDateChangeSubmitted(newDate));
+              }
+            },
           ),
           const _Divider(),
           TaskDetailsTile(
