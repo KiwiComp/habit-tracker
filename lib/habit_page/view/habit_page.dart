@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:habit_tracker/habit_page/bloc/bloc.dart';
 import 'package:habit_tracker/l10n/l10n.dart';
+import 'package:habit_tracker/task_page/widgets/archive_confirmation_dialog.dart';
+import 'package:habit_tracker/task_page/widgets/edit_name_dialog.dart';
 import 'package:habits_repository/habits_repository.dart';
 
 /// The full-screen detail/edit page for one habit (route `/habit/:id`).
@@ -38,19 +40,30 @@ class _HabitView extends StatelessWidget {
     final l10n = context.l10n;
     final spacing = context.spacing;
 
-    return Scaffold(
-      appBar: AppBar(),
-      body: Padding(
-        padding: EdgeInsets.all(spacing.md),
-        child: switch (state.status) {
-          HabitStatus.loading => const Center(
-            child: CircularProgressIndicator(),
-          ),
-          HabitStatus.notFound => Center(
-            child: Text(l10n.habitPageNotFoundMessage),
-          ),
-          HabitStatus.loaded => _HabitDetails(habit: state.habit!),
-        },
+    return BlocListener<HabitBloc, HabitState>(
+      listenWhen: (previous, current) =>
+          previous.saveStatus != current.saveStatus,
+      listener: (context, state) {
+        if (state.saveStatus == HabitSaveStatus.failure) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.editNameSaveError)));
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(),
+        body: Padding(
+          padding: EdgeInsets.all(spacing.md),
+          child: switch (state.status) {
+            HabitStatus.loading => const Center(
+              child: CircularProgressIndicator(),
+            ),
+            HabitStatus.notFound => Center(
+              child: Text(l10n.habitPageNotFoundMessage),
+            ),
+            HabitStatus.loaded => _HabitDetails(habit: state.habit!),
+          },
+        ),
       ),
     );
   }
@@ -64,13 +77,90 @@ class _HabitDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final spacing = context.spacing;
+    final bloc = context.read<HabitBloc>();
+    final l10n = context.l10n;
+    final lastDate = habit.endDate ?? DateTime(habit.startDate.year + 5);
 
     return Material(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: spacing.xs,
-        children: [Text(habit.name)],
+        children: [
+          DetailsActionTile(
+            label: habit.name,
+            icon: Icons.edit,
+            onTap: () async {
+              final newName = await showEditNameDialog(
+                context,
+                currentName: habit.name,
+              );
+              if (newName != null) {
+                bloc.add(HabitNameChangeSubmitted(newName));
+              }
+            },
+          ),
+          const _Divider(),
+          DetailsActionTile(
+            label: l10n.createActivityStartDateLabelTask,
+            icon: Icons.today,
+            date: habit.startDate,
+            onTap: () async {
+              final newStartDate = await showDatePicker(
+                context: context,
+                initialDate: habit.startDate,
+                firstDate: DateTime(habit.startDate.year - 1),
+                lastDate: lastDate,
+              );
+              if (newStartDate != null) {
+                bloc.add(HabitStartDateChangeSubmitted(newStartDate));
+              }
+            },
+          ),
+          const _Divider(),
+          DetailsActionTile(
+            label: 'End date',
+            icon: Icons.today,
+            date: habit.endDate,
+            onTap: () => pickEndDate(
+              context,
+              currentDate: habit.endDate,
+              firstDate: habit.startDate.add(const Duration(days: 1)),
+              preferredInitialDate: habit.endDate ?? DateTime.now(),
+              neverLabel: l10n.createActivityEndsNever,
+              pickDateLabel: l10n.createActivityEndsOnDate,
+              onChanged: (newEndDate) =>
+                  bloc.add(HabitEndDateChangeSubmitted(newEndDate)),
+            ),
+          ),
+          const _Divider(),
+          DetailsActionTile(
+            label: l10n.deleteHabitOrTask,
+            icon: Icons.delete,
+            onTap: () async {
+              final confirmed = await showArchiveConfirmationDialog(
+                context,
+                name: habit.name,
+              );
+              // if (confirmed) {
+              //   bloc.add(const TaskArchiveRequestSubmitted());
+              // }
+            },
+          ),
+        ],
       ),
+    );
+  }
+}
+
+class _Divider extends StatelessWidget {
+  const _Divider();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Divider(
+      indent: 0,
+      endIndent: 0,
+      height: 1,
     );
   }
 }

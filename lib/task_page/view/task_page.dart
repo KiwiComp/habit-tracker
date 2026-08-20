@@ -90,7 +90,7 @@ class _TaskDetails extends StatelessWidget {
         crossAxisAlignment: .start,
         spacing: context.spacing.xs,
         children: [
-          TaskDetailsTile(
+          DetailsActionTile(
             label: task.name,
             icon: Icons.edit,
             onTap: () async {
@@ -104,7 +104,7 @@ class _TaskDetails extends StatelessWidget {
             },
           ),
           const _Divider(),
-          TaskDetailsTile(
+          DetailsActionTile(
             label: l10n.createActivityStartDateLabelTask,
             icon: Icons.today,
             date: task.startDate,
@@ -121,7 +121,7 @@ class _TaskDetails extends StatelessWidget {
             },
           ),
           const _Divider(),
-          TaskDetailsTile(
+          DetailsActionTile(
             label: l10n.deleteHabitOrTask,
             icon: Icons.delete,
             onTap: () async {

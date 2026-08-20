@@ -14,11 +14,31 @@ enum HabitStatus {
   notFound,
 }
 
+/// How `HabitBloc`'s save of an edited field (e.g. name) is going.
+enum HabitSaveStatus {
+  /// No save in flight.
+  idle,
+
+  /// A `HabitsRepository.updateHabit` call hasn't resolved yet.
+  saving,
+
+  /// The edit persisted successfully.
+  success,
+
+  /// The edit failed to persist — see `HabitBloc`'s `addError` call for the
+  /// underlying error.
+  failure,
+}
+
 /// The state of `HabitBloc`.
 @immutable
 final class HabitState {
   /// Creates a [HabitState].
-  const HabitState({this.status = HabitStatus.loading, this.habit});
+  const HabitState({
+    this.status = HabitStatus.loading,
+    this.habit,
+    this.saveStatus = HabitSaveStatus.idle,
+  });
 
   /// How the load is going.
   final HabitStatus status;
@@ -26,18 +46,29 @@ final class HabitState {
   /// The loaded habit. Only set once [status] is [HabitStatus.loaded].
   final Habit? habit;
 
+  /// How the most recent edit (e.g. a name change) is saving.
+  final HabitSaveStatus saveStatus;
+
   /// Returns a copy of this state with the given fields replaced.
-  HabitState copyWith({HabitStatus? status, Habit? habit}) {
+  HabitState copyWith({
+    HabitStatus? status,
+    Habit? habit,
+    HabitSaveStatus? saveStatus,
+  }) {
     return HabitState(
       status: status ?? this.status,
       habit: habit ?? this.habit,
+      saveStatus: saveStatus ?? this.saveStatus,
     );
   }
 
   @override
   bool operator ==(Object other) =>
-      other is HabitState && other.status == status && other.habit == habit;
+      other is HabitState &&
+      other.status == status &&
+      other.habit == habit &&
+      other.saveStatus == saveStatus;
 
   @override
-  int get hashCode => Object.hash(status, habit);
+  int get hashCode => Object.hash(status, habit, saveStatus);
 }

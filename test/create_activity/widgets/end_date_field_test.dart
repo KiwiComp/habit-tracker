@@ -62,7 +62,7 @@ void main() {
       expect(result, isNull);
     });
 
-    testWidgets('choosing "On a date" opens the picker and reports it', (
+    testWidgets('opens the picker directly when there is no end date yet', (
       tester,
     ) async {
       DateTime? picked;
@@ -78,8 +78,10 @@ void main() {
 
       await tester.tap(find.text('Never'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('On a date'));
-      await tester.pumpAndSettle();
+
+      // No "Never / On a date" sheet — nothing to offer clearing when the
+      // end date is already unset, so it jumps straight to the calendar.
+      expect(find.text('On a date'), findsNothing);
 
       // Picker opens on the firstDate month (January 2026); pick the 20th.
       await tester.tap(find.text('20'));

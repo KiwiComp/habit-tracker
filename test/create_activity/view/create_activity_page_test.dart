@@ -213,17 +213,9 @@ void main() {
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
 
-      // Set the end date to "Never" via the field's sheet. Target the sheet
-      // option by its unique icon — the field itself also shows "Never".
-      await tester.tap(find.byType(EndDateField));
-      await tester.pumpAndSettle();
-      await tester.tap(
-        find.ancestor(
-          of: find.byIcon(Icons.all_inclusive),
-          matching: find.byType(InkWell),
-        ),
-      );
-      await tester.pumpAndSettle();
+      // The end date defaults to "Never" already — no end date has been
+      // picked yet, so there's nothing to set here.
+      expect(find.text('Never'), findsOneWidget);
 
       await tester.tap(find.widgetWithText(ElevatedButton, 'Save'));
       await tester.pumpAndSettle();
