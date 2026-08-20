@@ -38,17 +38,22 @@ class _TasksListView extends StatelessWidget {
       appBar: HabitTrackerAppBar(title: context.l10n.startNavTasks),
       body: Padding(
         padding: EdgeInsets.all(spacing.md),
-        child: ListView.separated(
-          itemCount: tasks.length,
-          separatorBuilder: (_, _) => SizedBox(height: spacing.sm),
-          itemBuilder: (context, index) {
-            final task = tasks[index];
-            return TaskListTile(
-              task: task,
-              onTap: () => context.push('/task/${task.id}'),
-            );
-          },
-        ),
+        child: tasks.isEmpty
+            ? TaskAndHabitListEmptyView(
+                title: context.l10n.tasksListEmptyTitle,
+                text: context.l10n.tasksListEmptySubtitle,
+              )
+            : ListView.separated(
+                itemCount: tasks.length,
+                separatorBuilder: (_, _) => SizedBox(height: spacing.sm),
+                itemBuilder: (context, index) {
+                  final task = tasks[index];
+                  return TaskListTile(
+                    task: task,
+                    onTap: () => context.push('/task/${task.id}'),
+                  );
+                },
+              ),
       ),
     );
   }

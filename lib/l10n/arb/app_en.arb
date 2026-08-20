@@ -172,5 +172,21 @@
                 "type": "String"
             }
         }
+    },
+    "habitsListEmptyTitle": "You have no created habits yet",
+    "@habitsListEmptyTitle": {
+        "description": "Title shown on the Habits tab when there are no habits"
+    },
+    "habitsListEmptySubtitle": "Click the plus button to create your first habit",
+    "@habitsListEmptySubtitle": {
+        "description": "Subtitle shown on the Habits tab when there are no habits"
+    },
+    "tasksListEmptyTitle": "You have no created tasks yet",
+    "@tasksListEmptyTitle": {
+        "description": "Title shown on the Tasks tab when there are no tasks"
+    },
+    "tasksListEmptySubtitle": "Click the plus button to create your first task",
+    "@tasksListEmptySubtitle": {
+        "description": "Subtitle shown on the Tasks tab when there are no tasks"
     }
 }

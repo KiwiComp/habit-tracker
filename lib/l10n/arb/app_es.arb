@@ -41,5 +41,9 @@
     "archiveTaskError": "No se pudo borrar. Inténtalo de nuevo.",
     "commonYes": "Sí",
     "commonNo": "No",
-    "deleteConfirmationMessage": "¿Deseas borrar \"{name}\"?"
+    "deleteConfirmationMessage": "¿Deseas borrar \"{name}\"?",
+    "habitsListEmptyTitle": "Aún no has creado ningún hábito",
+    "habitsListEmptySubtitle": "Pulsa el botón más para crear tu primer hábito",
+    "tasksListEmptyTitle": "Aún no has creado ninguna tarea",
+    "tasksListEmptySubtitle": "Pulsa el botón más para crear tu primera tarea"
 }

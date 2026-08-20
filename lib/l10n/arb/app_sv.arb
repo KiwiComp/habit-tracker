@@ -41,5 +41,9 @@
     "archiveTaskError": "Kunde inte ta bort. Försök igen.",
     "commonYes": "Ja",
     "commonNo": "Nej",
-    "deleteConfirmationMessage": "Vill du ta bort \"{name}\"?"
+    "deleteConfirmationMessage": "Vill du ta bort \"{name}\"?",
+    "habitsListEmptyTitle": "Du har inte skapat några vanor än",
+    "habitsListEmptySubtitle": "Tryck på plusknappen för att skapa din första vana",
+    "tasksListEmptyTitle": "Du har inte skapat några uppgifter än",
+    "tasksListEmptySubtitle": "Tryck på plusknappen för att skapa din första uppgift"
 }
