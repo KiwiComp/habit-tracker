@@ -1,32 +1,35 @@
+import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:habit_tracker/task_page/widgets/widgets.dart';
 
-import '../../helpers/helpers.dart';
+import '../../helpers/pump_app.dart';
 
 void main() {
-  Future<String?> pumpAndOpen(
+  Future<void> pumpAndOpen(
     WidgetTester tester, {
     required ValueSetter<String?> onResult,
     String currentName = 'Run',
   }) async {
     await tester.pumpApp(
-      Scaffold(
-        body: Builder(
-          builder: (context) => ElevatedButton(
-            onPressed: () async {
-              onResult(
-                await showEditNameDialog(context, currentName: currentName),
-              );
-            },
-            child: const Text('open'),
-          ),
+      Builder(
+        builder: (context) => ElevatedButton(
+          onPressed: () async {
+            onResult(
+              await showEditNameDialog(
+                context,
+                currentName: currentName,
+                label: 'Name',
+                hint: 'e.g. Run',
+                saveButtonLabel: 'Save',
+              ),
+            );
+          },
+          child: const Text('open'),
         ),
       ),
     );
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
-    return null;
   }
 
   group('showEditNameDialog', () {

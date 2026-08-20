@@ -30,6 +30,22 @@ enum HabitSaveStatus {
   failure,
 }
 
+/// How `HabitBloc`'s archiving (soft-deleting) of the habit is going.
+enum HabitArchiveStatus {
+  /// No archive request in flight.
+  idle,
+
+  /// A `HabitsRepository.archiveHabit` call hasn't resolved yet.
+  archiving,
+
+  /// The habit was archived successfully.
+  success,
+
+  /// The archive request failed to persist — see `HabitBloc`'s `addError`
+  /// call for the underlying error.
+  failure,
+}
+
 /// The state of `HabitBloc`.
 @immutable
 final class HabitState {
@@ -38,6 +54,7 @@ final class HabitState {
     this.status = HabitStatus.loading,
     this.habit,
     this.saveStatus = HabitSaveStatus.idle,
+    this.archiveStatus = HabitArchiveStatus.idle,
   });
 
   /// How the load is going.
@@ -49,16 +66,21 @@ final class HabitState {
   /// How the most recent edit (e.g. a name change) is saving.
   final HabitSaveStatus saveStatus;
 
+  /// How the most recent archive (soft-delete) request is going.
+  final HabitArchiveStatus archiveStatus;
+
   /// Returns a copy of this state with the given fields replaced.
   HabitState copyWith({
     HabitStatus? status,
     Habit? habit,
     HabitSaveStatus? saveStatus,
+    HabitArchiveStatus? archiveStatus,
   }) {
     return HabitState(
       status: status ?? this.status,
       habit: habit ?? this.habit,
       saveStatus: saveStatus ?? this.saveStatus,
+      archiveStatus: archiveStatus ?? this.archiveStatus,
     );
   }
 
@@ -67,8 +89,9 @@ final class HabitState {
       other is HabitState &&
       other.status == status &&
       other.habit == habit &&
-      other.saveStatus == saveStatus;
+      other.saveStatus == saveStatus &&
+      other.archiveStatus == archiveStatus;
 
   @override
-  int get hashCode => Object.hash(status, habit, saveStatus);
+  int get hashCode => Object.hash(status, habit, saveStatus, archiveStatus);
 }

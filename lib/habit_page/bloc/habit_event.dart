@@ -29,3 +29,9 @@ final class HabitEndDateChangeSubmitted extends HabitEvent {
   /// The new end date, or `null` to clear it ("Never").
   final DateTime? date;
 }
+
+/// The user confirmed archiving (soft-deleting) the habit from
+/// `ArchiveConfirmationDialog`.
+final class HabitArchiveRequestSubmitted extends HabitEvent {
+  const HabitArchiveRequestSubmitted();
+}

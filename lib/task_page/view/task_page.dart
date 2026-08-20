@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:habit_tracker/l10n/l10n.dart';
 import 'package:habit_tracker/task_page/bloc/bloc.dart';
-import 'package:habit_tracker/task_page/widgets/widgets.dart';
 import 'package:habits_repository/habits_repository.dart';
 
 /// The full-screen detail/edit page for one task (route `/task/:id`).
@@ -97,6 +96,9 @@ class _TaskDetails extends StatelessWidget {
               final newName = await showEditNameDialog(
                 context,
                 currentName: task.name,
+                label: l10n.createActivityNameLabel,
+                hint: l10n.createActivityNameHintTask,
+                saveButtonLabel: l10n.createActivitySaveButton,
               );
               if (newName != null) {
                 bloc.add(TaskNameChangeSubmitted(newName));
@@ -125,9 +127,11 @@ class _TaskDetails extends StatelessWidget {
             label: l10n.deleteHabitOrTask,
             icon: Icons.delete,
             onTap: () async {
-              final confirmed = await showArchiveConfirmationDialog(
+              final confirmed = await showConfirmationDialog(
                 context,
-                name: task.name,
+                message: l10n.deleteConfirmationMessage(task.name),
+                yesLabel: l10n.commonYes,
+                noLabel: l10n.commonNo,
               );
               if (confirmed) {
                 bloc.add(const TaskArchiveRequestSubmitted());

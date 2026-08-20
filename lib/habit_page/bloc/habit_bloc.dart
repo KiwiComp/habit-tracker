@@ -16,6 +16,7 @@ class HabitBloc extends Bloc<HabitEvent, HabitState> {
     on<HabitNameChangeSubmitted>(_onHabitNameChangeSubmitted);
     on<HabitStartDateChangeSubmitted>(_onHabitStartDateChangeSubmitted);
     on<HabitEndDateChangeSubmitted>(_onHabitEndDateChangeSubmitted);
+    on<HabitArchiveRequestSubmitted>(_onHabitArchiveRequestSubmitted);
     add(const HabitLoadRequested());
   }
 
@@ -110,6 +111,32 @@ class HabitBloc extends Bloc<HabitEvent, HabitState> {
       addError(error, stackTrace);
       emit(state.copyWith(saveStatus: HabitSaveStatus.failure));
       emit(state.copyWith(saveStatus: HabitSaveStatus.idle));
+    }
+  }
+
+  Future<void> _onHabitArchiveRequestSubmitted(
+    HabitArchiveRequestSubmitted event,
+    Emitter<HabitState> emit,
+  ) async {
+    final currentHabit = state.habit;
+    if (currentHabit == null) return;
+
+    emit(state.copyWith(archiveStatus: HabitArchiveStatus.archiving));
+    try {
+      await _habitsRepository.archiveHabit(currentHabit.id);
+      emit(
+        state.copyWith(
+          archiveStatus: HabitArchiveStatus.success,
+        ),
+      );
+    } on Exception catch (error, stackTrace) {
+      // Reported through the existing BlocObserver.onError logging (see
+      // AppBlocObserver) rather than rethrown, so the bloc keeps working —
+      // emitting failure below resets to idle instead of leaving the delete
+      // tile stuck mid-request after a failed retry.
+      addError(error, stackTrace);
+      emit(state.copyWith(archiveStatus: HabitArchiveStatus.failure));
+      emit(state.copyWith(archiveStatus: HabitArchiveStatus.idle));
     }
   }
 }

@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:habit_tracker/habit_page/bloc/bloc.dart';
 import 'package:habit_tracker/l10n/l10n.dart';
-import 'package:habit_tracker/task_page/widgets/archive_confirmation_dialog.dart';
-import 'package:habit_tracker/task_page/widgets/edit_name_dialog.dart';
 import 'package:habits_repository/habits_repository.dart';
 
 /// The full-screen detail/edit page for one habit (route `/habit/:id`).
@@ -42,12 +40,21 @@ class _HabitView extends StatelessWidget {
 
     return BlocListener<HabitBloc, HabitState>(
       listenWhen: (previous, current) =>
-          previous.saveStatus != current.saveStatus,
+          previous.saveStatus != current.saveStatus ||
+          previous.archiveStatus != current.archiveStatus,
       listener: (context, state) {
         if (state.saveStatus == HabitSaveStatus.failure) {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(l10n.editNameSaveError)));
+        }
+        if (state.archiveStatus == HabitArchiveStatus.failure) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.archiveTaskError)));
+        }
+        if (state.archiveStatus == HabitArchiveStatus.success) {
+          Navigator.of(context).pop();
         }
       },
       child: Scaffold(
@@ -93,6 +100,9 @@ class _HabitDetails extends StatelessWidget {
               final newName = await showEditNameDialog(
                 context,
                 currentName: habit.name,
+                label: l10n.createActivityNameLabel,
+                hint: l10n.createActivityNameHintTask,
+                saveButtonLabel: l10n.createActivitySaveButton,
               );
               if (newName != null) {
                 bloc.add(HabitNameChangeSubmitted(newName));
@@ -137,13 +147,15 @@ class _HabitDetails extends StatelessWidget {
             label: l10n.deleteHabitOrTask,
             icon: Icons.delete,
             onTap: () async {
-              final confirmed = await showArchiveConfirmationDialog(
+              final confirmed = await showConfirmationDialog(
                 context,
-                name: habit.name,
+                message: l10n.deleteConfirmationMessage(habit.name),
+                yesLabel: l10n.commonYes,
+                noLabel: l10n.commonNo,
               );
-              // if (confirmed) {
-              //   bloc.add(const TaskArchiveRequestSubmitted());
-              // }
+              if (confirmed) {
+                bloc.add(const HabitArchiveRequestSubmitted());
+              }
             },
           ),
         ],
