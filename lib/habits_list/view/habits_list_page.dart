@@ -38,17 +38,22 @@ class _HabitsListView extends StatelessWidget {
       appBar: HabitTrackerAppBar(title: context.l10n.startNavHabits),
       body: Padding(
         padding: EdgeInsets.all(spacing.md),
-        child: ListView.separated(
-          separatorBuilder: (_, _) => SizedBox(height: spacing.sm),
-          itemCount: habits.length,
-          itemBuilder: (context, index) {
-            final habit = habits[index];
-            return HabitListTile(
-              habit: habit,
-              onTap: () => context.push('/habit/${habit.id}'),
-            );
-          },
-        ),
+        child: habits.isEmpty
+            ? TaskAndHabitListEmptyView(
+                title: context.l10n.habitsListEmptyTitle,
+                text: context.l10n.habitsListEmptySubtitle,
+              )
+            : ListView.separated(
+                separatorBuilder: (_, _) => SizedBox(height: spacing.sm),
+                itemCount: habits.length,
+                itemBuilder: (context, index) {
+                  final habit = habits[index];
+                  return HabitListTile(
+                    habit: habit,
+                    onTap: () => context.push('/habit/${habit.id}'),
+                  );
+                },
+              ),
       ),
     );
   }

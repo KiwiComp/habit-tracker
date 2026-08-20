@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0+6
+
+- Add `TaskAndHabitListEmptyView`, a shared empty-state view (`title`/`text`) shown by `HabitsListPage`/`TasksListPage` when their list has no items.
+
 ## 0.1.0+5
 
 - Add `pickEndDate`, a shared "pick an end date, or clear it" flow (a "Never / pick a date" bottom sheet, skipped in favor of opening the calendar directly when there's no current end date to offer clearing) — used by both the create-activity end-date field and `HabitPage`'s end-date edit.

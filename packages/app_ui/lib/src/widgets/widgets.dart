@@ -4,4 +4,5 @@ export 'confirmation_dialog.dart';
 export 'details_action_tile.dart';
 export 'edit_name_dialog.dart';
 export 'end_date_picker.dart';
+export 'task_and_habit_list_empty_view.dart';
 export 'weekday_chip_row.dart';
