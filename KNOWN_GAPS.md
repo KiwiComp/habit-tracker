@@ -230,6 +230,31 @@ No tiles left stubbed on `TaskPage`. `HabitPage` hasn't been touched at
 all — no name edit, no start-date edit, no delete, still just loads and
 shows the name.
 
+**Amended 2026-08-20 — `HabitPage` fully built too.** Same shape as
+`TaskPage`: name edit, start-date edit, and a delete action
+(`HabitArchiveRequestSubmitted` → `HabitsRepository.archiveHabit`,
+`HabitArchiveStatus`/`archiveStatus`, pop-on-success), all sharing
+`HabitSaveStatus`/`saveStatus` for the in-place field edits, same reasoning
+as `TaskPage`'s shared `saveStatus` above. `HabitPage` additionally has an
+end-date edit that `TaskPage` has no equivalent of — a task has no end
+date, but a habit does, and it's optional. `HabitEndDateChangeSubmitted`
+takes a nullable `DateTime?`; the bloc passes `clearEndDate: true` to
+`Habit.copyWith` when it's `null`. No tiles left stubbed on `HabitPage`
+either.
+
+Along the way, `EditNameDialog` and `ArchiveConfirmationDialog`
+(previously `TaskPage`-only, in `lib/task_page/widgets/`, which no longer
+exists) were generalized — parameterized with plain strings instead of
+reading the app's l10n internally — and moved into `packages/app_ui` as
+`showEditNameDialog`/`showConfirmationDialog` (renamed, since nothing
+"archive"-specific was left in it once generic). Both pages now call them
+with their own l10n strings. A new `pickEndDate` (also in `app_ui`) shares
+the "Never / pick a date" bottom sheet between the create-activity
+end-date field and `HabitPage`'s end-date tile — it skips the sheet and
+opens the calendar directly whenever there's no current end date to offer
+clearing (applies to the create-activity field too now, not just
+`HabitPage`). See `packages/app_ui/CHANGELOG.md` (0.1.0+5).
+
 ## Untested feature folders — pending work, no longer deferred
 
 The **"defer tests until the screen is designed" convention is retired**
@@ -259,6 +284,16 @@ covered. The start-date widget test drives the real `showDatePicker` UI
 `test/create_activity/widgets/start_date_field_test.dart`), not just the
 bloc event directly. `lib/habit_page` is now the only page-level folder
 left on this list besides `habits_list`/`tasks_list`.
+
+**Amended 2026-08-20:** `TaskDetailsTile` no longer exists (both pages
+build their rows inline via `app_ui`'s `DetailsActionTile` now), and
+`EditNameDialog`/`ArchiveConfirmationDialog` moved into `app_ui` as
+`showEditNameDialog`/`showConfirmationDialog` — see the amendment on
+"HabitPage / TaskPage have no edit form yet" above. Their tests moved with
+them, into `packages/app_ui/test/`, so they no longer count toward
+`lib/task_page`'s own coverage number; re-measure with the CI tooling
+rather than assuming the 100% above still holds unchanged (same caveat as
+the "CI coverage" section above).
 
 ## habits_repository coverage — resolved 2026-08-13
 
@@ -318,6 +353,14 @@ gaining a way to browse/unarchive, per the entry above): at that point
 the UI should either relabel this action (e.g. "Archive", with a separate
 real "Delete" for `HabitsRepository.deleteHabit`) or surface archived items
 somewhere the "Delete" label's implied permanence is no longer contradicted.
+
+**Amended 2026-08-20:** `TaskDetailsTile` no longer exists — both pages
+build their delete row inline (`_TaskDetails`/`_HabitDetails`) via
+`app_ui`'s `DetailsActionTile`. `HabitPage` now has the identical
+archive-labeled-as-delete behavior too (`HabitArchiveRequestSubmitted` →
+`archiveHabit`), so this entire entry — including "revisit once an
+archived-items view exists" — applies to both pages now, not just
+`TaskPage`.
 
 ## Leftover counter boilerplate — resolved 2026-08-10
 

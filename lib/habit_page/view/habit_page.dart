@@ -8,8 +8,8 @@ import 'package:habits_repository/habits_repository.dart';
 /// The full-screen detail/edit page for one habit (route `/habit/:id`).
 ///
 /// Opened from Today or the Habits list — same page either way, see
-/// `ROUTING.md`. Stub: loads and confirms the right habit opened; the
-/// edit form itself is a later PR.
+/// `ROUTING.md`. Editing the name, start date, and end date, and deleting
+/// (archiving) the habit, are all wired up.
 class HabitPage extends StatelessWidget {
   /// Creates a [HabitPage] for the habit with the given [id].
   const HabitPage({required this.id, super.key});
@@ -111,7 +111,7 @@ class _HabitDetails extends StatelessWidget {
           ),
           const _Divider(),
           DetailsActionTile(
-            label: l10n.createActivityStartDateLabelTask,
+            label: l10n.createActivityStartDateSectionLabel,
             icon: Icons.today,
             date: habit.startDate,
             onTap: () async {
@@ -128,7 +128,7 @@ class _HabitDetails extends StatelessWidget {
           ),
           const _Divider(),
           DetailsActionTile(
-            label: 'End date',
+            label: l10n.createActivityEndsLabel,
             icon: Icons.today,
             date: habit.endDate,
             onTap: () => pickEndDate(

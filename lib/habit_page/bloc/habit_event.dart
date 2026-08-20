@@ -9,7 +9,7 @@ final class HabitLoadRequested extends HabitEvent {
   const HabitLoadRequested();
 }
 
-/// The user submitted a new name from `EditNameDialog`.
+/// The user submitted a new name from `showEditNameDialog`.
 final class HabitNameChangeSubmitted extends HabitEvent {
   const HabitNameChangeSubmitted(this.name);
 
@@ -17,12 +17,17 @@ final class HabitNameChangeSubmitted extends HabitEvent {
   final String name;
 }
 
+/// The user picked a new start date via `showDatePicker`, from
+/// `_HabitDetails`.
 final class HabitStartDateChangeSubmitted extends HabitEvent {
   const HabitStartDateChangeSubmitted(this.date);
 
+  /// The new start date to persist.
   final DateTime date;
 }
 
+/// The user picked a new end date, or chose "Never", via `pickEndDate`,
+/// from `_HabitDetails`.
 final class HabitEndDateChangeSubmitted extends HabitEvent {
   const HabitEndDateChangeSubmitted(this.date);
 
@@ -31,7 +36,7 @@ final class HabitEndDateChangeSubmitted extends HabitEvent {
 }
 
 /// The user confirmed archiving (soft-deleting) the habit from
-/// `ArchiveConfirmationDialog`.
+/// `showConfirmationDialog`.
 final class HabitArchiveRequestSubmitted extends HabitEvent {
   const HabitArchiveRequestSubmitted();
 }
