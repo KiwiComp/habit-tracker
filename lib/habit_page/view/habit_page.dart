@@ -95,7 +95,7 @@ class _HabitDetails extends StatelessWidget {
         children: [
           DetailsActionTile(
             label: habit.name,
-            icon: Icons.edit,
+            leadingIcon: Icons.edit,
             onTap: () async {
               final newName = await showEditNameDialog(
                 context,
@@ -112,7 +112,7 @@ class _HabitDetails extends StatelessWidget {
           const _Divider(),
           DetailsActionTile(
             label: l10n.createActivityStartDateSectionLabel,
-            icon: Icons.today,
+            leadingIcon: Icons.today,
             date: habit.startDate,
             onTap: () async {
               final newStartDate = await showDatePicker(
@@ -129,7 +129,8 @@ class _HabitDetails extends StatelessWidget {
           const _Divider(),
           DetailsActionTile(
             label: l10n.createActivityEndsLabel,
-            icon: Icons.today,
+            leadingIcon: Icons.today,
+            trailingIcon: Icons.all_inclusive,
             date: habit.endDate,
             onTap: () => pickEndDate(
               context,
@@ -145,7 +146,7 @@ class _HabitDetails extends StatelessWidget {
           const _Divider(),
           DetailsActionTile(
             label: l10n.deleteHabitOrTask,
-            icon: Icons.delete,
+            leadingIcon: Icons.delete,
             onTap: () async {
               final confirmed = await showConfirmationDialog(
                 context,

@@ -91,7 +91,7 @@ class _TaskDetails extends StatelessWidget {
         children: [
           DetailsActionTile(
             label: task.name,
-            icon: Icons.edit,
+            leadingIcon: Icons.edit,
             onTap: () async {
               final newName = await showEditNameDialog(
                 context,
@@ -108,7 +108,7 @@ class _TaskDetails extends StatelessWidget {
           const _Divider(),
           DetailsActionTile(
             label: l10n.createActivityStartDateLabelTask,
-            icon: Icons.today,
+            leadingIcon: Icons.today,
             date: task.startDate,
             onTap: () async {
               final newDate = await showDatePicker(
@@ -125,7 +125,7 @@ class _TaskDetails extends StatelessWidget {
           const _Divider(),
           DetailsActionTile(
             label: l10n.deleteHabitOrTask,
-            icon: Icons.delete,
+            leadingIcon: Icons.delete,
             onTap: () async {
               final confirmed = await showConfirmationDialog(
                 context,
