@@ -85,110 +85,15 @@ class EndDateField extends StatelessWidget {
   }
 
   Future<void> _pick(BuildContext context) async {
-    final action = await showModalBottomSheet<_EndDateAction>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(context.radius.lg),
-        ),
-      ),
-      builder: (_) => const _EndDateActionSheet(),
-    );
-    if (action == null) return;
-
-    if (action == _EndDateAction.never) {
-      onChanged(null);
-      return;
-    }
-
-    if (!context.mounted) return;
-    final initial = date != null && !date!.isBefore(firstDate)
-        ? date!
-        : firstDate;
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: initial,
-      firstDate: firstDate,
-      lastDate: DateTime(firstDate.year + 5),
-    );
-    if (picked != null) onChanged(picked);
-  }
-}
-
-enum _EndDateAction { never, pickDate }
-
-class _EndDateActionSheet extends StatelessWidget {
-  const _EndDateActionSheet();
-
-  @override
-  Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final spacing = context.spacing;
-
-    return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          vertical: spacing.lg,
-          horizontal: spacing.md,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _EndDateActionOption(
-              icon: Icons.all_inclusive,
-              title: l10n.createActivityEndsNever,
-              onTap: () => Navigator.of(context).pop(_EndDateAction.never),
-            ),
-            SizedBox(height: spacing.sm),
-            _EndDateActionOption(
-              icon: Icons.event_outlined,
-              title: l10n.createActivityEndsOnDate,
-              onTap: () => Navigator.of(context).pop(_EndDateAction.pickDate),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _EndDateActionOption extends StatelessWidget {
-  const _EndDateActionOption({
-    required this.icon,
-    required this.title,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String title;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final spacing = context.spacing;
-    final colors = context.colorScheme;
-    final borderRadius = context.radius.md;
-
-    return Material(
-      color: colors.surfaceContainerHigh,
-      borderRadius: BorderRadius.circular(borderRadius),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(borderRadius),
-        child: Padding(
-          padding: EdgeInsets.all(spacing.md),
-          child: Row(
-            children: [
-              Icon(icon, size: context.iconSize.md, color: colors.tertiary),
-              SizedBox(width: spacing.md),
-              Text(title, style: AppTextStyle.titleMedium),
-            ],
-          ),
-        ),
-      ),
+    await pickEndDate(
+      context,
+      currentDate: date,
+      firstDate: firstDate,
+      preferredInitialDate: date ?? firstDate,
+      neverLabel: l10n.createActivityEndsNever,
+      pickDateLabel: l10n.createActivityEndsOnDate,
+      onChanged: onChanged,
     );
   }
 }

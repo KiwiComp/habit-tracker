@@ -9,7 +9,7 @@ final class TaskLoadRequested extends TaskEvent {
   const TaskLoadRequested();
 }
 
-/// The user submitted a new name from `EditNameDialog`.
+/// The user submitted a new name from `showEditNameDialog`.
 final class TaskNameChangeSubmitted extends TaskEvent {
   const TaskNameChangeSubmitted(this.name);
 
@@ -27,7 +27,7 @@ final class TaskStartDateChangeSubmitted extends TaskEvent {
 }
 
 /// The user confirmed archiving (soft-deleting) the task from
-/// `ArchiveConfirmationDialog`.
+/// `showConfirmationDialog`.
 final class TaskArchiveRequestSubmitted extends TaskEvent {
   const TaskArchiveRequestSubmitted();
 }

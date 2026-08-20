@@ -40,7 +40,7 @@ class _TasksListView extends StatelessWidget {
         padding: EdgeInsets.all(spacing.md),
         child: ListView.separated(
           itemCount: tasks.length,
-          separatorBuilder: (_, _) => SizedBox(height: context.spacing.sm),
+          separatorBuilder: (_, _) => SizedBox(height: spacing.sm),
           itemBuilder: (context, index) {
             final task = tasks[index];
             return TaskListTile(

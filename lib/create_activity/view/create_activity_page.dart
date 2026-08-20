@@ -111,7 +111,7 @@ class _CreateActivityView extends StatelessWidget {
                       if (state.frequency == Frequency.weekdays) ...[
                         SizedBox(height: context.spacing.md),
                         WeekdayChipRow(
-                          selected: state.weekdays,
+                          weekdays: state.weekdays,
                           onToggled: (weekday) =>
                               bloc.add(CreateActivityWeekdayToggled(weekday)),
                         ),

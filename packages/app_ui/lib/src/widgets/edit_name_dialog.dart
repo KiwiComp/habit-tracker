@@ -1,28 +1,43 @@
 import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:habit_tracker/l10n/l10n.dart';
 
-/// Opens a dialog, centered on the screen, for editing a task/habit's name,
-/// pre-filled with [currentName].
+/// Opens a dialog, centered on the screen, for editing a name, pre-filled
+/// with [currentName].
 ///
-/// Returns the new, trimmed name once the user taps Save, or `null` if the
-/// dialog was dismissed without saving. Doesn't persist anything itself —
-/// same "dialog returns a choice, caller acts on it" shape as
-/// `EndDateField`'s sheet.
+/// Returns the new, trimmed name once the user taps the save button, or
+/// `null` if the dialog was dismissed without saving. Doesn't persist
+/// anything itself — same "dialog returns a choice, caller acts on it" shape
+/// as `pickEndDate`'s sheet.
 Future<String?> showEditNameDialog(
   BuildContext context, {
   required String currentName,
+  required String label,
+  required String hint,
+  required String saveButtonLabel,
 }) {
   return showDialog<String>(
     context: context,
-    builder: (_) => _EditNameDialog(currentName: currentName),
+    builder: (_) => _EditNameDialog(
+      currentName: currentName,
+      label: label,
+      hint: hint,
+      saveButtonLabel: saveButtonLabel,
+    ),
   );
 }
 
 class _EditNameDialog extends StatefulWidget {
-  const _EditNameDialog({required this.currentName});
+  const _EditNameDialog({
+    required this.currentName,
+    required this.label,
+    required this.hint,
+    required this.saveButtonLabel,
+  });
 
   final String currentName;
+  final String label;
+  final String hint;
+  final String saveButtonLabel;
 
   @override
   State<_EditNameDialog> createState() => _EditNameDialogState();
@@ -38,7 +53,6 @@ class _EditNameDialogState extends State<_EditNameDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
     final spacing = context.spacing;
 
     return Dialog(
@@ -57,12 +71,12 @@ class _EditNameDialogState extends State<_EditNameDialog> {
               AppTextField(
                 initialValue: widget.currentName,
                 onChanged: (name) => setState(() => _name = name),
-                label: l10n.createActivityNameLabel,
-                hint: l10n.createActivityNameHintTask,
+                label: widget.label,
+                hint: widget.hint,
               ),
               AppButton.primary(
                 onPressed: _canSave ? _save : null,
-                child: Text(l10n.createActivitySaveButton),
+                child: Text(widget.saveButtonLabel),
               ),
             ],
           ),

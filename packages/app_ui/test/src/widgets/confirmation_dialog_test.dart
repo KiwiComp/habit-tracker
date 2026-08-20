@@ -1,26 +1,29 @@
+import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:habit_tracker/task_page/widgets/widgets.dart';
 
-import '../../helpers/helpers.dart';
+import '../../helpers/pump_app.dart';
 
 void main() {
   Future<void> pumpAndOpen(
     WidgetTester tester, {
     required ValueSetter<bool> onResult,
-    String name = 'Run',
+    String message = 'Delete "Run"?',
   }) async {
     await tester.pumpApp(
-      Scaffold(
-        body: Builder(
-          builder: (context) => ElevatedButton(
-            onPressed: () async {
-              onResult(
-                await showArchiveConfirmationDialog(context, name: name),
-              );
-            },
-            child: const Text('open'),
-          ),
+      Builder(
+        builder: (context) => ElevatedButton(
+          onPressed: () async {
+            onResult(
+              await showConfirmationDialog(
+                context,
+                message: message,
+                yesLabel: 'Yes',
+                noLabel: 'No',
+              ),
+            );
+          },
+          child: const Text('open'),
         ),
       ),
     );
@@ -28,16 +31,16 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  group('showArchiveConfirmationDialog', () {
-    testWidgets('shows the name in the confirmation message', (
-      tester,
-    ) async {
+  group('showConfirmationDialog', () {
+    testWidgets('shows the given message', (tester) async {
       await pumpAndOpen(tester, onResult: (_) {});
 
-      expect(find.textContaining('Run'), findsOneWidget);
+      expect(find.text('Delete "Run"?'), findsOneWidget);
     });
 
-    testWidgets('resolves to true when Yes is tapped', (tester) async {
+    testWidgets('resolves to true when the yes button is tapped', (
+      tester,
+    ) async {
       bool? result;
       await pumpAndOpen(tester, onResult: (value) => result = value);
 
@@ -47,7 +50,9 @@ void main() {
       expect(result, isTrue);
     });
 
-    testWidgets('resolves to false when No is tapped', (tester) async {
+    testWidgets('resolves to false when the no button is tapped', (
+      tester,
+    ) async {
       bool? result;
       await pumpAndOpen(tester, onResult: (value) => result = value);
 

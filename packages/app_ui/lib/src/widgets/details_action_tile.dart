@@ -1,17 +1,19 @@
 import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 
-class TaskDetailsTile extends StatelessWidget {
-  const TaskDetailsTile({
+class DetailsActionTile extends StatelessWidget {
+  const DetailsActionTile({
     required this.label,
-    required this.icon,
+    required this.leadingIcon,
     required this.onTap,
+    this.trailingIcon,
     this.date,
     super.key,
   });
 
   final String label;
-  final IconData icon;
+  final IconData leadingIcon;
+  final IconData? trailingIcon;
   final DateTime? date;
   final VoidCallback onTap;
 
@@ -30,7 +32,7 @@ class TaskDetailsTile extends StatelessWidget {
               Row(
                 spacing: spacing.sm,
                 children: [
-                  Icon(icon),
+                  Icon(leadingIcon),
                   Text(label),
                 ],
               ),
@@ -39,10 +41,13 @@ class TaskDetailsTile extends StatelessWidget {
                 maintainSize: true,
                 maintainAnimation: true,
                 maintainState: true,
-                child: _DateBox(
+                child: _TrailingBox(
                   dateLabel: '${date?.day}/${date?.month}/${date?.year}',
+                  icon: null,
                 ),
               ),
+              if (trailingIcon != null && date == null)
+                _TrailingBox(dateLabel: null, icon: trailingIcon),
             ],
           ),
         ),
@@ -51,16 +56,19 @@ class TaskDetailsTile extends StatelessWidget {
   }
 }
 
-class _DateBox extends StatelessWidget {
-  const _DateBox({required this.dateLabel});
+class _TrailingBox extends StatelessWidget {
+  const _TrailingBox({required this.dateLabel, required this.icon});
 
-  final String dateLabel;
+  final String? dateLabel;
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
     final borderRadius = context.radius.xs;
     final spacing = context.spacing;
     final colors = context.colorScheme;
+    final iconSize = context.iconSize.sm + 2;
+    final horizontalPadding = dateLabel != null ? spacing.sm : spacing.xl;
 
     return Container(
       decoration: BoxDecoration(
@@ -68,11 +76,22 @@ class _DateBox extends StatelessWidget {
         borderRadius: BorderRadius.circular(borderRadius),
       ),
       child: Padding(
-        padding: EdgeInsets.all(spacing.sm),
-        child: Text(
-          dateLabel,
-          style: AppTextStyle.bodyMedium.copyWith(color: colors.onTertiary),
+        padding: EdgeInsets.symmetric(
+          vertical: spacing.sm,
+          horizontal: horizontalPadding,
         ),
+        child: dateLabel != null
+            ? Text(
+                dateLabel!,
+                style: AppTextStyle.bodyMedium.copyWith(
+                  color: colors.onTertiary,
+                ),
+              )
+            : Icon(
+                icon,
+                size: iconSize,
+                color: colors.onTertiary,
+              ),
       ),
     );
   }
