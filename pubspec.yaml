@@ -27,7 +27,7 @@ dependencies:
   habits_repository:
     path: packages/habits_repository
   intl: ^0.20.2
-  meta: ^1.18.0
+  meta: ^1.19.0
 
 dev_dependencies:
   bloc_lint: ^0.4.1
