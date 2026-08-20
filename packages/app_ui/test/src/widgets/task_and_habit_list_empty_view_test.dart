@@ -7,6 +7,10 @@ void main() {
   group('TaskAndHabitListEmptyView', () {
     testWidgets('renders the title and text', (tester) async {
       await tester.pumpApp(
+        // Deliberately non-const: a fully-literal const invocation here can
+        // be constant-folded away, so this line doesn't reliably register
+        // as covered.
+        // ignore: prefer_const_constructors
         TaskAndHabitListEmptyView(
           title: 'No items yet',
           text: 'Tap the plus button to add one',
