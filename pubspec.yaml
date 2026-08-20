@@ -26,7 +26,7 @@ dependencies:
   go_router: ^16.2.4
   habits_repository:
     path: packages/habits_repository
-  intl: ^0.20.2
+  intl: ^0.20.3
   meta: ^1.18.0
 
 dev_dependencies:
