@@ -32,9 +32,9 @@ void main() {
     group('HabitLoadRequested', () {
       blocTest<HabitBloc, HabitState>(
         'loads the habit by id',
-        setUp: () =>
-            when(() => habitsRepository.getHabit(habit.id))
-                .thenAnswer((_) async => habit),
+        setUp: () => when(
+          () => habitsRepository.getHabit(habit.id),
+        ).thenAnswer((_) async => habit),
         build: buildBloc,
         expect: () => [
           isA<HabitState>()
@@ -45,9 +45,9 @@ void main() {
 
       blocTest<HabitBloc, HabitState>(
         'reports notFound when no habit exists for the id',
-        setUp: () =>
-            when(() => habitsRepository.getHabit(habit.id))
-                .thenAnswer((_) async => null),
+        setUp: () => when(
+          () => habitsRepository.getHabit(habit.id),
+        ).thenAnswer((_) async => null),
         build: buildBloc,
         expect: () => [
           isA<HabitState>().having(
@@ -412,8 +412,7 @@ void main() {
         act: (bloc) => bloc.add(const HabitArchiveRequestSubmitted()),
         skip: 1, // the initial (notFound) load
         expect: () => const <HabitState>[],
-        verify: (_) =>
-            verifyNever(() => habitsRepository.archiveHabit(any())),
+        verify: (_) => verifyNever(() => habitsRepository.archiveHabit(any())),
       );
 
       blocTest<HabitBloc, HabitState>(

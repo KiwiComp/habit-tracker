@@ -85,8 +85,10 @@ void main() {
           isFalse,
         );
         expect(
-          build(frequency: Frequency.weekdays, weekdays: {DateTime.monday})
-              .canSave,
+          build(
+            frequency: Frequency.weekdays,
+            weekdays: {DateTime.monday},
+          ).canSave,
           isTrue,
         );
       });
@@ -110,16 +112,19 @@ void main() {
     group('hasUnreachableWeekdayWindow', () {
       test('is false unless the frequency is weekdays', () {
         expect(
-          build(endDate: start.add(const Duration(days: 2)))
-              .hasUnreachableWeekdayWindow,
+          build(
+            endDate: start.add(const Duration(days: 2)),
+          ).hasUnreachableWeekdayWindow,
           isFalse,
         );
       });
 
       test('is false when there is no end date', () {
         expect(
-          build(frequency: Frequency.weekdays, weekdays: {DateTime.saturday})
-              .hasUnreachableWeekdayWindow,
+          build(
+            frequency: Frequency.weekdays,
+            weekdays: {DateTime.saturday},
+          ).hasUnreachableWeekdayWindow,
           isFalse,
         );
       });
@@ -161,8 +166,10 @@ void main() {
 
     group('copyWith', () {
       test('replaces only the given fields', () {
-        final updated =
-            build().copyWith(name: 'Swim', frequency: Frequency.once);
+        final updated = build().copyWith(
+          name: 'Swim',
+          frequency: Frequency.once,
+        );
         expect(updated.name, 'Swim');
         expect(updated.frequency, Frequency.once);
         expect(updated.startDate, start);

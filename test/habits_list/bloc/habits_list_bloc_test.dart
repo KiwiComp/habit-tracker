@@ -68,7 +68,12 @@ void main() {
       },
       expect: () => [
         HabitsListState(habits: [habit()]),
-        HabitsListState(habits: [habit(), habit(id: '3', name: 'Stretch')]),
+        HabitsListState(
+          habits: [
+            habit(),
+            habit(id: '3', name: 'Stretch'),
+          ],
+        ),
       ],
     );
 

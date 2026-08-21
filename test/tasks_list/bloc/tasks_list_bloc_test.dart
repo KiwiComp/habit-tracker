@@ -71,7 +71,12 @@ void main() {
       },
       expect: () => [
         TasksListState(tasks: [task()]),
-        TasksListState(tasks: [task(), task(id: '3', name: 'Book dentist')]),
+        TasksListState(
+          tasks: [
+            task(),
+            task(id: '3', name: 'Book dentist'),
+          ],
+        ),
       ],
     );
 
