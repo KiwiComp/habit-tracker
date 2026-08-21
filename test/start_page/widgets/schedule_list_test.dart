@@ -120,6 +120,29 @@ void main() {
       expect(tileWidth(tester, 'Passport'), lessThan(closedWidth));
     });
 
+    testWidgets(
+      'dragging a different row without opening it past halfway leaves '
+      'the already-open row untouched',
+      (tester) async {
+        await tester.pumpApp(list(onTap: (_) {}));
+        final closedWidth = tileWidth(tester, 'Read');
+
+        await tester.drag(find.text('Read'), const Offset(-64, 0));
+        await tester.pumpAndSettle();
+        expect(tileWidth(tester, 'Read'), lessThan(closedWidth));
+
+        // A partial drag on Passport — past the gesture's touch slop (so it
+        // registers as a drag at all) but short of halfway, so it snaps
+        // back closed on release — reports itself closed, but it was never
+        // the open row to begin with. Read stays the open row.
+        await tester.drag(find.text('Passport'), const Offset(-40, 0));
+        await tester.pumpAndSettle();
+
+        expect(tileWidth(tester, 'Read'), lessThan(closedWidth));
+        expect(tileWidth(tester, 'Passport'), moreOrLessEquals(closedWidth));
+      },
+    );
+
     testWidgets('exposes each row as one checkable node', (tester) async {
       final handle = tester.ensureSemantics();
       await tester.pumpApp(

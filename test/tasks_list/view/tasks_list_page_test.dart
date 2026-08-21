@@ -97,6 +97,14 @@ void main() {
       expect(find.text('Read'), findsNothing);
     });
 
+    testWidgets('separates multiple rows in the list', (tester) async {
+      await pumpTasksListPage(tester);
+      habits.add([task(), task(id: '3', name: 'Book dentist')]);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(TaskListTile), findsNWidgets(2));
+    });
+
     testWidgets('tapping a task opens its detail page', (tester) async {
       await pumpTasksListPage(tester);
       habits.add([task()]);

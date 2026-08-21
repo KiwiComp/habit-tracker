@@ -32,9 +32,9 @@ void main() {
     group('TaskLoadRequested', () {
       blocTest<TaskBloc, TaskState>(
         'loads the task by id',
-        setUp: () =>
-            when(() => habitsRepository.getHabit(task.id))
-                .thenAnswer((_) async => task),
+        setUp: () => when(
+          () => habitsRepository.getHabit(task.id),
+        ).thenAnswer((_) async => task),
         build: buildBloc,
         expect: () => [
           isA<TaskState>()
@@ -45,9 +45,9 @@ void main() {
 
       blocTest<TaskBloc, TaskState>(
         'reports notFound when no task exists for the id',
-        setUp: () =>
-            when(() => habitsRepository.getHabit(task.id))
-                .thenAnswer((_) async => null),
+        setUp: () => when(
+          () => habitsRepository.getHabit(task.id),
+        ).thenAnswer((_) async => null),
         build: buildBloc,
         expect: () => [
           isA<TaskState>().having(
@@ -265,8 +265,7 @@ void main() {
         act: (bloc) => bloc.add(const TaskArchiveRequestSubmitted()),
         skip: 1, // the initial (notFound) load
         expect: () => const <TaskState>[],
-        verify: (_) =>
-            verifyNever(() => habitsRepository.archiveHabit(any())),
+        verify: (_) => verifyNever(() => habitsRepository.archiveHabit(any())),
       );
 
       blocTest<TaskBloc, TaskState>(

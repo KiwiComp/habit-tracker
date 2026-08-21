@@ -114,7 +114,10 @@ void main() {
       await tester.pumpAndSettle();
 
       verify(
-        () => repo.logEntry(habitId: '1', date: any(named: 'date')),
+        () => repo.logEntry(
+          habitId: '1',
+          date: any(named: 'date'),
+        ),
       ).called(1);
     });
 

@@ -127,8 +127,9 @@ void main() {
         weekdays: const {DateTime.monday},
         startDate: startDate,
       ),
-      act: (bloc) => bloc
-          .add(const CreateActivityRepeatPatternChanged(Frequency.weekdays)),
+      act: (bloc) => bloc.add(
+        const CreateActivityRepeatPatternChanged(Frequency.weekdays),
+      ),
       expect: () => [
         isA<CreateActivityState>()
             .having((s) => s.frequency, 'frequency', Frequency.weekdays)
@@ -143,10 +144,14 @@ void main() {
         ..add(const CreateActivityWeekdayToggled(DateTime.monday))
         ..add(const CreateActivityWeekdayToggled(DateTime.monday)),
       expect: () => [
-        isA<CreateActivityState>()
-            .having((s) => s.weekdays, 'weekdays', {DateTime.monday}),
-        isA<CreateActivityState>()
-            .having((s) => s.weekdays, 'weekdays', isEmpty),
+        isA<CreateActivityState>().having((s) => s.weekdays, 'weekdays', {
+          DateTime.monday,
+        }),
+        isA<CreateActivityState>().having(
+          (s) => s.weekdays,
+          'weekdays',
+          isEmpty,
+        ),
       ],
     );
 
@@ -156,8 +161,11 @@ void main() {
       act: (bloc) =>
           bloc.add(CreateActivityStartDateChanged(DateTime(2026, 2))),
       expect: () => [
-        isA<CreateActivityState>()
-            .having((s) => s.startDate, 'startDate', DateTime(2026, 2)),
+        isA<CreateActivityState>().having(
+          (s) => s.startDate,
+          'startDate',
+          DateTime(2026, 2),
+        ),
       ],
     );
 
@@ -169,8 +177,11 @@ void main() {
         ..add(CreateActivityEndDateChanged(DateTime(2026, 3)))
         ..add(const CreateActivityEndDateChanged(null)),
       expect: () => [
-        isA<CreateActivityState>()
-            .having((s) => s.endDate, 'endDate', DateTime(2026, 3)),
+        isA<CreateActivityState>().having(
+          (s) => s.endDate,
+          'endDate',
+          DateTime(2026, 3),
+        ),
         isA<CreateActivityState>().having((s) => s.endDate, 'endDate', isNull),
       ],
     );
@@ -257,8 +268,11 @@ void main() {
             'status',
             CreateActivitySaveStatus.failure,
           ),
-          isA<CreateActivityState>()
-              .having((s) => s.status, 'status', CreateActivitySaveStatus.idle),
+          isA<CreateActivityState>().having(
+            (s) => s.status,
+            'status',
+            CreateActivitySaveStatus.idle,
+          ),
         ],
         errors: () => [isA<Exception>()],
       );
