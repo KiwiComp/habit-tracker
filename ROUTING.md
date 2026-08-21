@@ -10,7 +10,7 @@ is implemented yet. Update it when the model changes.
 **Mobile only.** The `web/`, `windows/`, and `macos/` folders are unused
 scaffolding from the Very Good CLI `create` command; they are not a target.
 This rules out browser-URL concerns — but note that **notifications** (a
-planned future feature) reintroduce deep-linking on mobile: a tapped
+planned future feature) reintroduce deep linking on mobile: a tapped
 notification opens the app with only an id and no in-app origin (see
 [Data loading](#data-loading)).
 
@@ -30,7 +30,7 @@ Why, specifically (the tab-shell shape is the reason, not web):
   *root* navigator by default, not the active tab's stack — a classic source
   of bugs. `StatefulShellRoute` routes system-back to the active branch out of
   the box.
-- **Notification deep-linking.** A tapped notification opens the app (possibly
+- **Notification deep linking.** A tapped notification opens the app (possibly
   cold) with only an id. `go_router` lets that become a single
   `router.push('/habit/$id')`, reusing the same route the in-app flow uses.
 
