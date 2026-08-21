@@ -535,3 +535,30 @@ Still open:
 - **Midnight rollover** — the FAB's visibility is relative to "today" and won't
   recompute on its own if the app sits open past midnight (same edge as the
   `ScheduleList` entry above).
+
+## `_CounterCubit` test fixture suppresses a bloc_lint rule (2026-08-21)
+
+`test/app/app_bloc_observer_test.dart` declares a tiny local `_CounterCubit`
+(a `Cubit<int>` with an `increment`/`fail` method) purely to give
+`AppBlocObserver` a real `BlocBase` to observe in its unit tests.
+`bloc_lint`'s `prefer_file_naming_conventions` rule wants any file
+containing a Bloc/Cubit subclass to be named after that class, which this
+test file isn't — CI's `Bloc Lint` job failed on it. Suppressed with a
+documented `// ignore_for_file: prefer_file_naming_conventions` in that
+file rather than fixed, since every real fix has a real cost: extracting
+`_CounterCubit` into its own file is what the rule wants but is a lot of
+ceremony for a 4-line throwaway fixture nothing else uses, and there's no
+existing precedent in this repo for a test-local Bloc/Cubit to model it on
+(every real Bloc already lives in its own file, for real reasons that
+don't apply here). The alternative considered — reworking the test to
+drive an existing app Bloc (e.g. `HabitsListBloc` with a mocked
+`HabitsRepository`) instead of a custom fixture — avoids the lint
+entirely, but `addError` specifically has no easy public trigger on any
+existing bloc (it's only reachable indirectly through a save-failure path
+on `HabitBloc`/`TaskBloc`, which would couple this observer test to an
+unrelated feature's bloc wiring).
+
+**Revisit if this pattern repeats** — a second test-local Bloc/Cubit
+elsewhere would be a signal to either give this one a proper file after
+all, or add a shared minimal test-fixture bloc/cubit to `test/helpers/`
+that every such test can reuse instead of each inventing its own.
