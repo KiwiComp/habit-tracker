@@ -97,6 +97,14 @@ void main() {
       expect(find.text('Renew passport'), findsNothing);
     });
 
+    testWidgets('separates multiple rows in the list', (tester) async {
+      await pumpHabitsListPage(tester);
+      habits.add([habit(), habit(id: '3', name: 'Stretch')]);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(HabitListTile), findsNWidgets(2));
+    });
+
     testWidgets('tapping a habit opens its detail page', (tester) async {
       await pumpHabitsListPage(tester);
       habits.add([habit()]);

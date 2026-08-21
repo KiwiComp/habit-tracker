@@ -231,6 +231,37 @@ void main() {
       expect(find.byType(CreateActivityPage), findsNothing);
     });
 
+    testWidgets(
+      'picking an end date through the EndDateField updates the bloc state',
+      (tester) async {
+        // Tall viewport so the EndDateField (below the fold otherwise) and
+        // the date picker's OK button are both on-screen — same reasoning
+        // as "fills the whole form through the UI and saves" above.
+        tester.view.physicalSize = const Size(1000, 2400);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        await pumpPage(tester);
+
+        expect(find.text('Never'), findsOneWidget);
+
+        await tester.tap(find.byType(EndDateField));
+        await tester.pumpAndSettle();
+
+        // No end date is set yet, so pickEndDate skips the choice sheet and
+        // opens the calendar directly — accept the pre-selected (today's)
+        // date. This drives the page's own EndDateField.onChanged closure,
+        // not just the bloc event directly.
+        await tester.tap(find.text('OK'));
+        await tester.pumpAndSettle();
+
+        final context = tester.element(find.byType(AppTextField));
+        expect(context.read<CreateActivityBloc>().state.endDate, isNotNull);
+        expect(find.text('Never'), findsNothing);
+      },
+    );
+
     testWidgets('warns when the weekday window can never occur', (
       tester,
     ) async {

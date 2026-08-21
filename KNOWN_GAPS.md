@@ -15,9 +15,12 @@ before any store submission.
 
 ## App/bundle identifiers
 
-Android `applicationId` (`android/app/build.gradle.kts`) and the iOS bundle
-identifier are still the Very Good CLI placeholder
-(`com.example.verygoodcore.habit_tracker`). Fine for now; revisit before
+Android `applicationId` (`android/app/build.gradle.kts`) is still the Very
+Good CLI placeholder (`com.example.verygoodcore.habit_tracker`). The iOS
+bundle identifier (`ios/Runner.xcodeproj/project.pbxproj`,
+`PRODUCT_BUNDLE_IDENTIFIER`) is the same placeholder but with a hyphen —
+`com.example.verygoodcore.habit-tracker` — plus a `.dev`/`.stg`/
+`.RunnerTests` suffix per flavor/test target. Fine for now; revisit before
 real device distribution, store submission, or setting up a Firebase
 project (Firebase config is tied to this identifier).
 
@@ -69,6 +72,32 @@ No new percentage is recorded here on purpose: `flutter test --coverage`
 only reports libraries a test actually loaded, so it reads higher than CI's
 `collect_coverage_from: imports`. Re-measure with the CI tooling rather than
 trusting a local number.
+
+**Amended 2026-08-20 — test count is stale, and two more commits landed
+since.** The suite is now **149 passing, 0 failing** (not 117), after
+`129463e`/`4493655` (`task_page`/`habit_page` full builds) and `887232a`
+(empty views + first tests for `habits_list`/`tasks_list`, see "Untested
+feature folders" below). A local (non-CI-method) coverage run on root `lib`
+now reads ~90%, but `lib/habit_page/bloc/habit_bloc.dart` and
+`lib/habit_page/view/habit_page.dart` are still only incidentally exercised
+(no dedicated suite), and `lib/bootstrap.dart`/`lib/main_*.dart`/
+`lib/app/app_bloc_observer.dart` are still never loaded by any test at all.
+Whether `build-app`'s CI gate itself is green or red hasn't been
+re-confirmed by actually running the workflow — don't treat the local
+number as settling it, per the caution above.
+
+**Amended 2026-08-21 — dedicated suites for `habit_page`,
+`habits_list`/`tasks_list`, and `app_bloc_observer` closed most of the
+remaining gap.** See "Untested feature folders" below for what landed. The
+suite is now **215 passing, 0 failing**. A local (non-CI-method) run on
+root `lib`, excluding `packages/**`/`*.g.dart`/`lib/l10n/gen/`, now reads
+**1250/1251 lines (99.9%)** — the one remaining locally-uncovered line is
+`lib/start_page/widgets/schedule_list.dart:53`, unrelated to this pass.
+`lib/bootstrap.dart`/`lib/main_*.dart` still never load under any test at
+all (by deliberate choice, not oversight — see below), so they don't even
+enter that denominator; the real CI-method
+(`collect_coverage_from: imports`) percentage will read lower and hasn't
+been re-confirmed by actually running the workflow.
 
 **These gates are red right now, on purpose.** The decision (2026-08-12) was
 *not* to lower thresholds to today's numbers just to go green — a green check
@@ -161,14 +190,18 @@ slide-to-reveal work):
 - Completion state is **no longer** a gap: `StartBloc` consults
   `watchEntriesOnDate` and feeds `completedHabitIds` into the row's
   checkbox, and tapping a row toggles it via `logEntry`/`unlogEntry`.
-- **The slide-reveal action has no accessible equivalent** (2026-08-17). A
-  row's detail page is reachable *only* by a horizontal drag on
-  `SlideToRevealTile` — there's no `Semantics` action, no long-press
-  fallback, no visible affordance. A screen-reader user cannot open a habit
-  at all, and a sighted user has nothing telling them the gesture exists.
-  This is the largest open cost of the shrink-to-reveal design and it wasn't
-  a considered trade — flagged, not decided: `customSemanticsActions` vs a
-  long-press fallback vs a persistent chevron.
+- **Correction (2026-08-20) — the slide-reveal action does have an
+  accessible equivalent; the original bullet below was wrong on arrival.**
+  It claimed a row's detail page was reachable *only* by a horizontal drag,
+  with no `Semantics` action and no screen-reader path to open a habit at
+  all — but the same commit (`50a4103`) that wrote that claim also wrapped
+  each row in `Semantics(customSemanticsActions: {...})`, exposing a named
+  "open details" action (`l10n.startActivityOpenDetailsAction`) independent
+  of the drag gesture, covered by `schedule_list_test.dart`. So
+  `customSemanticsActions` was the choice made, just not reflected in the
+  text at the time. What's still genuinely missing: no `onLongPress`
+  fallback, and no persistent visible affordance (e.g. a chevron) telling a
+  *sighted* user the gesture exists in the first place.
 - Two smaller interaction details, both deliberate-for-now: `_onDragEnd`
   settles on position only and ignores `details.primaryVelocity`, so a fast
   flick stopping short of halfway snaps closed; and a 45° drag resolves to
@@ -294,6 +327,68 @@ them, into `packages/app_ui/test/`, so they no longer count toward
 `lib/task_page`'s own coverage number; re-measure with the CI tooling
 rather than assuming the 100% above still holds unchanged (same caveat as
 the "CI coverage" section above).
+
+**Amended 2026-08-20 (later same day) — `habits_list`/`tasks_list` gained
+their first tests.** `887232a` added
+`test/habits_list/view/habits_list_page_test.dart` and
+`test/tasks_list/view/tasks_list_page_test.dart` (empty-view rendering,
+list filtered by activity type, tap-to-navigate). That's page-level only —
+there's still no dedicated `HabitsListBloc`/`TasksListBloc` test and no
+`HabitListTile`/`TaskListTile` test, so bloc/tile coverage remains
+incidental. `lib/habit_page` is untouched — `test/habit_page` still doesn't
+exist at all, making it the one page-level folder with zero dedicated
+coverage. Loose files (`lib/bootstrap.dart`, `lib/main_*.dart`,
+`lib/app/app_bloc_observer.dart`) are still untested.
+
+**Amended 2026-08-21 — `lib/habit_page`, `lib/habits_list`, and
+`lib/tasks_list` are now done, 100% line coverage each.**
+
+- `lib/habit_page`: mirrors `lib/task_page`'s three-file suite
+  (`test/habit_page/bloc/habit_bloc_test.dart`,
+  `.../habit_state_test.dart`, `test/habit_page/view/habit_page_test.dart`)
+  — same idioms (mocktail `_MockHabitsRepository`, real `showDatePicker`
+  UI driven via day-cell tap + OK, `Navigator.push` scaffold trick to
+  assert pop-on-archive-success) — plus the one thing `TaskPage` has no
+  equivalent of: the end-date tile, covered via `pickEndDate`'s sheet
+  ("On a date" → picker, and "Never" → clears) rather than the direct-to-
+  calendar path (that path is already covered in isolation by
+  `packages/app_ui/test/src/widgets/end_date_picker_test.dart`).
+- `lib/habits_list`/`lib/tasks_list`: added
+  `test/{habits,tasks}_list/bloc/{habits,tasks}_list_bloc_test.dart`
+  (initial state, filtered emission, repeated emissions, `close()`
+  cancelling the repository subscription) and matching
+  `bloc/{habits,tasks}_list_state_test.dart` (`copyWith`/equality/
+  `hashCode`, previously only reachable incidentally and missing
+  `hashCode` entirely), plus
+  `test/{habits,tasks}_list/widgets/{habit,task}_list_tile_test.dart`
+  (name rendering, `onTap`, and — for `HabitListTile` — that its
+  `WeekdayChipRow` is read-only, `onToggled: null`). The existing page
+  tests gained a "separates multiple rows" case pushing ≥2 items through
+  the stream, closing the one line each page was missing (the
+  `ListView.separated` `separatorBuilder`, never reached by a single-item
+  list).
+- `create_activity_page.dart` closed its 2-line gap too (not listed above,
+  but same audit): a new `create_activity_page_test.dart` case taps
+  `EndDateField` and drives its picker through the real UI, exercising the
+  page's own `onChanged: (date) =>
+  bloc.add(CreateActivityEndDateChanged(date))` closure, previously only
+  reached indirectly via a raw bloc `add` in another test.
+- `lib/app/app_bloc_observer.dart` gained
+  `test/app/app_bloc_observer_test.dart`: `onChange`/`onError` call
+  through without throwing, and — installed as `Bloc.observer` — a real
+  `Cubit`'s state changes and `addError` calls still work normally
+  (nothing swallowed).
+- `lib/bootstrap.dart`/`lib/main_development.dart`/`main_production.dart`/
+  `main_staging.dart` remain **deliberately** untested (user decision,
+  2026-08-21): pure wiring with no branching logic, `ErrorTracking.init`
+  isn't mockable without a refactor nobody asked for, and no precedent in
+  this repo (or the sibling `packages/*`) tests the equivalent
+  Very-Good-CLI entrypoint files. Not a gap to revisit unless `bootstrap()`
+  grows real logic.
+
+`lib/habit_page` and `lib/habits_list`/`lib/tasks_list` are no longer on
+the "still to do" list above — the only items left there are the loose
+files, now further scoped by the previous paragraph.
 
 ## habits_repository coverage — resolved 2026-08-13
 
