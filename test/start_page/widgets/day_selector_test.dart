@@ -65,5 +65,72 @@ void main() {
 
       expect(bloc.state.selectedDate.isSameDayAs(DateTime.now()), isFalse);
     });
+
+    testWidgets('renders every day chip at the same width', (tester) async {
+      final bloc = StartBloc(habitsRepository: repo);
+      addTearDown(bloc.close);
+
+      await tester.pumpApp(
+        BlocProvider.value(
+          value: bloc,
+          child: const Scaffold(body: DaySelector()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(_chipWidths(tester), hasLength(1));
+    });
+
+    testWidgets(
+      'renders every day chip at the same width regardless of how wide '
+      "that day's own weekday/month label happens to be, e.g. Spanish "
+      '"sept" vs "oct"',
+      (tester) async {
+        tester.platformDispatcher.localesTestValue = [const Locale('es')];
+        addTearDown(tester.platformDispatcher.clearLocalesTestValue);
+
+        final bloc = StartBloc(habitsRepository: repo);
+        addTearDown(bloc.close);
+
+        await tester.pumpApp(
+          BlocProvider.value(
+            value: bloc,
+            child: const Scaffold(body: DaySelector()),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(_chipWidths(tester), hasLength(1));
+      },
+    );
+
+    testWidgets(
+      'renders every day chip at the same width under a larger '
+      'accessibility text scale',
+      (tester) async {
+        tester.platformDispatcher.textScaleFactorTestValue = 2;
+        addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+        final bloc = StartBloc(habitsRepository: repo);
+        addTearDown(bloc.close);
+
+        await tester.pumpApp(
+          BlocProvider.value(
+            value: bloc,
+            child: const Scaffold(body: DaySelector()),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(_chipWidths(tester), hasLength(1));
+      },
+    );
   });
 }
+
+/// The rendered width of every day chip's [InkWell] in the strip, collapsed
+/// into a set — a passing test asserts this has exactly one element.
+Set<double> _chipWidths(WidgetTester tester) => {
+  for (final element in find.byType(InkWell).evaluate())
+    (element.renderObject! as RenderBox).size.width,
+};

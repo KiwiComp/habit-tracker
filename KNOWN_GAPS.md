@@ -562,3 +562,52 @@ unrelated feature's bloc wiring).
 elsewhere would be a signal to either give this one a proper file after
 all, or add a shared minimal test-fixture bloc/cubit to `test/helpers/`
 that every such test can reuse instead of each inventing its own.
+
+## `ShellScaffold` depends on `StartBloc` for the FAB's start date (2026-08-22)
+
+Landed alongside linking the add-activity FAB's seeded `startDate` to
+`StartBloc.state.selectedDate` on the Today tab (`ShellBranch.today`) and
+`DateTime.now()` elsewhere. To make `selectedDate` reachable from the FAB,
+`BlocProvider<StartBloc>` moved from `StartPage` up into `ShellScaffold`
+(`lib/routing/widgets/shell_scaffold.dart`) — so `lib/routing/`, a
+navigation/chrome layer, now imports and constructs a full feature bloc
+(habit/entry stream subscriptions, activity scheduling, completion
+toggling) just to read one field off it. In practice the coupling is
+narrow — `ShellScaffold` only ever does a one-off `context.read` on
+`selectedDate`, never watches it — but `shell_scaffold_test.dart`'s
+`setUp` has to stub `HabitsRepository.watchHabits()`/`watchEntriesOnDate()`
+purely so `StartBloc`'s internal subscriptions don't throw, which is a
+concrete (if small) symptom of routing code carrying business-logic
+dependencies it doesn't need.
+
+**Considered and deferred: a small `SelectedDayCubit` owned by the shell,
+consumed by `StartBloc`.** `ShellScaffold` would provide only a
+purpose-built `Cubit<DateTime>`; `BlocProvider<StartBloc>` would move back
+down into `StartPage` (matching every other page-owned bloc in this app),
+constructed there with the cubit injected the same way `StartPage` already
+injects `HabitsRepository`. `StartBloc` would subscribe to the cubit's
+stream to drive its existing `_onDaySelected` reaction (re-subscribe to
+entries, recompute scheduled activities, clear `completedHabitIds`)
+instead of reacting to a directly-fired `StartDaySelected` event.
+
+Deferred rather than done now because the blast radius is real: production
+call sites in `day_selector.dart` (read + write), `start_page.dart` (read
+for the title/`isToday`, write in `_onJumpToTodayTap`), and
+`start_bloc.dart` itself (constructor + event handling) would all change,
+plus **8 tests in `start_bloc_test.dart`** that construct
+`StartBloc(..., initialDate: ...)` or drive it via
+`add(StartDaySelected(...))` directly, and the `StartDaySelected`-driving
+tests in `day_selector_test.dart`, `start_page_test.dart`, and
+`shell_scaffold_test.dart`. Risks worth remembering if this is picked up:
+seed `StartBloc`'s initial state from `selectedDayCubit.state` (not a
+second independent `DateTime.now()`, which would reintroduce the exact
+duplicate-default bug fixed in this same change); decide whether
+`StartDaySelected` remains a bloc-internal event driven only by the
+cubit's stream or stays being independently triggered (both would reintroduce
+"two ways to change the date" one layer down); and watch for timing
+drift — routing the day change through a stream subscription instead of a
+direct `add()` risks breaking the exact emission sequences the existing
+`blocTest` assertions expect.
+
+Revisit when next touching `start_bloc_test.dart` anyway, or before a third
+consumer needs `selectedDate` and this shape gets copied again.

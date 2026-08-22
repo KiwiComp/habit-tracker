@@ -15,17 +15,27 @@ import 'package:habits_repository/habits_repository.dart';
 /// both as the same entity, differing only by `Frequency`, so the form
 /// follows that shape.
 class CreateActivityPage extends StatelessWidget {
-  /// Creates a [CreateActivityPage], seeded with [initialType].
-  const CreateActivityPage({required this.initialType, super.key});
+  /// Creates a [CreateActivityPage], seeded with [initialType] and
+  /// [initialStartDate].
+  const CreateActivityPage({
+    required this.initialType,
+    this.initialStartDate,
+    super.key,
+  });
 
   /// Which option the user tapped in the add-activity sheet to get here.
   final ActivityType initialType;
+
+  /// The start date to seed the form with — defaults to today if omitted,
+  /// same as `CreateActivityBloc` itself.
+  final DateTime? initialStartDate;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => CreateActivityBloc(
         initialType: initialType,
+        initialStartDate: initialStartDate,
         habitsRepository: context.read<HabitsRepository>(),
       ),
       child: const _CreateActivityView(),

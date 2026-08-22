@@ -57,11 +57,19 @@ void main() {
       expect(find.byType(TasksListPage), findsOneWidget);
     });
 
-    testWidgets('/create builds the create page for the passed type', (
+    testWidgets('/create builds the create page for the passed args', (
       tester,
     ) async {
       final router = await pumpApp(tester);
-      unawaited(router.push('/create', extra: ActivityType.task));
+      unawaited(
+        router.push(
+          '/create',
+          extra: CreateActivityRouteArgs(
+            type: ActivityType.task,
+            startDate: DateTime(2026, 1, 5),
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
       expect(find.byType(CreateActivityPage), findsOneWidget);
     });

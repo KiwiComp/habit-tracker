@@ -57,7 +57,17 @@ void main() {
   Future<void> pumpStartPage(WidgetTester tester) async {
     final router = GoRouter(
       routes: [
-        GoRoute(path: '/', builder: (_, _) => const StartPage()),
+        GoRoute(
+          path: '/',
+          // `StartPage` no longer provides its own `StartBloc` — see
+          // `ShellScaffold`'s doc comment — so the test router does it here
+          // instead, standing in for that ancestor.
+          builder: (context, _) => BlocProvider(
+            create: (context) =>
+                StartBloc(habitsRepository: context.read<HabitsRepository>()),
+            child: const StartPage(),
+          ),
+        ),
         GoRoute(
           path: '/habit/:id',
           builder: (_, state) =>
