@@ -56,6 +56,23 @@ void main() {
         expect(bloc.state.activityType, ActivityType.task);
         expect(bloc.state.frequency, Frequency.once);
       });
+
+      test('startDate defaults to today when initialStartDate is omitted', () {
+        final bloc = buildBloc();
+        final today = DateTime.now();
+        expect(bloc.state.startDate.year, today.year);
+        expect(bloc.state.startDate.month, today.month);
+        expect(bloc.state.startDate.day, today.day);
+      });
+
+      test('startDate uses initialStartDate when given', () {
+        final bloc = CreateActivityBloc(
+          initialType: ActivityType.habit,
+          habitsRepository: habitsRepository,
+          initialStartDate: startDate,
+        );
+        expect(bloc.state.startDate, startDate);
+      });
     });
 
     blocTest<CreateActivityBloc, CreateActivityState>(

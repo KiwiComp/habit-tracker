@@ -1,4 +1,6 @@
+import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:habit_tracker/app/app.dart';
 import 'package:habit_tracker/create_activity/create_activity.dart';
@@ -82,5 +84,55 @@ void main() {
       expect(find.byType(CreateActivityPage), findsNothing);
       expect(find.byType(StartPage), findsOneWidget);
     });
+
+    testWidgets('the FAB seeds startDate from today off the Today tab', (
+      tester,
+    ) async {
+      await pumpApp(tester);
+
+      await tester.tap(navItem('Habits'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.add));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Habit'));
+      await tester.pumpAndSettle();
+
+      final startDate = tester
+          .element(find.byType(AppTextField))
+          .read<CreateActivityBloc>()
+          .state
+          .startDate;
+      final today = DateTime.now();
+      expect(startDate.year, today.year);
+      expect(startDate.month, today.month);
+      expect(startDate.day, today.day);
+    });
+
+    testWidgets(
+      'the FAB seeds startDate from the selected day on the Today tab',
+      (tester) async {
+        await pumpApp(tester);
+
+        final pastDate = DateTime(2020, 3, 10);
+        tester
+            .element(find.byType(DaySelector))
+            .read<StartBloc>()
+            .add(StartDaySelected(pastDate));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byIcon(Icons.add));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Habit'));
+        await tester.pumpAndSettle();
+
+        final startDate = tester
+            .element(find.byType(AppTextField))
+            .read<CreateActivityBloc>()
+            .state
+            .startDate;
+        expect(startDate, pastDate);
+      },
+    );
   });
 }

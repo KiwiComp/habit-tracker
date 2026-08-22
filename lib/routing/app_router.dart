@@ -19,6 +19,7 @@ GoRouter buildAppRouter() {
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
             ShellScaffold(navigationShell: navigationShell),
+        // Order matches `ShellBranch` exactly — see its doc comment.
         branches: [
           StatefulShellBranch(
             routes: [GoRoute(path: '/', builder: (_, _) => const StartPage())],
@@ -40,8 +41,13 @@ GoRouter buildAppRouter() {
       ),
       GoRoute(
         path: '/create',
-        builder: (context, state) =>
-            CreateActivityPage(initialType: state.extra! as ActivityType),
+        builder: (context, state) {
+          final args = state.extra! as CreateActivityRouteArgs;
+          return CreateActivityPage(
+            initialType: args.type,
+            initialStartDate: args.startDate,
+          );
+        },
       ),
       GoRoute(
         path: '/habit/:id',

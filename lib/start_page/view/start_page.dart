@@ -12,17 +12,15 @@ import 'package:habit_tracker/widgets/widgets.dart';
 import 'package:habits_repository/habits_repository.dart';
 import 'package:intl/intl.dart';
 
+// `StartBloc` is provided by `ShellScaffold`, an ancestor of every branch —
+// not here — so the add-activity FAB (also in the shell) can read
+// `selectedDate` regardless of which tab it's tapped from. See
+// `ShellScaffold`'s doc comment.
 class StartPage extends StatelessWidget {
   const StartPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          StartBloc(habitsRepository: context.read<HabitsRepository>()),
-      child: const StartView(),
-    );
-  }
+  Widget build(BuildContext context) => const StartView();
 }
 
 class StartView extends StatefulWidget {
