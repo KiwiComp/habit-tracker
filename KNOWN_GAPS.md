@@ -603,7 +603,7 @@ seed `StartBloc`'s initial state from `selectedDayCubit.state` (not a
 second independent `DateTime.now()`, which would reintroduce the exact
 duplicate-default bug fixed in this same change); decide whether
 `StartDaySelected` remains a bloc-internal event driven only by the
-cubit's stream or stays independently triggerable (both would reintroduce
+cubit's stream or stays being independently triggered (both would reintroduce
 "two ways to change the date" one layer down); and watch for timing
 drift — routing the day change through a stream subscription instead of a
 direct `add()` risks breaking the exact emission sequences the existing
