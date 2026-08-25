@@ -28,6 +28,9 @@ void main() {
     when(
       () => habitsRepository.getHabit(habit.id),
     ).thenAnswer((_) async => habit);
+    when(
+      () => habitsRepository.getEntries(habit.id),
+    ).thenAnswer((_) async => const <Entry>[]);
   });
 
   Future<void> pumpPage(WidgetTester tester) {

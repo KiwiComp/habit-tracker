@@ -1,13 +1,14 @@
 import 'package:bloc/bloc.dart';
 import 'package:habit_tracker/habit_page/bloc/habit_event.dart';
 import 'package:habit_tracker/habit_page/bloc/habit_state.dart';
+import 'package:habit_tracker/habit_stats.dart';
 import 'package:habits_repository/habits_repository.dart';
 
-/// Loads a single habit by id for `HabitPage`.
+/// Loads a single habit and its entries by id for `HabitPage`.
 ///
-/// A one-shot `HabitsRepository.getHabit` read, not a stream — the page is
-/// a full-screen modal, so it's the only possible writer of the habit while
-/// it's open.
+/// One-shot `HabitsRepository.getHabit`/`getEntries` reads, not streams —
+/// the page is a full-screen modal, so it's the only possible writer of the
+/// habit (and its entries) while it's open.
 class HabitBloc extends Bloc<HabitEvent, HabitState> {
   /// Creates a [HabitBloc] that loads `id` via `habitsRepository`.
   HabitBloc({required this._id, required this._habitsRepository})
@@ -23,15 +24,26 @@ class HabitBloc extends Bloc<HabitEvent, HabitState> {
   final String _id;
   final HabitsRepository _habitsRepository;
 
+  // Held onto so a schedule-affecting edit (start/end date) can recompute
+  // stats without re-reading entries from the database.
+  List<Entry> _entries = const [];
+
   Future<void> _onLoadRequested(
     HabitLoadRequested event,
     Emitter<HabitState> emit,
   ) async {
     final habit = await _habitsRepository.getHabit(_id);
+    if (habit == null) {
+      emit(state.copyWith(status: HabitStatus.notFound));
+      return;
+    }
+    _entries = await _habitsRepository.getEntries(_id);
     emit(
-      habit == null
-          ? state.copyWith(status: HabitStatus.notFound)
-          : state.copyWith(status: HabitStatus.loaded, habit: habit),
+      state.copyWith(
+        status: HabitStatus.loaded,
+        habit: habit,
+        stats: computeHabitStats(habit, _entries),
+      ),
     );
   }
 
@@ -78,6 +90,7 @@ class HabitBloc extends Bloc<HabitEvent, HabitState> {
         state.copyWith(
           saveStatus: HabitSaveStatus.success,
           habit: updatedHabit,
+          stats: computeHabitStats(updatedHabit, _entries),
         ),
       );
     } on Exception catch (error, stackTrace) {
@@ -105,6 +118,7 @@ class HabitBloc extends Bloc<HabitEvent, HabitState> {
         state.copyWith(
           saveStatus: HabitSaveStatus.success,
           habit: updatedHabit,
+          stats: computeHabitStats(updatedHabit, _entries),
         ),
       );
     } on Exception catch (error, stackTrace) {

@@ -45,5 +45,7 @@
     "habitsListEmptyTitle": "Aún no has creado ningún hábito",
     "habitsListEmptySubtitle": "Pulsa el botón más para crear tu primer hábito",
     "tasksListEmptyTitle": "Aún no has creado ninguna tarea",
-    "tasksListEmptySubtitle": "Pulsa el botón más para crear tu primera tarea"
+    "tasksListEmptySubtitle": "Pulsa el botón más para crear tu primera tarea",
+    "habitsListTileCurrentStreak": "Racha actual: {count}",
+    "habitsListTileLongestStreak": "Racha más larga: {count}"
 }

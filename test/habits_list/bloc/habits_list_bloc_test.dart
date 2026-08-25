@@ -11,6 +11,7 @@ class _MockHabitsRepository extends Mock implements HabitsRepository {}
 void main() {
   late _MockHabitsRepository habitsRepository;
   late StreamController<List<Habit>> habitsController;
+  late StreamController<List<Entry>> entriesController;
 
   Habit habit({String id = '1', String name = 'Read'}) => Habit(
     id: id,
@@ -28,16 +29,28 @@ void main() {
     createdAt: DateTime(2020),
   );
 
+  Entry entry({required String habitId, required DateTime date}) => Entry(
+    id: '$habitId-$date',
+    habitId: habitId,
+    date: date,
+    createdAt: date,
+  );
+
   setUp(() {
     habitsRepository = _MockHabitsRepository();
     habitsController = StreamController<List<Habit>>.broadcast();
+    entriesController = StreamController<List<Entry>>.broadcast();
     when(
       () => habitsRepository.watchHabits(),
     ).thenAnswer((_) => habitsController.stream);
+    when(
+      () => habitsRepository.watchAllEntries(),
+    ).thenAnswer((_) => entriesController.stream);
   });
 
   tearDown(() async {
     await habitsController.close();
+    await entriesController.close();
   });
 
   HabitsListBloc buildBloc() =>
@@ -54,7 +67,11 @@ void main() {
       build: buildBloc,
       act: (_) => habitsController.add([habit(), task()]),
       expect: () => [
-        HabitsListState(habits: [habit()]),
+        isA<HabitsListState>().having(
+          (s) => s.habits.map((h) => h.habit),
+          'habits',
+          [habit()],
+        ),
       ],
     );
 
@@ -67,23 +84,53 @@ void main() {
         habitsController.add([habit(), habit(id: '3', name: 'Stretch')]);
       },
       expect: () => [
-        HabitsListState(habits: [habit()]),
-        HabitsListState(
-          habits: [
-            habit(),
-            habit(id: '3', name: 'Stretch'),
-          ],
+        isA<HabitsListState>().having(
+          (s) => s.habits.map((h) => h.habit),
+          'habits',
+          [habit()],
+        ),
+        isA<HabitsListState>().having(
+          (s) => s.habits.map((h) => h.habit),
+          'habits',
+          [habit(), habit(id: '3', name: 'Stretch')],
         ),
       ],
     );
 
-    test('close cancels the repository subscription', () async {
+    blocTest<HabitsListBloc, HabitsListState>(
+      "computes each habit's stats from entries grouped by habitId, "
+      'recomputing when entries change',
+      build: buildBloc,
+      act: (_) async {
+        habitsController.add([habit(), habit(id: '3', name: 'Stretch')]);
+        await Future<void>.delayed(Duration.zero);
+        entriesController.add([
+          entry(habitId: '1', date: DateTime(2020)),
+          entry(habitId: '1', date: DateTime(2020, 1, 2)),
+          entry(habitId: '3', date: DateTime(2020)),
+        ]);
+      },
+      skip: 1, // the habits-only emission
+      expect: () => [
+        isA<HabitsListState>().having(
+          (s) => {
+            for (final h in s.habits) h.habit.id: h.stats.completedCount,
+          },
+          'completedCount by habit id',
+          {'1': 2, '3': 1},
+        ),
+      ],
+    );
+
+    test('close cancels both repository subscriptions', () async {
       final bloc = buildBloc();
       expect(habitsController.hasListener, isTrue);
+      expect(entriesController.hasListener, isTrue);
 
       await bloc.close();
 
       expect(habitsController.hasListener, isFalse);
+      expect(entriesController.hasListener, isFalse);
     });
   });
 }

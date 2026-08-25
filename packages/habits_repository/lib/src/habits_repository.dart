@@ -120,6 +120,30 @@ class HabitsRepository {
     return query.watch().map((rows) => rows.map(_entryFromRow).toList());
   }
 
+  /// Reads every entry logged for [habitId] once, oldest first.
+  ///
+  /// One-shot rather than a stream, for the same reason as [getHabit]: the
+  /// pages that call this are the only possible writer of the habit's
+  /// entries while they're open.
+  Future<List<Entry>> getEntries(String habitId) async {
+    final query = _database.select(_database.entriesTable)
+      ..where((table) => table.habitId.equals(habitId))
+      ..orderBy([(table) => OrderingTerm(expression: table.date)]);
+    final rows = await query.get();
+    return rows.map(_entryFromRow).toList();
+  }
+
+  /// Streams every entry logged across every habit, oldest first.
+  ///
+  /// For pages that need entries for many habits at once (e.g. computing
+  /// stats for a whole habits list) — one bulk stream instead of the
+  /// caller managing a [watchEntries] subscription per habit.
+  Stream<List<Entry>> watchAllEntries() {
+    final query = _database.select(_database.entriesTable)
+      ..orderBy([(table) => OrderingTerm(expression: table.date)]);
+    return query.watch().map((rows) => rows.map(_entryFromRow).toList());
+  }
+
   /// Streams every entry logged on [date], across all habits.
   Stream<List<Entry>> watchEntriesOnDate(DateTime date) {
     final query = _database.select(_database.entriesTable)

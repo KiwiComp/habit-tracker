@@ -240,6 +240,86 @@ void main() {
     });
   });
 
+  group('getEntries', () {
+    test('returns every entry logged for the habit, oldest first', () async {
+      final habit = await repository.createHabit(
+        name: 'Drink water',
+        frequency: Frequency.daily,
+        startDate: DateTime(2026),
+      );
+      await repository.logEntry(habitId: habit.id, date: DateTime(2026, 1, 2));
+      await repository.logEntry(habitId: habit.id, date: DateTime(2026));
+
+      final entries = await repository.getEntries(habit.id);
+
+      expect(entries.map((entry) => entry.date), [
+        DateTime(2026),
+        DateTime(2026, 1, 2),
+      ]);
+    });
+
+    test('excludes entries logged for other habits', () async {
+      final habit = await repository.createHabit(
+        name: 'Drink water',
+        frequency: Frequency.daily,
+        startDate: DateTime(2026),
+      );
+      final otherHabit = await repository.createHabit(
+        name: 'Read',
+        frequency: Frequency.daily,
+        startDate: DateTime(2026),
+      );
+      await repository.logEntry(habitId: otherHabit.id, date: DateTime(2026));
+
+      final entries = await repository.getEntries(habit.id);
+
+      expect(entries, isEmpty);
+    });
+  });
+
+  group('watchAllEntries', () {
+    test('includes entries across every habit', () async {
+      final habit = await repository.createHabit(
+        name: 'Drink water',
+        frequency: Frequency.daily,
+        startDate: DateTime(2026),
+      );
+      final otherHabit = await repository.createHabit(
+        name: 'Read',
+        frequency: Frequency.daily,
+        startDate: DateTime(2026),
+      );
+      await repository.logEntry(habitId: habit.id, date: DateTime(2026));
+      await repository.logEntry(habitId: otherHabit.id, date: DateTime(2026));
+
+      final entries = await repository.watchAllEntries().first;
+
+      expect(entries, hasLength(2));
+      expect(entries.map((entry) => entry.habitId), [
+        habit.id,
+        otherHabit.id,
+      ]);
+    });
+
+    test('emits a new list whenever an entry is logged', () async {
+      final habit = await repository.createHabit(
+        name: 'Drink water',
+        frequency: Frequency.daily,
+        startDate: DateTime(2026),
+      );
+      final queue = StreamQueue(
+        repository.watchAllEntries().map((entries) => entries.length),
+      );
+
+      expect(await queue.next, 0);
+
+      await repository.logEntry(habitId: habit.id, date: DateTime(2026));
+
+      expect(await queue.next, 1);
+      await queue.cancel();
+    });
+  });
+
   group('watchEntriesOnDate', () {
     test('only includes entries logged on that date', () async {
       final habit = await repository.createHabit(

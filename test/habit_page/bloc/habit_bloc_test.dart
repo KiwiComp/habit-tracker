@@ -23,6 +23,9 @@ void main() {
 
   setUp(() {
     habitsRepository = _MockHabitsRepository();
+    when(
+      () => habitsRepository.getEntries(habit.id),
+    ).thenAnswer((_) async => const <Entry>[]);
   });
 
   HabitBloc buildBloc() =>
@@ -54,6 +57,33 @@ void main() {
             (s) => s.status,
             'status',
             HabitStatus.notFound,
+          ),
+        ],
+      );
+
+      blocTest<HabitBloc, HabitState>(
+        'computes stats from the loaded habit and its entries',
+        setUp: () {
+          when(
+            () => habitsRepository.getHabit(habit.id),
+          ).thenAnswer((_) async => habit);
+          when(() => habitsRepository.getEntries(habit.id)).thenAnswer(
+            (_) async => [
+              Entry(
+                id: 'entry',
+                habitId: habit.id,
+                date: habit.startDate,
+                createdAt: habit.startDate,
+              ),
+            ],
+          );
+        },
+        build: buildBloc,
+        expect: () => [
+          isA<HabitState>().having(
+            (s) => s.stats?.completedCount,
+            'stats.completedCount',
+            1,
           ),
         ],
       );
@@ -315,6 +345,38 @@ void main() {
             ),
           ).called(1);
         },
+      );
+
+      blocTest<HabitBloc, HabitState>(
+        'recomputes stats against the new end date',
+        setUp: () {
+          when(
+            () => habitsRepository.getHabit(habit.id),
+          ).thenAnswer((_) async => habit);
+          when(() => habitsRepository.updateHabit(any())).thenAnswer(
+            (_) async {},
+          );
+        },
+        build: buildBloc,
+        act: (bloc) async {
+          await Future<void>.delayed(Duration.zero);
+          // habit.startDate is 2026-01-05, daily — 6 scheduled days
+          // (5th through 10th inclusive) once bounded by this end date.
+          bloc.add(HabitEndDateChangeSubmitted(DateTime(2026, 1, 10)));
+        },
+        skip: 1, // the initial load
+        expect: () => [
+          isA<HabitState>().having(
+            (s) => s.saveStatus,
+            'saveStatus',
+            HabitSaveStatus.saving,
+          ),
+          isA<HabitState>().having(
+            (s) => s.stats?.totalScheduled,
+            'stats.totalScheduled',
+            6,
+          ),
+        ],
       );
 
       blocTest<HabitBloc, HabitState>(

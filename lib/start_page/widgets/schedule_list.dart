@@ -28,7 +28,7 @@ class ScheduleList extends StatefulWidget {
 
   /// Called with the tapped row's habit, to toggle it done for the selected
   /// day.
-  final ValueChanged<Habit> onActivityTap;
+  final ValueChanged<Habit>? onActivityTap;
 
   /// Called with the habit whose slide-reveal action was tapped, to open
   /// its detail page.
@@ -85,7 +85,9 @@ class _ScheduleListState extends State<ScheduleList> {
             habit: habit,
             completedHabitIds: widget.completedHabitIds,
             revealFraction: revealFraction,
-            onTap: () => widget.onActivityTap(habit),
+            onTap: widget.onActivityTap == null
+                ? null
+                : () => widget.onActivityTap!(habit),
             onOpen: () => widget.onOpenActivity(habit),
           ),
         );
@@ -111,7 +113,7 @@ class _HabitTile extends StatelessWidget {
   /// reads as flush with the revealed action instead of floating above it.
   final double revealFraction;
 
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   /// Opens the habit's detail page.
   ///

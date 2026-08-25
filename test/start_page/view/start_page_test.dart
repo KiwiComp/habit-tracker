@@ -131,6 +131,32 @@ void main() {
       ).called(1);
     });
 
+    testWidgets(
+      'tapping a row for a future day does not mark it done',
+      (tester) async {
+        await pumpStartPage(tester);
+        habits.add([dailyHabit()]);
+        await tester.pumpAndSettle();
+
+        final tomorrow = DateTime.now().add(const Duration(days: 1));
+        tester
+            .element(find.byType(DaySelector))
+            .read<StartBloc>()
+            .add(StartDaySelected(tomorrow));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('Read'));
+        await tester.pumpAndSettle();
+
+        verifyNever(
+          () => repo.logEntry(
+            habitId: any(named: 'habitId'),
+            date: any(named: 'date'),
+          ),
+        );
+      },
+    );
+
     testWidgets("a row's slide action opens its detail page", (tester) async {
       await pumpStartPage(tester);
       habits.add([dailyHabit()]);

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:habit_tracker/habit_page/habit_page.dart';
+import 'package:habit_tracker/habit_stats.dart';
 import 'package:habits_repository/habits_repository.dart';
 
 void main() {
@@ -11,15 +12,26 @@ void main() {
     createdAt: DateTime(2026),
   );
 
-  group('HabitState', () {
-    test('defaults to loading, no habit, idle save, idle archive', () {
-      const state = HabitState();
+  const stats = HabitStats(
+    completedCount: 1,
+    totalScheduled: 2,
+    currentStreak: 1,
+    longestStreak: 1,
+  );
 
-      expect(state.status, HabitStatus.loading);
-      expect(state.habit, isNull);
-      expect(state.saveStatus, HabitSaveStatus.idle);
-      expect(state.archiveStatus, HabitArchiveStatus.idle);
-    });
+  group('HabitState', () {
+    test(
+      'defaults to loading, no habit, no stats, idle save, idle archive',
+      () {
+        const state = HabitState();
+
+        expect(state.status, HabitStatus.loading);
+        expect(state.habit, isNull);
+        expect(state.stats, isNull);
+        expect(state.saveStatus, HabitSaveStatus.idle);
+        expect(state.archiveStatus, HabitArchiveStatus.idle);
+      },
+    );
 
     group('copyWith', () {
       test('replaces given fields and keeps the rest', () {
@@ -30,6 +42,16 @@ void main() {
         expect(updated.status, HabitStatus.loaded);
         expect(updated.habit, habit);
         expect(updated.saveStatus, HabitSaveStatus.saving);
+      });
+
+      test('replaces stats and keeps the rest', () {
+        final state = HabitState(status: HabitStatus.loaded, habit: habit);
+
+        final updated = state.copyWith(stats: stats);
+
+        expect(updated.status, HabitStatus.loaded);
+        expect(updated.habit, habit);
+        expect(updated.stats, stats);
       });
 
       test('replaces archiveStatus and keeps the rest', () {
@@ -82,6 +104,15 @@ void main() {
               habit: habit,
               archiveStatus: HabitArchiveStatus.archiving,
             ),
+          ),
+        );
+      });
+
+      test('unequal when stats differs', () {
+        expect(
+          HabitState(status: HabitStatus.loaded, habit: habit),
+          isNot(
+            HabitState(status: HabitStatus.loaded, habit: habit, stats: stats),
           ),
         );
       });

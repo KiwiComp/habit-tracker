@@ -45,5 +45,7 @@
     "habitsListEmptyTitle": "Du har inte skapat några vanor än",
     "habitsListEmptySubtitle": "Tryck på plusknappen för att skapa din första vana",
     "tasksListEmptyTitle": "Du har inte skapat några uppgifter än",
-    "tasksListEmptySubtitle": "Tryck på plusknappen för att skapa din första uppgift"
+    "tasksListEmptySubtitle": "Tryck på plusknappen för att skapa din första uppgift",
+    "habitsListTileCurrentStreak": "Nuvarande svit: {count}",
+    "habitsListTileLongestStreak": "Längsta svit: {count}"
 }
