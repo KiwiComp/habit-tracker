@@ -92,7 +92,7 @@ class HabitListTile extends StatelessWidget {
 }
 
 class _CompletionBadge extends StatelessWidget {
-  const _CompletionBadge({required this.stats, super.key});
+  const _CompletionBadge({required this.stats});
 
   final HabitStats stats;
 
