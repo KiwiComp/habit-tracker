@@ -29,7 +29,7 @@ class _HabitsListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final habits = context.select<HabitsListBloc, List<Habit>>(
+    final habits = context.select<HabitsListBloc, List<HabitWithStats>>(
       (bloc) => bloc.state.habits,
     );
     final spacing = context.spacing;
@@ -47,9 +47,11 @@ class _HabitsListView extends StatelessWidget {
                 separatorBuilder: (_, _) => SizedBox(height: spacing.sm),
                 itemCount: habits.length,
                 itemBuilder: (context, index) {
-                  final habit = habits[index];
+                  final habitWithStats = habits[index];
+                  final habit = habitWithStats.habit;
                   return HabitListTile(
                     habit: habit,
+                    stats: habitWithStats.stats,
                     onTap: () => context.push('/habit/${habit.id}'),
                   );
                 },

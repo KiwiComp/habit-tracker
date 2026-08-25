@@ -25,7 +25,7 @@ void main() {
   final passportTask = habit('t', 'Passport', Frequency.once);
 
   Widget list({
-    required ValueChanged<Habit> onTap,
+    required ValueChanged<Habit>? onTap,
     ValueChanged<Habit> onOpen = ignoreHabit,
     Set<String> completedHabitIds = const {},
   }) => Scaffold(
@@ -207,6 +207,23 @@ void main() {
       expect(opened, passportTask);
       handle.dispose();
     });
+
+    testWidgets(
+      'a null onActivityTap disables tapping and removes the tap semantics',
+      (tester) async {
+        final handle = tester.ensureSemantics();
+        await tester.pumpApp(list(onTap: null));
+
+        // Tapping does nothing (and doesn't throw) — there's no callback to
+        // report through.
+        await tester.tap(find.text('Read'));
+        await tester.pump();
+
+        final node = tester.getSemantics(find.bySemanticsLabel('Read'));
+        expect(node, isSemantics(hasTapAction: false));
+        handle.dispose();
+      },
+    );
 
     testWidgets('a vertical drag does not open a row', (tester) async {
       await tester.pumpApp(list(onTap: (_) {}));

@@ -58,6 +58,7 @@ class _StartViewState extends State<StartView> {
       (bloc) => bloc.state.completedHabitIds,
     );
     final isToday = selectedDate.isSameDayAs(DateTime.now());
+    final isAfterToday = selectedDate.isAfter(DateTime.now());
 
     return Scaffold(
       appBar: HabitTrackerAppBar(
@@ -78,8 +79,11 @@ class _StartViewState extends State<StartView> {
                 : ScheduleList(
                     activities: activities,
                     completedHabitIds: completeHabitIds,
-                    onActivityTap: (habit) =>
-                        bloc.add(ToggleActivityMarking(habit.id, selectedDate)),
+                    onActivityTap: isAfterToday
+                        ? null
+                        : (habit) => bloc.add(
+                            ToggleActivityMarking(habit.id, selectedDate),
+                          ),
                     onOpenActivity: (habit) => context.push(
                       habit.isTask ? '/task/${habit.id}' : '/habit/${habit.id}',
                     ),

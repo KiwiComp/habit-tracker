@@ -611,3 +611,43 @@ direct `add()` risks breaking the exact emission sequences the existing
 
 Revisit when next touching `start_bloc_test.dart` anyway, or before a third
 consumer needs `selectedDate` and this shape gets copied again.
+
+## `HabitPage` doesn't display `HabitStats` yet (2026-08-25)
+
+`HabitBloc` loads a habit's entries and computes `HabitStats`
+(`lib/habit_stats.dart`) into `HabitState.stats` on load, and recomputes
+it whenever a start/end date edit changes the habit's schedule — the same
+data `HabitsListPage`'s rows now show per habit
+(`lib/habits_list/widgets/habit_list_tile.dart`). `HabitPage`'s own
+`_HabitDetails` view (`lib/habit_page/view/habit_page.dart`) never reads
+`state.stats` — the detail page shows the name/start date/end date/delete
+rows only, with no completion/streak section. The data is there; only the
+UI for it on this specific page is missing.
+
+**Revisit** by adding a stats section to `_HabitDetails`, following the
+same bounded-vs-unbounded display split as `HabitListTile` (completed/total
++ percentage only when `stats.totalScheduled != null`).
+
+## Entries logged for a future day before the tap-block landed still count (2026-08-25)
+
+`StartPage` now disables marking a habit done for a day after today
+(`lib/start_page/view/start_page.dart`'s `isAfterToday` guard on
+`ScheduleList.onActivityTap`) — added after a bug where `HabitListTile`'s
+completion count silently excluded a future-dated entry from
+`completedCount` while still including it in `totalScheduled`. The fix in
+`computeHabitStats` (`lib/habit_stats.dart`) makes `completedCount` count
+every logged entry regardless of date, and the `StartPage` fix stops any
+*new* future-dated entries from being created.
+
+Neither fix retroactively touches entries already logged for a future day
+before this change shipped — those rows still exist in the `entries`
+table and will keep counting toward `completedCount`/the completion
+percentage on any habit they belong to, exactly as if they'd been
+completed on time. No database migration or backfill was written to clean
+these up.
+
+**Revisit if this surfaces in practice** — e.g. a habit's completion
+percentage looking implausibly high — by finding and clearing entries
+whose `date` is after their `createdAt`'s calendar day (the signature of a
+pre-marked future entry), or simply by manually un-marking/re-marking the
+affected day from the UI.

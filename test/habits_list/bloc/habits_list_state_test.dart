@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:habit_tracker/habit_stats.dart';
 import 'package:habit_tracker/habits_list/habits_list.dart';
 import 'package:habits_repository/habits_repository.dart';
 
@@ -11,6 +12,48 @@ void main() {
     createdAt: DateTime(2020),
   );
 
+  const stats = HabitStats(
+    completedCount: 1,
+    totalScheduled: 2,
+    currentStreak: 1,
+    longestStreak: 1,
+  );
+
+  final habitWithStats = HabitWithStats(habit: habit, stats: stats);
+
+  group('HabitWithStats', () {
+    test('equal when habit and stats both match', () {
+      expect(
+        HabitWithStats(habit: habit, stats: stats),
+        HabitWithStats(habit: habit, stats: stats),
+      );
+    });
+
+    test('unequal when stats differs', () {
+      expect(
+        habitWithStats,
+        isNot(
+          HabitWithStats(
+            habit: habit,
+            stats: const HabitStats(
+              completedCount: 0,
+              totalScheduled: 2,
+              currentStreak: 0,
+              longestStreak: 0,
+            ),
+          ),
+        ),
+      );
+    });
+
+    test('hashCode matches for equal values', () {
+      expect(
+        HabitWithStats(habit: habit, stats: stats).hashCode,
+        HabitWithStats(habit: habit, stats: stats).hashCode,
+      );
+    });
+  });
+
   group('HabitsListState', () {
     test('defaults to an empty list of habits', () {
       const state = HabitsListState();
@@ -21,13 +64,13 @@ void main() {
     test('copyWith replaces habits', () {
       const state = HabitsListState();
 
-      final updated = state.copyWith(habits: [habit]);
+      final updated = state.copyWith(habits: [habitWithStats]);
 
-      expect(updated.habits, [habit]);
+      expect(updated.habits, [habitWithStats]);
     });
 
     test('copyWith falls back to the receiver when no argument is given', () {
-      final state = HabitsListState(habits: [habit]);
+      final state = HabitsListState(habits: [habitWithStats]);
 
       expect(state.copyWith(), state);
     });
@@ -35,31 +78,38 @@ void main() {
     group('equality', () {
       test('equal when the habit lists match', () {
         expect(
-          HabitsListState(habits: [habit]),
-          HabitsListState(habits: [habit]),
+          HabitsListState(habits: [habitWithStats]),
+          HabitsListState(habits: [habitWithStats]),
         );
       });
 
       test('unequal when the lists differ in length', () {
         expect(
-          HabitsListState(habits: [habit]),
+          HabitsListState(habits: [habitWithStats]),
           isNot(const HabitsListState()),
         );
       });
 
       test('unequal when the lists differ in content', () {
         expect(
-          HabitsListState(habits: [habit]),
+          HabitsListState(habits: [habitWithStats]),
           isNot(
-            HabitsListState(habits: [habit.copyWith(name: 'Stretch')]),
+            HabitsListState(
+              habits: [
+                HabitWithStats(
+                  habit: habit.copyWith(name: 'Stretch'),
+                  stats: stats,
+                ),
+              ],
+            ),
           ),
         );
       });
 
       test('hashCode matches for equal states', () {
         expect(
-          HabitsListState(habits: [habit]).hashCode,
-          HabitsListState(habits: [habit]).hashCode,
+          HabitsListState(habits: [habitWithStats]).hashCode,
+          HabitsListState(habits: [habitWithStats]).hashCode,
         );
       });
     });

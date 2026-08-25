@@ -1,3 +1,4 @@
+import 'package:habit_tracker/habit_stats.dart';
 import 'package:habits_repository/habits_repository.dart';
 import 'package:meta/meta.dart';
 
@@ -53,6 +54,7 @@ final class HabitState {
   const HabitState({
     this.status = HabitStatus.loading,
     this.habit,
+    this.stats,
     this.saveStatus = HabitSaveStatus.idle,
     this.archiveStatus = HabitArchiveStatus.idle,
   });
@@ -62,6 +64,11 @@ final class HabitState {
 
   /// The loaded habit. Only set once [status] is [HabitStatus.loaded].
   final Habit? habit;
+
+  /// Completion/streak numbers for [habit], derived from its entries.
+  /// Recomputed whenever an edit changes the habit's schedule. Only set
+  /// once [status] is [HabitStatus.loaded].
+  final HabitStats? stats;
 
   /// How the most recent edit (e.g. a name change) is saving.
   final HabitSaveStatus saveStatus;
@@ -73,12 +80,14 @@ final class HabitState {
   HabitState copyWith({
     HabitStatus? status,
     Habit? habit,
+    HabitStats? stats,
     HabitSaveStatus? saveStatus,
     HabitArchiveStatus? archiveStatus,
   }) {
     return HabitState(
       status: status ?? this.status,
       habit: habit ?? this.habit,
+      stats: stats ?? this.stats,
       saveStatus: saveStatus ?? this.saveStatus,
       archiveStatus: archiveStatus ?? this.archiveStatus,
     );
@@ -89,9 +98,11 @@ final class HabitState {
       other is HabitState &&
       other.status == status &&
       other.habit == habit &&
+      other.stats == stats &&
       other.saveStatus == saveStatus &&
       other.archiveStatus == archiveStatus;
 
   @override
-  int get hashCode => Object.hash(status, habit, saveStatus, archiveStatus);
+  int get hashCode =>
+      Object.hash(status, habit, stats, saveStatus, archiveStatus);
 }

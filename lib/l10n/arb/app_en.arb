@@ -188,5 +188,23 @@
     "tasksListEmptySubtitle": "Click the plus button to create your first task",
     "@tasksListEmptySubtitle": {
         "description": "Subtitle shown on the Tasks tab when there are no tasks"
+    },
+    "habitsListTileCurrentStreak": "Current streak: {count}",
+    "@habitsListTileCurrentStreak": {
+        "description": "Current streak count shown on a habit's row on the Habits tab",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "habitsListTileLongestStreak": "Longest streak: {count}",
+    "@habitsListTileLongestStreak": {
+        "description": "Longest streak count shown on a habit's row on the Habits tab",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
     }
 }

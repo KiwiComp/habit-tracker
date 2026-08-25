@@ -24,6 +24,9 @@ void main() {
     when(
       () => repo.watchEntriesOnDate(any()),
     ).thenAnswer((_) => Stream.value(const <Entry>[]));
+    when(
+      () => repo.watchAllEntries(),
+    ).thenAnswer((_) => Stream.value(const <Entry>[]));
     when(() => repo.close()).thenAnswer((_) async {});
   });
 

@@ -13,3 +13,12 @@ final class HabitsListHabitsChanged extends HabitsListEvent {
   /// The recurring habits to show, excluding one-off tasks.
   final List<Habit> habits;
 }
+
+/// The set of entries (from `HabitsRepository.watchAllEntries`) changed.
+final class HabitsListEntriesChanged extends HabitsListEvent {
+  /// Creates a [HabitsListEntriesChanged] event with the latest [entries].
+  const HabitsListEntriesChanged(this.entries);
+
+  /// Every entry logged across every habit.
+  final List<Entry> entries;
+}
