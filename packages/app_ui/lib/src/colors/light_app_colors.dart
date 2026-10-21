@@ -1,4 +1,5 @@
 import 'dart:ui';
+
 import 'package:app_ui/src/colors/app_colors.dart';
 
 final class LightAppColors extends AppColors {
