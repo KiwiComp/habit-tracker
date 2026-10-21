@@ -216,7 +216,7 @@ index on (habit, date), and deleting a habit cascades to its entries.
 
 ### Prerequisites
 
-- Flutter `3.44.x` (Dart SDK `^3.12.0`) — see `environment` in `pubspec.yaml`
+- Flutter `3.47.x` (Dart SDK `^3.13.0`) — see `environment` in `pubspec.yaml`
 - Xcode and/or Android Studio for the mobile toolchains
 - [Very Good CLI][very_good_cli_link] (`dart pub global activate very_good_cli`),
   used for the test commands in [docs/development.md](docs/development.md)
