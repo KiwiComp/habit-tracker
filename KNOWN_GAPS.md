@@ -160,7 +160,7 @@ history and streak stats intact.
 
 ## Habits tab — resolved 2026-08-11
 
-Resolved by the `go_router` migration (`ROUTING.md`): the bottom nav now
+Resolved by the `go_router` migration (`docs/ROUTING.md`): the bottom nav now
 lives in `lib/routing/widgets/shell_scaffold.dart`, with a real third
 `Tasks` destination alongside it, and `Habits`/`Tasks` tap through to
 `HabitsListPage`/`TasksListPage` (routes `/habits`/`/tasks`). Both list
@@ -216,14 +216,14 @@ slide-to-reveal work):
 
 ## ScheduleList items aren't tappable yet — resolved 2026-08-11
 
-Resolved by the `go_router` migration (`ROUTING.md`): each `ScheduleList`
+Resolved by the `go_router` migration (`docs/ROUTING.md`): each `ScheduleList`
 row now pushes `/habit/:id` or `/task/:id` (chosen via the new `Habit.isTask`
 helper), landing on `HabitPage`/`TaskPage`. Those load by a **one-shot**
 `HabitsRepository.getHabit(id)` rather than a `watchHabit(id)` stream — a
 deliberate choice, not an oversight: the page is a full-screen modal, so
 it's the only possible writer of the habit while open, and a tapped
 notification (planned) opens the app cold with only an id, which a static
-`extra` payload can't serve. See `ROUTING.md`'s "Data loading" section for
+`extra` payload can't serve. See `docs/ROUTING.md`'s "Data loading" section for
 the full reasoning.
 
 Both pages are still stubs — they confirm the *right* entity loaded (show
@@ -237,7 +237,7 @@ dragging the row left (`SlideToRevealTile`), which still pushes the same
 
 ## HabitPage / TaskPage have no edit form yet
 
-`ROUTING.md`'s routing migration deliberately stopped short of building
+`docs/ROUTING.md`'s routing migration deliberately stopped short of building
 the edit section itself (form fields, Save, validation, save→pop-on-success)
 for `HabitPage`/`TaskPage` — see its "Build order" step 3. Both pages
 currently just load the habit/task by id and show its name.
@@ -466,11 +466,21 @@ from `lib/l10n/arb/app_en.arb`/`app_es.arb` in this pass. `README.md`'s
 as its example key (and only listed `en`/`es`, not the newly-added `sv`) —
 updated to use `helloWorld` instead and to reflect all three locales.
 
+Superseded 2026-10-21: `README.md` was rewritten from scratch and the
+walkthrough moved out of it, into `docs/development.md`. It no longer uses a
+placeholder key at all — the example is now `createActivitySaveButton`
+("Save" / "Guardar" / "Spara"), a string the app actually ships, with
+`habitsListTileCurrentStreak` added to cover the `placeholders` case. The
+eight allowlist entries those invented example strings needed were dropped
+from `.github/cspell.json` in the same pass, replaced by the two real
+translations above, so the dictionary now only carries words the project
+actually uses.
+
 ## AppBar + "jump to today" FAB — resolved 2026-08-11
 
-Planned alongside the routing restructure in `ROUTING.md` (kept out of that
+Planned alongside the routing restructure in `docs/ROUTING.md` (kept out of that
 file — it's chrome, not routing). Landed after the go_router shell (the
-`ROUTING.md` migration had explicitly scoped this relocation *out* of
+`docs/ROUTING.md` migration had explicitly scoped this relocation *out* of
 routing itself), so it could move the add-activity FAB off `StartPage`'s
 `Scaffold` onto the shell without a throwaway two-FABs-on-one-`Scaffold`
 layout.

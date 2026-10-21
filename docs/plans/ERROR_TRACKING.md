@@ -1,8 +1,8 @@
 # error_tracking package — setup instructions
 
 This file is a blueprint for creating the `error_tracking` package, before it exists. Follow
-`CREATE_PACKAGE.md` first for the general package-scaffolding steps, then this file for the
-package's actual content.
+`docs/plans/CREATE_PACKAGE.md` first for the general package-scaffolding steps, then this file for
+the package's actual content.
 
 ## Scaffold choice
 
@@ -135,8 +135,9 @@ void main() {
 ## Finishing up
 
 Once implemented: bump the package's `pubspec.yaml` version and add a `CHANGELOG.md` entry
-describing the change (per `CREATE_PACKAGE.md`'s discipline), then verify with `dart analyze`
-(should report no issues) and `flutter test` (should pass) from inside the package directory.
+describing the change (per `docs/plans/CREATE_PACKAGE.md`'s discipline), then verify with `dart
+analyze` (should report no issues) and `flutter test` (should pass) from inside the package
+directory.
 
-This package is not wired into the app's `bootstrap.dart` by this step — see `BOOTSTRAP.md` for
-that.
+This package is not wired into the app's `bootstrap.dart` by this step — see
+`docs/plans/BOOTSTRAP.md` for that.
