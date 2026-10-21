@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 /// Wraps the widget built by [childBuilder] in a horizontal-drag gesture
@@ -86,7 +84,7 @@ class _SlideToRevealTileState extends State<SlideToRevealTile>
 
   void _onDragEnd(DragEndDetails details) {
     final open = _controller.value > 0.5;
-    unawaited(_controller.animateTo(open ? 1 : 0, curve: Curves.easeOut));
+    _controller.animateTo(open ? 1 : 0, curve: Curves.easeOut);
     widget.onOpenChanged(open);
   }
 
@@ -103,7 +101,7 @@ class _SlideToRevealTileState extends State<SlideToRevealTile>
     // but don't start seeding `_controller` from `isDesignatedOpen` in
     // `initState` without reconciling that here too.
     if (oldWidget.isDesignatedOpen && !widget.isDesignatedOpen) {
-      unawaited(_controller.animateTo(0, curve: Curves.easeOut));
+      _controller.animateTo(0, curve: Curves.easeOut);
     }
   }
 
