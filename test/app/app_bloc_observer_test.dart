@@ -1,7 +1,8 @@
 // bloc_lint wants every Bloc/Cubit subclass in its own file named after it.
 // `_CounterCubit` is a throwaway, test-only fixture that exists solely to
-// give `AppBlocObserver` a real `BlocBase` to observe — see KNOWN_GAPS.md
-// for the deferred decision on whether it's worth a dedicated file.
+// give `AppBlocObserver` a real `BlocBase` to observe. See KNOWN_GAPS.md's
+// "`_CounterCubit` test fixture suppresses a bloc_lint rule" for why this is
+// suppressed rather than fixed.
 // ignore_for_file: prefer_file_naming_conventions
 
 import 'package:bloc/bloc.dart';
