@@ -54,7 +54,7 @@ matching version bump in `pubspec.yaml`, in the same change — never one withou
 
 ```yaml
 environment:
-  sdk: ^3.12.0
+  sdk: ^3.13.0
 
 resolution: workspace
 ```

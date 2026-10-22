@@ -1510,17 +1510,15 @@ class $$EntriesTableTableTableManager
                     >
                   >(state) {
                     if (habitId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.habitId,
-                                referencedTable: $$EntriesTableTableReferences
-                                    ._habitIdTable(db),
-                                referencedColumn: $$EntriesTableTableReferences
-                                    ._habitIdTable(db)
-                                    .id,
-                              )
-                              as T;
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.habitId,
+                        referencedTable: $$EntriesTableTableReferences
+                            ._habitIdTable(db),
+                        referencedColumn: $$EntriesTableTableReferences
+                            ._habitIdTable(db)
+                            .id,
+                      ) as T;
                     }
 
                     return state;

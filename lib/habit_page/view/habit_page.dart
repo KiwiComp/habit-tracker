@@ -8,7 +8,7 @@ import 'package:habits_repository/habits_repository.dart';
 /// The full-screen detail/edit page for one habit (route `/habit/:id`).
 ///
 /// Opened from Today or the Habits list — same page either way, see
-/// `ROUTING.md`. Editing the name, start date, and end date, and deleting
+/// `docs/ROUTING.md`. Editing the name, start date, and end date, and deleting
 /// (archiving) the habit, are all wired up.
 class HabitPage extends StatelessWidget {
   /// Creates a [HabitPage] for the habit with the given [id].

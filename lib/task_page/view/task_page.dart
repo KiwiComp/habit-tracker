@@ -8,7 +8,7 @@ import 'package:habits_repository/habits_repository.dart';
 /// The full-screen detail/edit page for one task (route `/task/:id`).
 ///
 /// Opened from Today or the Tasks list — same page either way, see
-/// `ROUTING.md`. Editing the name and start date, and deleting (archiving)
+/// `docs/ROUTING.md`. Editing the name and start date, and deleting (archiving)
 /// the task, are all wired up.
 class TaskPage extends StatelessWidget {
   /// Creates a [TaskPage] for the task with the given [id].

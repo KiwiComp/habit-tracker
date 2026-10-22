@@ -27,8 +27,8 @@ void main() {
 
     testWidgets('its buttons are tappable no-ops for now', (tester) async {
       // The actions are wired to `onPressed: () {}` until real behaviour
-      // lands (see KNOWN_GAPS.md) — tapping each just confirms they're enabled
-      // and don't throw.
+      // lands — see KNOWN_GAPS.md's "The app bar's buttons are no-ops".
+      // Tapping each just confirms they're enabled and don't throw.
       await tester.pumpApp(
         const Scaffold(appBar: HabitTrackerAppBar(title: 'Today')),
       );

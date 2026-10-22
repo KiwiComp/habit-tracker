@@ -7,8 +7,8 @@ import 'package:habit_tracker/start_page/start_page.dart';
 import 'package:habit_tracker/task_page/task_page.dart';
 import 'package:habit_tracker/tasks_list/tasks_list.dart';
 
-/// Builds the app's [GoRouter] — see `ROUTING.md` for the full navigation
-/// model this implements.
+/// Builds the app's [GoRouter] — see `docs/ROUTING.md` for the full
+/// navigation model this implements.
 ///
 /// A function rather than a shared singleton, so each `App` instance (each
 /// widget test included) gets its own router with fresh navigation state.

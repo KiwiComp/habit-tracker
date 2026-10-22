@@ -12,10 +12,11 @@ import 'package:habits_repository/habits_repository.dart';
 /// The shell scaffold behind `StatefulShellRoute.indexedStack`.
 ///
 /// Owns the chrome shared across the Today/Habits/Tasks tabs — see
-/// `ROUTING.md` and `KNOWN_GAPS.md`'s "AppBar + jump to today FAB" entry: the
-/// bottom nav bar, and the add-activity FAB (available from any tab, not
-/// just Today). Switching tabs goes through `navigationShell.goBranch`,
-/// never `context.go`, so each branch's stack and state survive the switch.
+/// `docs/ROUTING.md` and `KNOWN_GAPS.md`'s "AppBar + jump to today FAB"
+/// entry: the bottom nav bar, and the add-activity FAB (available from any
+/// tab, not just Today). Switching tabs goes through
+/// `navigationShell.goBranch`, never `context.go`, so each branch's stack and
+/// state survive the switch.
 ///
 /// Also provides `StartBloc` — moved up from `StartPage` so the FAB can read
 /// its `selectedDate` on the Today tab (see `_ShellScaffoldView`). This

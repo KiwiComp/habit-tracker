@@ -2,9 +2,10 @@
 
 This file assumes: a Very Good CLI-generated Flutter app (`lib/bootstrap.dart` plus
 `lib/main_development.dart` / `lib/main_staging.dart` / `lib/main_production.dart`), and the
-`error_tracking` package already built per `ERROR_TRACKING.md` and registered as a dependency in
-the app's `pubspec.yaml` (see `CREATE_PACKAGE.md` step 5 for how to register a package — the app
-itself needs the same `path:` dependency treatment as any other workspace member depending on it).
+`error_tracking` package already built per `docs/plans/ERROR_TRACKING.md` and registered as a
+dependency in the app's `pubspec.yaml` (see `docs/plans/CREATE_PACKAGE.md` step 5 for how to
+register a package — the app itself needs the same `path:` dependency treatment as any other
+workspace member depending on it).
 
 ## Starting point
 
