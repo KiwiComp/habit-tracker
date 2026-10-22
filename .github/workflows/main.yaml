@@ -31,7 +31,7 @@ jobs:
   # error_tracking has no real test suite yet, so it gets no job here — see
   # TODO.md. Add it once it's tested.
   build-app:
-    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v1
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v2
     with:
       flutter_version: "3.47.x"
       working_directory: "."
@@ -43,7 +43,7 @@ jobs:
       run_bloc_lint: true
 
   build-habits-repository:
-    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v1
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v2
     with:
       flutter_version: "3.47.x"
       working_directory: packages/habits_repository
@@ -54,7 +54,7 @@ jobs:
       run_bloc_lint: false
 
   build-app-ui:
-    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v1
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v2
     with:
       flutter_version: "3.47.x"
       working_directory: packages/app_ui
@@ -64,7 +64,7 @@ jobs:
       run_bloc_lint: false
 
   build-error-tracking:
-    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v1
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v2
     with:
       flutter_version: "3.47.x"
       working_directory: packages/error_tracking
