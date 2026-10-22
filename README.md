@@ -270,7 +270,6 @@ pull request and push to `main`:
 - **Semantic pull request** — PR titles must follow
   [Conventional Commits][conventional_commits_link].
 - **Spell check** on every Markdown file.
-- **License check** — dependencies must be MIT, BSD-2/3-Clause, or Apache-2.0.
 
 Each coverage floor is the level the finished package should hold, chosen
 rather than lowered to match whatever coverage happened to be — all four are
