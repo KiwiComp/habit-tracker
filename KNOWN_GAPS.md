@@ -15,7 +15,6 @@ still matters it follows as a dated note. Finished entries move to the
 - [App icons](#app-icons) — placeholder solid-color icons, not fit for a device or the store.
 - [App/bundle identifiers](#appbundle-identifiers) — still the Very Good CLI placeholders.
 - [The app bar's buttons are no-ops](#the-app-bars-buttons-are-no-ops) — all four actions render and tap, but do nothing.
-- [CI coverage gates are set above today's numbers](#ci-coverage-gates-are-set-above-todays-numbers) — red on purpose; only the CI tooling measures them honestly.
 - [`bootstrap.dart` and `main_*.dart` are deliberately untested](#bootstrapdart-and-main_dart-are-deliberately-untested) — pure wiring, and the one accepted test gap.
 - [No behavior defined for a habit whose end date has passed](#no-behavior-defined-for-a-habit-whose-end-date-has-passed) — an ended habit is indistinguishable from a live one at the query level.
 - [Nothing recomputes when the day changes at midnight](#nothing-recomputes-when-the-day-changes-at-midnight) — everything that depends on "today" is computed at build time.
@@ -60,37 +59,6 @@ They are defined once in that one widget deliberately, so whichever gets
 wired up first behaves the same on every tab — see
 [the archived AppBar entry](#appbar--jump-to-today-fab--resolved-2026-08-11)
 for why it's shaped that way.
-
-### CI coverage gates are set above today's numbers
-
-_Noted 2026-08-12._
-
-`.github/workflows/main.yaml` runs one job per tested package, each with a
-`min_coverage` set to the level the finished package should hold, and
-`coverage_excludes` dropping generated code (`*.g.dart`, `lib/l10n/gen/`)
-from the denominator:
-
-| Job | Working directory | Target |
-| --- | --- | --- |
-| `build-app` | `.` — also excludes `packages/**`, so it measures the app's own `lib` only | 80% |
-| `build-habits-repository` | `packages/habits_repository` | 95% |
-| `build-app-ui` | `packages/app_ui` | 100% |
-| `build-error-tracking` | `packages/error_tracking` | 100% |
-
-The targets describe the finished package, not today's number. The decision
-(2026-08-12) was explicitly *not* to lower a threshold to whatever coverage
-currently is: a green check should mean "at the approved bar", so a gate may
-sit red on purpose until the code earns green. `run_bloc_lint` is on for
-`build-app` only — no other package has blocs or a `bloc_tools` dependency.
-
-**Measure with the CI tooling, not a local run.** `flutter test --coverage`
-only reports libraries a test actually loaded, so it reads higher than CI's
-`collect_coverage_from: imports`. The last local measurement (2026-08-21,
-root `lib`, excluding `packages/**`/`*.g.dart`/`lib/l10n/gen/`) read
-1250/1251 lines with `lib/start_page/widgets/schedule_list.dart:53` the one
-uncovered line — but whether `build-app` itself passes has never been
-confirmed by running the workflow, so don't treat a local number as settling
-it.
 
 ### `bootstrap.dart` and `main_*.dart` are deliberately untested
 
@@ -432,7 +400,7 @@ Regression tests live in `create_activity_state_test.dart`.
 
 A single root `build` job (implicit 100% coverage, root working directory
 only) was replaced by one job per tested package, which is what
-[the open gates entry](#ci-coverage-gates-are-set-above-todays-numbers)
+[the gates entry](#ci-coverage-gates--resolved-2026-10-21)
 describes. The old shape meant `habits_repository`'s suite never ran in CI at
 all, and `error_tracking` had no job until it gained a suite.
 
@@ -518,3 +486,39 @@ Two of those suites moved code rather than only covering it:
 via `app_ui`'s `DetailsActionTile`), and the dialog tests moved into
 `packages/app_ui/test/` with the dialogs themselves, so they no longer count
 toward `lib/task_page`'s own number.
+
+### CI coverage gates — resolved 2026-10-21
+
+`.github/workflows/main.yaml` runs one job per tested package, each with a
+`min_coverage` set to the level the finished package should hold and
+`coverage_excludes` dropping generated code (`*.g.dart`, `lib/l10n/gen/`)
+from the denominator:
+
+| Job | Working directory | Target |
+| --- | --- | --- |
+| `build-app` | `.` — also excludes `packages/**`, so it measures the app's own `lib` only | 80% |
+| `build-habits-repository` | `packages/habits_repository` | 95% |
+| `build-app-ui` | `packages/app_ui` | 100% |
+| `build-error-tracking` | `packages/error_tracking` | 100% |
+
+The targets were set (2026-08-12) to what each finished package should hold,
+deliberately above the coverage of the day, on the rule that a threshold is
+never lowered to match reality — a green check should mean "at the approved
+bar". **All four are met:** every gate passed on CI on 2026-10-21, with 247
+tests for the app, 77 for `app_ui`, 53 for `habits_repository` and 5 for
+`error_tracking`.
+
+That was the first run to reach the coverage step since 2026-08-25, because
+CI had been broken rather than idle in between: `very_good_workflows@v1` is
+a moving tag, and it moved to a `very_good_cli` requiring a newer Dart than
+this workflow pinned, so all four build jobs died at the CLI install step.
+Raising the pin to Flutter 3.47.x fixed that and exposed the next step —
+Dart 3.13's formatter wanted four files written differently. Worth
+remembering that `@v1` can break this repo's CI with no change in the repo.
+
+`run_bloc_lint` is on for `build-app` only — no other package has blocs or a
+`bloc_tools` dependency.
+
+**A local coverage number is not the gate's number.** `flutter test
+--coverage` only reports libraries a test actually loaded, so it reads higher
+than CI's `collect_coverage_from: imports`. Let the workflow answer it.

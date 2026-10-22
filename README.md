@@ -272,9 +272,9 @@ pull request and push to `main`:
 - **Spell check** on every Markdown file.
 - **License check** — dependencies must be MIT, BSD-2/3-Clause, or Apache-2.0.
 
-Coverage floors are set to where each package *should* end up rather than
-where it is today, so a job may be red on purpose; the reasoning is recorded
-in [KNOWN_GAPS.md](KNOWN_GAPS.md).
+Each coverage floor is the level the finished package should hold, chosen
+rather than lowered to match whatever coverage happened to be — all four are
+met. The reasoning is recorded in [KNOWN_GAPS.md](KNOWN_GAPS.md).
 
 ---
 
